@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "Autumn API",
+    "description": "API to interact with Autumn",
     "license": {
       "name": "MIT"
     },
@@ -10,118 +10,191 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://api.useautumn.com/v1"
     }
   ],
   "security": [
     {
-      "bearerAuth": []
+      "bearerAuth": [
+        "Authorization"
+      ]
     }
   ],
+
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+    "/attach": {
+      "post": {
+        "description": "Attach a product to a customer",
+        "requestBody": {
+          "description": "Device to attach",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "customer_id": {
+                    "type": "string",
+                    "description": "ID which you provided when creating the customer"
+                  },
+                  "product_id": {
+                    "type": "string",
+                    "description": "This can be found on the product page"
                   }
                 }
               }
             }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
         },
         "responses": {
           "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Device attached"
           }
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/customers": {
+      "post": {
+        "description": "Create a new customer",
+        "requestBody": {
+          "description": "Customer to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Unique identifier of the customer as provided by you"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the customer"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email of the customer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Customer created"
+          }
+        }
+      }
+    },
+    "/events": {
+      "post": {
+        "description": "Send an event to Autumn",
+        "requestBody": {
+          "description": "Event to send",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "customer_id",
+                  "event_name",
+                  "timestamp"
+                ],
+                "properties": {
+                  "customer_id": {
+                    "type": "string",
+                    "description": "ID which you provided when creating the customer"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Name of the event"
+                  },
+                  "idempotency_key": {
+                    "type": "string",
+                    "description": "Unique identifier for the event. If the same event is sent multiple times, it will be ignored."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event sent"
+          }
+        }
+      }
+    },
+    "/entitlements/allowed": {
+      "get": {
+        "description": "Check if a customer has access to a product",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
+            "name": "customer_id",
+            "in": "query",
+            "description": "ID which you provided when creating the customer",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
+            }
+          },
+          {
+            "name": "feature_id",
+            "in": "query",
+            "description": "ID of the feature to check access to",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "quantity",
+            "in": "query",
+            "description": "Quantity of the feature end user is consuming. By default, the feature is considered to be consumed at 1 unit.",
+            "required": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Customer has access to the product",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "allowed": {
+                      "type": "boolean",
+                      "description": "Whether the customer has access to the feature"
+                    },
+                    "balances": {
+                      "type": "array",
+                      "description": "Balances of this feature / credits using this feature for the customer",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the feature"
+                          },
+                          "balance": {
+                            "type": "integer",
+                            "description": "Balance of the feature"
+                          },
+                          "required": {
+                            "type": "integer",
+                            "description": "Required amount of the feature"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -132,6 +205,17 @@
   },
   "components": {
     "schemas": {
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
+        }
+      },
+
+
+      
       "Plant": {
         "required": [
           "name"

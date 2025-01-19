@@ -13,18 +13,6 @@
     "anchors": {
       "from": "#B491FF",
       "to": "#7C3EFF"
-    },
-    "background": {
-      "light": "#FAFAF9",
-      "dark": "#1a1a1a"
-    }
-  },
-  "font": {
-    "headings": {
-      "family": "Archivo"
-    },
-    "body": {
-      "family": "Inter"
     }
   },
   "topbarLinks": [
@@ -41,19 +29,22 @@
 
   ],
   "anchors": [
-
-  ],
-  "openapi": "api-reference/openapi.json",
-  "api": {
-    "playground": {
-      "mode": "hide"
+    {
+      "name": "Documentation",
+      "icon": "book-open-cover",
+      "url": "https://mintlify.com/docs"
     },
-    "request": {
-      "example": {
-        "languages": ["bash", "javascript", "python"]
-      }
+    {
+      "name": "Community",
+      "icon": "slack",
+      "url": "https://mintlify.com/community"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://mintlify.com/blog"
     }
-  },
+  ],
   "navigation": [
     {
       "group": "Get Started",
@@ -64,13 +55,28 @@
       ]
     },
     {
-      "group": "API Reference",
+      "group": "Essentials",
       "pages": [
-        "api-reference/introduction",
-        "api-reference/customers/post",
-        "api-reference/attach/post",
-        "api-reference/events/post",
-        "api-reference/entitlements/allowed"
+        "essentials/markdown",
+        "essentials/code",
+        "essentials/images",
+        "essentials/settings",
+        "essentials/navigation",
+        "essentials/reusable-snippets"
+      ]
+    },
+    {
+      "group": "API Documentation",
+      "pages": [
+        "api-reference/introduction"
+      ]
+    },
+    {
+      "group": "Endpoint Examples",
+      "pages": [
+        "api-reference/endpoint/get",
+        "api-reference/endpoint/create",
+        "api-reference/endpoint/delete"
       ]
     }
   ],
