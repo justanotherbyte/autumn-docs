@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Autumn",
   "logo": {
-    "dark": "/assets/logo/logo_text_light.png",
-    "light": "/assets/logo/logo_with_text.png"
+    "dark": "/assets/logo/dark_logo_with_text.png",
+    "light": "/assets/logo/light_logo_with_text.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -58,19 +58,16 @@
     {
       "group": "Get Started",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
+        "quickstart"
       ]
     },
     {
       "group": "API Reference",
       "pages": [
-        "api-reference/introduction",
         "api-reference/customers/post",
         "api-reference/attach/post",
         "api-reference/events/post",
-        "api-reference/entitlements/allowed"
+        "api-reference/entitled"
       ]
     }
   ],

@@ -129,9 +129,9 @@
         }
       }
     },
-    "/entitlements/allowed": {
+    "/entitled": {
       "get": {
-        "description": "Check if a customer has access to a product",
+        "description": "Check if a customer has access to a feature",
         "parameters": [
           {
             "name": "customer_id",

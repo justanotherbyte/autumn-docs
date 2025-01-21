@@ -1,14 +1,115 @@
 ---
 title: 'Quickstart'
-description: 'Start building awesome documentation in under 5 minutes'
+description: 'Implement pricing & billing in under 5 minutes'
 ---
 
-## Setup your development
 
-Learn how to update your docs locally and deploy them to the public.
+In this quick tutorial, we'll go through the example of an AI chatbot company called Summer Chat setting up pricing 😉. Summer Chat wants to allow 20 premium messages and 50 normal messages per month on their Pro plan.
 
-### Edit and preview
+## Step 1: Set up feature tracking / gating
+First, let's create a feature in the dashboard. We'll create one called 'Premium Msg' and one for 'Normal Msg'. Additionally, these will be 'Metered' features since they are countable.
 
+<img
+  src="/assets/screenshots/features.png"
+  width={700}
+  alt="Hero Dark"
+/>
+
+## Step 2: Create a product
+Next, let's create a product. We'll call it "Pro", and under Entitlements, we'll add our 20 premium messages / month and 50 normal messages / month. We'll then add a pricing of $20 / month
+
+<img
+  src="/assets/screenshots/product.png"
+  width={700}
+  alt="Hero Dark"
+/>
+
+## Step 3: Create a customer
+Finally, let's create our first customer. You can do this either via the API or dashboard. The best part...you can use your own customer IDs!
+
+<Tabs>
+  <Tab title="API">
+    ```javascript
+    const response = await fetch('https://api.useautumn.com/v1/customers', {
+      method: "POST",
+      headers: {Authorization: 'Bearer <token>', 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        "id": "my_personal_id",
+        "name": "John Doe",
+        "email": "john.doe@gmail.com"
+      })
+    })
+    ```
+  </Tab>
+  <Tab title="Dashboard">
+    <img
+      src="/assets/screenshots/create_customer.png"
+      width={700}
+      alt="Hero Dark"
+    />
+  </Tab>
+</Tabs>
+
+## Step 4: Attach a product
+Next, let's attach our Pro product to the customer. Once again, you can do this via Dashboard or API. This step will involve billing the customer, so if you haven't set up your Stripe credentials yet, you will be prompted to do so.
+
+Our design philosiphy is that you should not have to handle upgrades, downgrades, webhooks, and more. As such, whenever you want to attach a product to a customer, all you need to do is call this endpoint, and we will handle all the logic for you!
+
+<Tabs>
+  <Tab title="API">
+    ```javascript
+    const response = await fetch('https://api.useautumn.com/v1/attach', {
+      method: "POST",
+      headers: {Authorization: 'Bearer <token>', 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        "customer_id": "my_personal_id",
+        "product_id": "prod_2rwydCAcuUp913PqoZwOjpy4aDM"
+      })
+    })
+    ```
+  </Tab>
+  <Tab title="Dashboard">
+    <img
+      src="/assets/screenshots/attach_product.png"
+      width={700}
+      alt="Hero Dark"
+    />
+  </Tab>
+</Tabs>
+
+
+### Step 5: Check access and send event
+
+Now, whenever a customer uses one of your features, all you need to do is first check if the customer has access to it, then send an event if so!
+
+```javascript
+// 1. Check if customer is entitled to feature
+const response = await fetch('https://api.useautumn.com/v1/entitled', {
+  method: "POST",
+  headers: {Authorization: 'Bearer <token>', 'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    "customer_id": "my_personal_id",
+    "feature_id": "premium_msg"
+  })
+})
+
+// 2. Check if user is allowed
+let data = await response.json()
+if (!data.allowed) {
+  throw new Error(`feature not allowed`)
+}
+
+// 3. Send event if user accesses feature
+await fetch('https://api.useautumn.com/v1/events', {
+  method: "POST",
+  headers: {Authorization: 'Bearer <token>', 'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    "customer_id": "my_personal_id",
+    "event_name": "premium_msg"
+  })
+})
+```
+{/* 
 <AccordionGroup>
   <Accordion icon="github" title="Clone your docs locally">
     During the onboarding process, we created a repository on your Github with
@@ -83,4 +184,4 @@ Add content directly in your files with MDX syntax and React components. You can
   Keep your docs on your own website's subdomain.
 </Card>
 
-</CardGroup>
+</CardGroup> */}
