@@ -24,7 +24,7 @@
   "paths": {
     "/attach": {
       "post": {
-        "description": "Attach a product to a customer",
+        "description": "Attach a product to a customer when they attempt to purchase it",
         "requestBody": {
           "description": "Device to attach",
           "content": {
