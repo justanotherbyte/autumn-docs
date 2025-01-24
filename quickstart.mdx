@@ -13,17 +13,27 @@ We can define the chatbot's features in the Autumn dashboard. We'll create two f
 
 2. "Pro Analytics": a `boolean` feature, as it's a simple on-off toggle depending on the tier
 
-![](/image\(20\).png)
+
+<img
+  className="border rounded-md"
+  src="/assets/screenshots/features.png"
+/>
 
 Creating a boolean feature just needs a name and ID. Metered features rely on reporting usage events (see Step 5) so we can keep track of how much allowance each customer has left. We need to define the name of the event we'll be sending from our application.
 
-![](/image\(22\).png)
+<img
+  className=""
+  src="/assets/screenshots/create_feature.png"
+/>
 
 ## Step 2: Create a product
 
 Next, let's create a product. We'll call it "Pro Tier", and under Entitlements, we'll add our 50 chat messages per month and Pro Analytics. We'll then add a pricing of $99 per month.
 
-![](/image\(21\).png)
+<img
+  className="border rounded-md"
+  src="/assets/screenshots/product.png"
+/>
 
 ## Step 3: Create a customer
 
@@ -53,7 +63,7 @@ Now we need to create our first customer. You can do this either via the API or 
 
 When this customer purchases Pro Tier, we'll attach our Pro product to the customer. Once again, you can do this via Dashboard or API. This step will involve billing the customer, so if you haven't set up your Stripe credentials yet, you will be prompted to do so.
 
-If a customer needs to make a card payment, this will return a checkout link URL. If we have the card already on file, we'll automatically handle billing.
+If a customer needs to make a card payment, this will return a Stripe checkout URL. If we have the card already on file, we'll automatically handle billing.
 
 Our design philosophy is that you shouldn't have to handle upgrades, downgrades, or [258 webhook statuses](https://docs.stripe.com/api/events/types). So whenever you want to assign a product to a customer, all you need to do is call this endpoint--Autumn will handle all this for you!
 
@@ -68,6 +78,12 @@ Our design philosophy is that you shouldn't have to handle upgrades, downgrades,
         "product_id": "prod_2rwydCAcuUp913PqoZwOjpy4aDM"
       })
     })
+
+    const data = await response.json()
+
+    if (data.checkout_url) {
+      // Redirect user to checkout_url
+    }
     ```
   </Tab>
 

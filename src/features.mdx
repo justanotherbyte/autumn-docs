@@ -1,0 +1,43 @@
+---
+title: 'Features'
+---
+
+
+In Autumn, there are 2 types of features you can create: `boolean` and `metered`. When defining a boolean or metered feature, the `id` you enter is what you'll use to check whether a customer has access later on.
+
+### Configuring a metered feature
+For metered features, you need to pass in:
+
+1. One or more event names
+2. An aggregation (either `COUNT` or `SUM`)
+
+When calculating the usage of a metered feature, Autumn will first filter all events by `event_name`, and then either `COUNT` or `SUM` over them.
+
+- `COUNT`: This aggregation simply takes the count of events
+- `SUM`: This aggregation will sum based on a property you specify as shown below. This property should be passed in the `properties` field when sending an event.
+
+<img
+  className="border rounded-md"
+  width={400}
+  src="/assets/screenshots/create_feature2.png"
+/>
+
+#### Example of sending event with property
+In the example below, if there is a metered event `minutes` which sums over the property `length`, then the following event will increment the metered feature by 2.
+```js
+await fetch('https://api.useautumn.com/v1/events', {
+  method: "POST",
+  headers: {Authorization: 'Bearer <token>', 'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    "customer_id": "cus_123",
+    "event_name": "minutes",
+    "properties": {
+      "length": 2
+    }
+  })
+})
+```
+
+
+
+
