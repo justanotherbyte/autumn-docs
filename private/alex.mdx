@@ -1,0 +1,69 @@
+---
+title: 'Alex onboarding'
+---
+
+We have already created your PRO customers and attached the relevant product for each of them.
+
+### Integration Steps
+
+To integrate, all you have to do is iterate through your customers, and call the following two endpoints:
+1. **Upsert customer**
+    - For Pro customers, this endpoint will retrieve the customer based on `email` and update the `id` and `fingerprint` property.
+    - For Free customers, we weren't able to retrieve them from Stripe, so this endpoint will create a new customer. The `free` product will auto-attach since it's set as default. Additionally, you can pass in a UNIX timestamp in milliseconds since epoch to `reset_at`, which will specify when the customer's entitlements reset
+    - **Note:** This endpoint uses a `PUT` HTTP request method
+
+2. **Update balances**
+    - This allows you to update each feature's balance (usage) for a particular customer. This is pretty straightforward and simply takes in an array of objects with `feature_id` and `balance`
+    - **Note:** `balance` will be set, not incremented or otherwise
+
+
+**Upsert Customer**
+```js
+const url = "https://api.useautumn.com/v1/customers" 
+const method = "PUT"
+const reqBody = {
+    id: "string, <your_own_customer_id>",
+    name: "string",
+    email: "string",
+    fingerprint: "string, <mac_serial_number>",
+    reset_at: "number (milliseconds since epoch)",
+}
+```
+
+**Update Balances**
+```js
+const url = "https://api.useautumn.com/v1/customers/<customer_id>/balances"
+const method = "POST"
+const reqBody = {
+  balances: [
+    {
+      feature_id: "chat-messages",
+      balance: 1
+    },
+    {
+      feature_id: "deepseek-messages",
+      balance: 1
+    },
+    {
+      feature_id: "o1-messages",
+      balance: 1
+    },
+    {
+      feature_id: "apply-code",
+      balance: 1
+    },
+    {
+      feature_id: "git-commit-message",
+      balance: 1
+    },
+    {
+      feature_id: "voice-input",
+      balance: 1
+    },
+    {
+      feature_id: "tab-to-completes",
+      balance: 1
+    }
+  ]
+}
+```
