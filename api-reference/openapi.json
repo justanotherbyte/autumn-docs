@@ -21,6 +21,7 @@
     }
   ],
 
+
   "paths": {
     "/attach": {
       "post": {
@@ -39,6 +40,9 @@
                   "product_id": {
                     "type": "string",
                     "description": "This can be found on the product page"
+                  },
+                  "customer_data": {
+                    "$ref": "#/components/schemas/CustomerData"
                   }
                 }
               }
@@ -116,6 +120,9 @@
                   "idempotency_key": {
                     "type": "string",
                     "description": "Unique identifier for the event. If the same event is sent multiple times, it will be ignored."
+                  },
+                  "customer_data": {
+                    "$ref": "#/components/schemas/CustomerData"
                   }
                 }
               }
@@ -130,37 +137,35 @@
       }
     },
     "/entitled": {
-      "get": {
+      "post": {
         "description": "Check if a customer has access to a feature",
-        "parameters": [
-          {
-            "name": "customer_id",
-            "in": "query",
-            "description": "ID which you provided when creating the customer",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "feature_id",
-            "in": "query",
-            "description": "ID of the feature to check access to",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "quantity",
-            "in": "query",
-            "description": "Quantity of the feature end user is consuming. By default, the feature is considered to be consumed at 1 unit.",
-            "required": false,
-            "schema": {
-              "type": "integer"
+        "requestBody": {
+          "description": "Customer to check",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "customer_id": {
+                    "type": "string",
+                    "description": "ID which you provided when creating the customer"
+                  },
+                  "feature_id": {
+                    "type": "string",
+                    "description": "ID of the feature to check access to"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Quantity of the feature end user is consuming. By default, the feature is considered to be consumed at 1 unit."
+                  },
+                  "customer_data": {
+                    "$ref": "#/components/schemas/CustomerData"
+                  }
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Customer has access to the product",
@@ -210,6 +215,20 @@
         "properties": {
           "success": {
             "type": "boolean"
+          }
+        }
+      },
+      "CustomerData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "fingerprint": {
+            "type": "string"
           }
         }
       },
