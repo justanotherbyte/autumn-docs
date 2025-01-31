@@ -51,20 +51,20 @@
                 }
               },
               "examples": {
-                "Customer ID only": {
+                "Required": {
                   "value": {
-                    "customer_id": "<Your internal Customer ID>",
-                    "product_id": "<Product ID>"
+                    "customer_id": "john-123",
+                    "product_id": "pro-tier"
                   }
                 },
-                "With customer_data": {
+                "with customer_data": {
                   "value": {
-                    "customer_id": "<your customer id>",
-                    "product_id": "<product id>",
+                    "customer_id": "john-123",
+                    "product_id": "pro-tier",
                     "customer_data": {
-                      "name": "John Doe",
-                      "email": "john@example.com",
-                      "fingerprint": "fp_123456"
+                      "name": "John Yeo",
+                      "email": "john@useautumn.com",
+                      "fingerprint": "jsdfioudhjf98sdhfis90sd8f"
                     }
                   }
                 }
@@ -187,25 +187,25 @@
               "examples": {
                 "COUNT events": {
                   "value": {
-                    "customer_id": "<your customer id>",
+                    "customer_id": "john-123",
                     "event_name": "user_login"
                   }
                 },
                 "SUM events": {
                   "value": {
-                    "customer_id": "<your customer id>",
-                    "event_name": "user_login",
+                    "customer_id": "john-123",
+                    "event_name": "compute",
                     "properties": {
-                      "compute_seconds": "12"
+                      "compute_seconds_utilised": "12"
                     }
                   }
                 },
                 "With customer_data": {
                   "value": {
-                    "customer_id": "<your customer id>",
-                    "event_name": "user_login",
+                    "customer_id": "john-123",
+                    "event_name": "compute",
                     "properties": {
-                      "compute_seconds": "12"
+                      "compute_seconds_utilised": "12"
                     },
                     "customer_data": {
                       "name": "John Yeo",
@@ -251,7 +251,8 @@
                     "description": "If you know the quantity of the feature the end user is consuming in advance"
                   },
                   "event_data": {
-                    "$ref": "#/components/schemas/EventData"
+                    "$ref": "#/components/schemas/EventData",
+                    "description": "Optional: Use this field to record a usage event after entitlement check in the same request. For dedicated usage tracking (recommended), see [events](/api-reference/events)."
                   },
                   "customer_data": {
                     "$ref": "#/components/schemas/CustomerData"
@@ -259,20 +260,31 @@
                 }
               },
               "examples": {
-                "Customer ID only": {
+                "Required": {
                   "value": {
-                    "customer_id": "<Your internal Customer ID>",
-                    "product_id": "<Product ID>"
+                    "customer_id": "john-123",
+                    "feature_id": "compute_seconds"
                   }
                 },
-                "With customer_data": {
+                "with event_data": {
                   "value": {
-                    "customer_id": "<your customer id>",
-                    "product_id": "<product id>",
+                    "customer_id": "john-123",
+                    "feature_id": "compute_seconds",
+                    "event_data": {
+                      "event_name": "compute",
+                      "properties": {
+                        "compute_seconds_utilised": "12"
+                      }
+                    }
+                  }
+                },
+                "with customer_data": {
+                  "value": {
+                    "customer_id": "john-123",
+                    "feature_id": "user_number",
                     "customer_data": {
-                      "name": "John Doe",
-                      "email": "john@example.com",
-                      "fingerprint": "fp_123456"
+                      "name": "John Yeo",
+                      "email": "john@useautumn.com"
                     }
                   }
                 }
@@ -326,7 +338,7 @@
     "schemas": {
       "CustomerData": {
         "type": "object",
-        "description": "Optional customer data. If the customer already exists, this object will be ignored.",
+        "description": "Properties for new customers. If a customer with the provided `customer_id` already exists, this object is ignored. Otherwise, a new customer will be created with these properties. Alternatively, see the [customers](/api-reference/customers) endpoint.",
         "properties": {
           "name": {
             "type": "string",

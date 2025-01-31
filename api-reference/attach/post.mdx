@@ -3,6 +3,5 @@ title: 'Attach Product'
 openapi: 'POST /attach'
 ---
 
-If payment is required, a Stripe `checkout_url` will be returned. If the customer's card is already on file, any upgrade or downgrade logic will be handled, and a `success: true` response will be returned.
+If payment is required, a Stripe `checkout_url` will be returned. If the customer's card is already on file, any upgrade or downgrade logic will be handled, and a `success: true` response will be returned instead.
 
-<Tip> Autumn will automatically create a new customer if the `customer_id` doesn't already exist.  You can optionally set the properties of this new customer through the `customer_data` field.</Tip>

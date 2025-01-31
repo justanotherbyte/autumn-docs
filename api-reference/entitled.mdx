@@ -3,5 +3,7 @@ title: 'Check Entitlement'
 openapi: 'POST /entitled'
 ---
 
+<Tip> If the `customer_id` you send doesn't already exist, Autumn will automatically create a new customer and assign any default products.  
+You can optionally set the properties of this new customer through the `customer_data` field.</Tip>
 
-<Tip> Autumn will automatically create a new customer if the `customer_id` doesn't already exist.  You can optionally set the properties of this new customer through the `customer_data` field.</Tip>
+
