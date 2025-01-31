@@ -6,6 +6,7 @@
     "light": "/assets/logo/light_logo_with_text.png"
   },
   "favicon": "/favicon.svg",
+  "theme": "quill",
   "colors": {
     "primary": "#7C3EFF",
     "light": "#B491FF",
@@ -65,16 +66,16 @@
     {
       "group": "API Reference",
       "pages": [
-        "api-reference/customers/post",
         "api-reference/attach/post",
+        "api-reference/entitled",
         "api-reference/events/post",
-        "api-reference/entitled"
+        "api-reference/customers/post"
       ]
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://linkedin.com/company/mintlify"
+    "x": "https://x.com/autumnpricing",
+    "github": "https://github.com/useautumn",
+    "linkedin": "https://linkedin.com/company/useautumn"
   }
 }

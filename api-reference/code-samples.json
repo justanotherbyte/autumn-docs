@@ -1,0 +1,5 @@
+{
+    "lang": "python",
+    "label": "Python",
+    "source": "import requests\n\nresponse = requests.post('https://api.useautumn.com/v1/attach',\n  headers={\n    'Authorization': 'Bearer YOUR_API_KEY',\n    'Content-Type': 'application/json'\n  },\n  json={\n    'customer_id': '123',\n    'product_id': '456'\n  }\n)"
+  }

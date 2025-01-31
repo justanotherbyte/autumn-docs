@@ -32,17 +32,40 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "customer_id",
+                  "product_id"
+                ],
                 "properties": {
                   "customer_id": {
                     "type": "string",
-                    "description": "ID which you provided when creating the customer"
+                    "description": "Your unique identifier for the customer"
                   },
                   "product_id": {
                     "type": "string",
-                    "description": "This can be found on the product page"
+                    "description": "Product ID, set when creating the product in the Autumn dashboard"
                   },
                   "customer_data": {
                     "$ref": "#/components/schemas/CustomerData"
+                  }
+                }
+              },
+              "examples": {
+                "Customer ID only": {
+                  "value": {
+                    "customer_id": "<Your internal Customer ID>",
+                    "product_id": "<Product ID>"
+                  }
+                },
+                "With customer_data": {
+                  "value": {
+                    "customer_id": "<your customer id>",
+                    "product_id": "<product id>",
+                    "customer_data": {
+                      "name": "John Doe",
+                      "email": "john@example.com",
+                      "fingerprint": "fp_123456"
+                    }
                   }
                 }
               }
@@ -51,7 +74,41 @@
         },
         "responses": {
           "200": {
-            "description": "Device attached"
+            "description": "Device attached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "checkout_url": {
+                      "type": "string",
+                      "description": "URL to the Stripe checkout page. Only present if payment is required."
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates if the product change was successful. Only present if payment is not required."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Description of the action taken"
+                    }
+                  }
+                },
+                "examples": {
+                  "Payment Required": {
+                    "value": {
+                      "checkout_url": "https://checkout.stripe.com/c/pay/<hash>"
+                    }
+                  },
+                  "Product Change": {
+                    "value": {
+                      "success": true,
+                      "message": "Product change handled"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -65,24 +122,23 @@
             "application/json": {
               "schema": {
                 "required": [
-                  "id",
-                  "name"
+                  "id"
                 ],
                 "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "Unique identifier of the customer as provided by you"
+                "allOf": [
+                  {
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Your unique identifier for the customer"
+                      }
+                    }
                   },
-                  "name": {
-                    "type": "string",
-                    "description": "Name of the customer"
-                  },
-                  "email": {
-                    "type": "string",
-                    "description": "Email of the customer"
+                  {
+                    "$ref": "#/components/schemas/CustomerData",
+                    "description": ""
                   }
-                }
+                ]
               }
             }
           }
@@ -96,7 +152,7 @@
     },
     "/events": {
       "post": {
-        "description": "Send an event to Autumn",
+        "description": "Send a usage event to Autumn",
         "requestBody": {
           "description": "Event to send",
           "content": {
@@ -105,24 +161,56 @@
                 "type": "object",
                 "required": [
                   "customer_id",
-                  "event_name",
-                  "timestamp"
+                  "event_name"
                 ],
-                "properties": {
-                  "customer_id": {
-                    "type": "string",
-                    "description": "ID which you provided when creating the customer"
+                "allOf": [
+                  {
+                    "properties": {
+                      "customer_id": {
+                        "type": "string",
+                        "description": "ID which you provided when creating the customer"
+                      }
+                    }
                   },
-                  "event_name": {
-                    "type": "string",
-                    "description": "Name of the event"
+                  {
+                    "$ref": "#/components/schemas/EventData"
                   },
-                  "idempotency_key": {
-                    "type": "string",
-                    "description": "Unique identifier for the event. If the same event is sent multiple times, it will be ignored."
-                  },
-                  "customer_data": {
-                    "$ref": "#/components/schemas/CustomerData"
+                  {
+                    "properties": {
+                      "customer_data": {
+                        "$ref": "#/components/schemas/CustomerData"
+                      }
+                    }
+                  }
+                ]
+              },
+              "examples": {
+                "COUNT events": {
+                  "value": {
+                    "customer_id": "<your customer id>",
+                    "event_name": "user_login"
+                  }
+                },
+                "SUM events": {
+                  "value": {
+                    "customer_id": "<your customer id>",
+                    "event_name": "user_login",
+                    "properties": {
+                      "compute_seconds": "12"
+                    }
+                  }
+                },
+                "With customer_data": {
+                  "value": {
+                    "customer_id": "<your customer id>",
+                    "event_name": "user_login",
+                    "properties": {
+                      "compute_seconds": "12"
+                    },
+                    "customer_data": {
+                      "name": "John Yeo",
+                      "email": "john@useautumn.com"
+                    }
                   }
                 }
               }
@@ -145,6 +233,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "customer_id",
+                  "feature_id"
+                ],
                 "properties": {
                   "customer_id": {
                     "type": "string",
@@ -154,12 +246,34 @@
                     "type": "string",
                     "description": "ID of the feature to check access to"
                   },
-                  "quantity": {
+                  "required_quantity": {
                     "type": "integer",
-                    "description": "Quantity of the feature end user is consuming. By default, the feature is considered to be consumed at 1 unit."
+                    "description": "If you know the quantity of the feature the end user is consuming in advance"
+                  },
+                  "event_data": {
+                    "$ref": "#/components/schemas/EventData"
                   },
                   "customer_data": {
                     "$ref": "#/components/schemas/CustomerData"
+                  }
+                }
+              },
+              "examples": {
+                "Customer ID only": {
+                  "value": {
+                    "customer_id": "<Your internal Customer ID>",
+                    "product_id": "<Product ID>"
+                  }
+                },
+                "With customer_data": {
+                  "value": {
+                    "customer_id": "<your customer id>",
+                    "product_id": "<product id>",
+                    "customer_data": {
+                      "name": "John Doe",
+                      "email": "john@example.com",
+                      "fingerprint": "fp_123456"
+                    }
                   }
                 }
               }
@@ -210,66 +324,40 @@
   },
   "components": {
     "schemas": {
-      "Customer": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          }
-        }
-      },
       "CustomerData": {
         "type": "object",
+        "description": "Optional customer data. If the customer already exists, this object will be ignored.",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Name of the customer"
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "description": "Email of the customer"
           },
           "fingerprint": {
-            "type": "string"
+            "type": "string",
+            "description": "Unique fingerprint of the customer, used to prevent free trial abuse (eg serial_number, device_id, etc)"
           }
         }
       },
-
-
-      
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "EventData": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "event_name": {
+            "type": "string",
+            "description": "Name of the event"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "idempotency_key": {
+            "type": "string",
+            "description": "Unique identifier for the event. If the same event is sent multiple times, it will be ignored."
+          },
+          "properties": {
+            "type": "object",
+            "description": "Event properties. Can be used to send a value when using SUM aggregation."
           }
         }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
       },
       "Error": {
         "required": [

@@ -2,5 +2,8 @@
 title: 'Send Event'
 openapi: 'POST /events'
 ---
+This endpoint is for sending usage events to Autumn, required for tracking your metered features. Events can aggregated via:
 
-When you pass in a `customer_id` that doesn't exist, a new customer will be created. You can set the properties of this new customer (eg. `name`) through the `customer_data` field.
+- `COUNT`: Counts the number of times an event happened (eg. number of users created).
+- `SUM`: Sums a value sent in the event properties (eg. total compute time)
+<Tip> Autumn will automatically create a new customer if the `customer_id` doesn't already exist.  You can optionally set the properties of this new customer through the `customer_data` field.</Tip>
