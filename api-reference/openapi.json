@@ -347,7 +347,7 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": {
+                          "feature_id": {
                             "type": "string",
                             "description": "ID of the feature"
                           },
