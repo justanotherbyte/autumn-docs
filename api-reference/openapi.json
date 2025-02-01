@@ -150,6 +150,43 @@
         }
       }
     },
+    "/customers/{customer_id}/billing_portal": {
+      "get": {
+        "description": "Get the customer's Stripe billing portal URL",
+        "parameters": [
+          {
+            "name": "customer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID which you provided when creating the customer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved billing portal URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "URL to access the customer's billing portal"
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://billing.stripe.com/session/<hash>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/events": {
       "post": {
         "description": "Send a usage event to Autumn",
@@ -252,7 +289,7 @@
                   },
                   "event_data": {
                     "$ref": "#/components/schemas/EventData",
-                    "description": "Optional: Use this field to record a usage event after entitlement check in the same request. For dedicated usage tracking (recommended), see [events](/api-reference/events)."
+                    "description": "Optionally record a usage event after entitlement check in the same request. For dedicated usage tracking (recommended), see [events](/api-reference/events)."
                   },
                   "customer_data": {
                     "$ref": "#/components/schemas/CustomerData"
@@ -338,7 +375,7 @@
     "schemas": {
       "CustomerData": {
         "type": "object",
-        "description": "Properties for new customers. If a customer with the provided `customer_id` already exists, this object is ignored. Otherwise, a new customer will be created with these properties. Alternatively, see the [customers](/api-reference/customers) endpoint.",
+        "description": "Properties for new customers. If a customer with the provided `customer_id` already exists, this object is ignored. Otherwise, a new customer will be created with these properties. Alternatively, use the [customers](/api-reference/customers) endpoint.",
         "properties": {
           "name": {
             "type": "string",

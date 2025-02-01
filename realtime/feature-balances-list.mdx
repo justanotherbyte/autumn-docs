@@ -1,0 +1,97 @@
+---
+title: 'List Feature Balances'
+description: 'List of all metered feature balances for a customer'
+---
+
+<RequestExample>
+```typescript Connection
+const ws = new WebSocket(
+ 'wss://api.useautumn.com/{customer_id}/entitlements',
+ ['x-publishable-key', '<PUBLISHABLE_KEY>']
+)
+```
+</RequestExample>
+<ResponseExample>
+```json Messages
+{
+  "data": [
+    {
+      "feature_id": "chat-messages",
+      "balance": 13,
+      "unlimited": false
+    },
+    {
+      "feature_id": "overage-messages",
+      "balance": -10,
+      "unlimited": false
+    }
+  ],
+  "error": null
+}
+```
+</ResponseExample>
+
+You can subscribe to real-time balance updates for all features via a WebSocket. This is useful for building a real-time usage dashboard for a customer.
+
+<Info>A `balance` records the usage of a metered feature for a customer. Remaining pre-paid allowance is represented as a _positive_ number, and owed usage as a _negative_ number.</Info>
+
+
+#### Authorizations
+<ParamField header="x-publishable-key" type="string" required>
+  Your publishable API key, passed as a WebSocket subprotocol. This can be found in the [Autumn Dashboard](https://app.useautumn.com/dev).
+</ParamField>
+
+
+#### Path Parameters
+<ParamField path="customer_id" type="string" required>
+  The ID of the customer to get the balances list for.
+</ParamField>
+
+#### Response
+
+<ResponseField name="data" type="array">
+ Array of feature balances
+ <Expandable title="properties" defaultOpen={true}>
+   <ResponseField name="feature_id" type="string" >
+     Unique identifier for the feature
+   </ResponseField>
+   <ResponseField name="balance" type="integer" >
+     Current balance for the feature. Positive values represent remaining allowance, and negative values represent owed usage.
+   </ResponseField>
+   <ResponseField name="unlimited" type="boolean" >
+     Whether feature has unlimited usage
+   </ResponseField>
+ </Expandable>
+</ResponseField>
+
+<ResponseField name="error" type="string">
+ Error message if something went wrong
+</ResponseField>
+
+
+
+## Connection Management
+
+```javascript
+const ws = new WebSocket(
+  'wss://api.useautumn.com/customer_123/entitlements',
+  ['x-publishable-key', 'am_pk_test_...']
+);
+
+ws.onopen = () => {
+  console.log('Connected to Autumn realtime');
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data); 
+    // Update your UI here
+};
+
+ws.onerror = (error) => {
+  console.error('WebSocket error:', error);
+};
+
+ws.onclose = () => {
+  console.log('Disconnected from Autumn realtime');
+};
+```
