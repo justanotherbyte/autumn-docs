@@ -45,6 +45,24 @@
                     "type": "string",
                     "description": "Product ID, set when creating the product in the Autumn dashboard"
                   },
+                  "options": {
+                    "type": "object",
+                    "description": "Billing options for the product, if needed.",
+                    "properties": {
+                      "feature_id": {
+                        "type": "string",
+                        "description": "Feature ID of the feature that will be affected by the options."
+                      },
+                      "quantity": {
+                        "type": "integer",
+                        "description": "Quantity of the feature (eg number of seats) to be purchased. Required if billing is in-advance usage-based."
+                      },
+                      "threshold": {
+                        "type": "integer",
+                        "description": "Customer will be charged for this product when the balance of this feature falls below this threshold. Required if billing is threshold-based."
+                      }
+                    }
+                  },
                   "customer_data": {
                     "$ref": "#/components/schemas/CustomerData"
                   }
