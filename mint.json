@@ -69,6 +69,7 @@
       "pages": [
         "api-reference/events/post",
         "api-reference/customers/post",
+        "api-reference/customers/get",
         "api-reference/billing-portal"
       ]
     },
