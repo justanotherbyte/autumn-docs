@@ -1,0 +1,195 @@
+---
+title: "AI Builders"
+description: "How to integrate Autumn using an AI application builder"
+---
+
+Using Autumn, you can integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), [v0](https://v0.dev) or [Bolt.new](https://https://bold.new) in just a couple prompts--no webhooks or server management required.
+
+## Step 1: Create an Autumn account and link Stripe
+
+Create your free Autumn account at [useautumn.com](https://app.useautumn.com). Then navigate to the [Connect Stripe](https://app.useautumn.com/integrations/stripe) page and paste in your Test and Live Secret API keys.
+
+<Note>
+  If you just want to integrate in Test mode to start, enter your test key
+  `sk_test_....` in both the live and test fields. You can disconnect and
+  reconnect to update your keys later.
+</Note>
+
+Your Test and Live keys can be found in the Stripe [Dashboard](https://dashboard.stripe.com/apikeys),
+under _Developers_ > _API keys_.
+
+## Step 2: Define your features
+
+Under the features tab in Autumn, define the features that your users have access to. For simplicity, we'll just create a single `boolean` feature called `pro-features`, which we'll use as a flag which represents the ability of a user to use the paid features in your app.
+
+Press the 'Create feature' button to name the feature:
+
+<img src="/assets/screenshots/pro-features.png" alt="Pro features" />
+
+<Note>
+  In this case, we have just created a single feature to flag whether users are
+  on our paid plan. However you can define multiple features (which can then be
+  used in different products), including `metered` (usage-based) features. See
+  [Quickstart](/quickstart) for an example.
+</Note>
+
+## Step 3: Create your products
+
+Under the Products tab, we'll create our free and paid plans.
+
+1. "**Free**": This product should be set as the default product, so that it's automatically attached to any new customers. We'll have no pricing for this product, and it won't have access to our `pro-features`. It'll be an empty product.
+2. "**Pro**": This product will have a price of $20 per month, and will have access to our `pro-features` feature.
+
+When you're done, you should have something like this:
+
+<Tabs>
+  <Tab title="Free Plan">
+    <img
+      className="border rounded-md"
+      src="/assets/screenshots/free-plan.png"
+    />
+    <img
+    src="/assets/screenshots/empty-free-product.png"
+    />
+
+  </Tab>
+  <Tab title="Pro Plan">
+    <img src="/assets/screenshots/pro-plan.png" />
+  </Tab>
+</Tabs>
+
+## Step 4: Integrate Autumn using your AI builder
+
+Now you're ready to integrate Autumn into your AI builder. There are two places this needs to happen:
+
+1. **On purchase**: When a user purchases a plan, you need to call our `attach` to generate a Stripe Checkout URL. Once a user pays, Autumn will attach the product to their account and they will have access to our `pro-features`
+2. **When trying to use a feature**: When a user tries to use a paid feature, you need to call our `entitled` endpoint to check if they have access to `pro-features`.
+
+Below are the API schemas for the `attach` and `entitled` endpoints, which you should use in your prompt. Here are some example prompts you can use:
+
+<Accordion title="Create a Pricing page and call Autumn on purchase">
+{/* <Note>
+  Since you're just calling Autumn from the frontend, use your **publishable** API key in the prompt, found in the Autumn [developer tab](https://app.useautumn.com/dev).
+</Note> */}
+
+<Note>
+  The attach endpoint requires a customer_id. You can just use your internal
+  user ID from your database (which is likely Supabase).
+</Note>
+```plaintext Prompt
+
+Let’s set up pricing. I have:
+
+1. A free plan which allows access to my basic features
+2. A pro plan for $20 per month which allows access to ‘pro-features’
+
+Build a pricing page showing the above 2 plans. When the user clicks on “Subscribe to Pro”, use the following API from Autumn to assign the product to the customer. Please direct user to checkout_url if present in response.
+
+Don’t worry about gating features. We’ll handle that with Autumn later on using a ‘pro-features’ flag that they will return.
+
+My free product has an id of ‘free’, and pro product has a product_id of ‘pro’ Use our user ID as customer_id from our DB. Please keep force_checkout as true so a URL is always returned.
+
+Use this API key for Autumn. Leave it in code for now: <>
+
+Autumn attach product API:
+
+**Request**
+
+curl --request POST \
+--url https://api.useautumn.com/v1/attach \
+--header 'Authorization: Bearer <token>' \
+--header 'Content-Type: application/json' \
+--data '{
+"customer_id": "<Your internal Customer ID>",
+"product_id": "<Product ID>",
+“force_checkout”: true
+}'
+
+**Response**
+
+{
+"checkout_url": "https://checkout.stripe.com/c/pay/<hash>"
+}
+
+````
+
+</Accordion>
+
+<Accordion title="Check if a user has access to pro-features">
+<Note>
+  The entitlement endpoint requires a customer_id. You can just use your internal
+  user ID from your database (which is likely Supabase).
+</Note>
+
+```plaintext Prompt
+
+We need to handle feature gating for our Pro tier. Whenever a user tries to access <my pro features>, first call the Autumn endpoint below to check whether the user is on the pro plan and can access pro-features.
+If they are not allowed, please prompt the user to upgrade by pointing them to the pricing page.
+Otherwise, allow the user to access the feature.
+The feature_id is ‘pro-features’. Please use our user ID as customer_id from our DB.
+
+Autumn entitlement API:
+
+**Request:**
+
+curl --request POST \
+ --url https://api.useautumn.com/v1/entitled \
+ --header 'Authorization: Bearer <token>' \
+ --header 'Content-Type: application/json' \
+ --data '{
+"customer_id": "john-123",
+"feature_id": "pro-features"
+}'
+
+**Response:**
+
+{
+"allowed": true,
+}
+````
+
+</Accordion>
+
+<Accordion title="For handling usage-based features">
+
+```plaintext Prompt
+
+For our todolist, our Free users have access to X number of todos and our Pro users have access to Y number of todos. We need to handle feature gating. Before a todo is created, call the Autumn endpoint below to check whether the user is entitled, and then record a usage event.
+If the todo is not allowed, please prompt the user to upgrade with a toast pointing them to the pricing page.
+If the todo is allowed, create the todo.
+The feature_id and event_name are both ‘todo’.
+
+Autumn entitlement API:
+
+**Request:**
+
+curl --request POST \
+  --url https://api.useautumn.com/v1/entitled \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "customer_id": "<Internal Customer ID>",
+  "feature_id": "todo",
+  "event_data": {
+    "event_name": "todo",
+  }
+}'
+
+**Response:**
+
+{
+"allowed": true,
+"balances": [
+{
+"feature_id": "todo",
+"balance": 123,
+}
+]
+}
+```
+
+</Accordion>
+
+## Congrats!
+
+You've now integrated Autumn using your AI builder. Let us know how it goes!

@@ -15,27 +15,21 @@
   ],
   "security": [
     {
-      "bearerAuth": [
-        "Authorization"
-      ]
+      "bearerAuth": ["Authorization"]
     }
   ],
-
 
   "paths": {
     "/attach": {
       "post": {
         "description": "Attach a product to a customer when they attempt to purchase it",
         "requestBody": {
-          "description": "Device to attach",
+          "description": "Customer and product to attach",
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "customer_id",
-                  "product_id"
-                ],
+                "required": ["customer_id", "product_id"],
                 "properties": {
                   "customer_id": {
                     "type": "string",
@@ -44,6 +38,11 @@
                   "product_id": {
                     "type": "string",
                     "description": "Product ID, set when creating the product in the Autumn dashboard"
+                  },
+                  "force_checkout": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Always return a Stripe Checkout URL, even if the customer's card is already on file."
                   },
                   "options": {
                     "type": "object",
@@ -139,9 +138,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "required": [
-                  "id"
-                ],
+                "required": ["id"],
                 "type": "object",
                 "allOf": [
                   {
@@ -214,10 +211,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "customer_id",
-                  "event_name"
-                ],
+                "required": ["customer_id", "event_name"],
                 "allOf": [
                   {
                     "properties": {
@@ -288,10 +282,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "customer_id",
-                  "feature_id"
-                ],
+                "required": ["customer_id", "feature_id"],
                 "properties": {
                   "customer_id": {
                     "type": "string",
@@ -427,10 +418,7 @@
         }
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+        "required": ["error", "message"],
         "type": "object",
         "properties": {
           "error": {
