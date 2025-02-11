@@ -44,6 +44,7 @@
                   "properties": {
                     "customer": {
                       "type": "object",
+                      "description": "Additional customer details",
                       "properties": {
                         "id": {
                           "type": "string",
@@ -88,24 +89,28 @@
                     },
                     "products": {
                       "type": "array",
+                      "description": "List of active products for the customer",
                       "items": {
                         "$ref": "#/components/schemas/Product"
                       }
                     },
                     "add_ons": {
                       "type": "array",
+                      "description": "List of active add-ons for the customer",
                       "items": {
                         "$ref": "#/components/schemas/Product"
                       }
                     },
                     "entitlements": {
                       "type": "array",
+                      "description": "List of active entitlements for the customer",
                       "items": {
                         "$ref": "#/components/schemas/Entitlement"
                       }
                     },
                     "invoices": {
                       "type": "array",
+                      "description": "List of past invoices the customer has paid",
                       "items": {
                         "$ref": "#/components/schemas/Invoice"
                       }
@@ -138,8 +143,8 @@
           },
           "status": {
             "type": "string",
-            "enum": ["active", "inactive", "canceled"],
-            "description": "Current status of the product subscription"
+            "enum": ["active"],
+            "description": "Current status of the product subscription. We only return active products."
           },
           "created_at": {
             "type": "integer",
@@ -194,7 +199,6 @@
           },
           "interval": {
             "type": "string",
-            "enum": ["minute", "month", "lifetime"],
             "description": "Time interval for the entitlement"
           },
           "balance": {
