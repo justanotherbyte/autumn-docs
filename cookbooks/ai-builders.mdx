@@ -74,7 +74,8 @@ Below are the API schemas for the `attach` and `entitled` endpoints, which you s
 
 <Note>
   The attach endpoint requires a customer_id. You can just use your internal
-  user ID from your database (which is likely Supabase).
+  user ID from your database (which is likely Supabase). You should fill in the
+  API key and product_id in the prompt.
 </Note>
 
 ```plaintext Prompt
@@ -88,9 +89,9 @@ Build a pricing page showing the above 2 plans. When the user clicks on “Subsc
 
 Don’t worry about gating features. We’ll handle that with Autumn later on using a ‘pro-features’ flag that they will return.
 
-My free product has an id of ‘free’, and pro product has a product_id of ‘pro’ Use our user ID as customer_id from our DB. Please keep force_checkout as true so a URL is always returned.
+My free product has an id of ‘free’, and pro product has a product_id of ‘pro’ Use our user ID from our DB as the customer_id. Please keep force_checkout as true so a URL is always returned.
 
-Use this API key for Autumn. Leave it in code for now: <>
+Use this API key for Autumn. Leave it in code for now: <API Key>
 
 Autumn attach product API:
 
@@ -119,7 +120,8 @@ curl --request POST \
 <Accordion title="Check if a user has access to pro-features" defaultOpen={true}>
 <Note>
   The entitlement endpoint requires a customer_id. You can just use your internal
-  user ID from your database (which is likely Supabase).
+  user ID from your database (which is likely Supabase). You should fill in your
+  feature_id in the prompt.
 </Note>
 
 ```plaintext Prompt
@@ -127,7 +129,7 @@ curl --request POST \
 We need to handle feature gating for our Pro tier. Whenever a user tries to access <my pro features>, first call the Autumn endpoint below to check whether the user is on the pro plan and can access pro-features.
 If they are not allowed, please prompt the user to upgrade by pointing them to the pricing page.
 Otherwise, allow the user to access the feature.
-The feature_id is ‘pro-features’. Please use our user ID as customer_id from our DB.
+The feature_id is ‘pro-features’. Please use our user ID from our DB as the customer_id.
 
 Autumn entitlement API:
 
@@ -138,8 +140,8 @@ curl --request POST \
  --header 'Authorization: Bearer <token>' \
  --header 'Content-Type: application/json' \
  --data '{
-"customer_id": "john-123",
-"feature_id": "pro-features"
+"customer_id": <Internal Customer ID>,
+"feature_id": <Feature ID>
 }'
 
 **Response:**
@@ -160,6 +162,7 @@ For our todolist, our Free users have access to X number of todos and our Pro us
 If the todo is not allowed, please prompt the user to upgrade with a toast pointing them to the pricing page.
 If the todo is allowed, create the todo.
 The feature_id and event_name are both ‘todo’.
+Please use our user ID from our DB as the customer_id.
 
 Autumn entitlement API:
 
