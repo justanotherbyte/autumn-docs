@@ -3,4 +3,4 @@ title: "Attach Product"
 openapi: "POST /attach"
 ---
 
-If payment is required, a Stripe `checkout_url` will be returned. If the customer's card is already on file, any upgrade or downgrade logic will be handled, and a `success: true` response will be returned instead.
+If payment is required, a Stripe `checkout_url` will be returned. If the customer's card is already on file, any upgrade or downgrade logic will be handled by default, and a `success: true` response will be returned.

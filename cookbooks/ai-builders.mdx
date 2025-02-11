@@ -67,7 +67,7 @@ Now you're ready to integrate Autumn into your AI builder. There are two places 
 
 Below are the API schemas for the `attach` and `entitled` endpoints, which you should use in your prompt. Here are some example prompts you can use:
 
-<Accordion title="Create a Pricing page and call Autumn on purchase">
+<Accordion title="Create a Pricing page and call Autumn on purchase" defaultOpen={true}>
 {/* <Note>
   Since you're just calling Autumn from the frontend, use your **publishable** API key in the prompt, found in the Autumn [developer tab](https://app.useautumn.com/dev).
 </Note> */}
@@ -76,6 +76,7 @@ Below are the API schemas for the `attach` and `entitled` endpoints, which you s
   The attach endpoint requires a customer_id. You can just use your internal
   user ID from your database (which is likely Supabase).
 </Note>
+
 ```plaintext Prompt
 
 Let’s set up pricing. I have:
@@ -111,11 +112,11 @@ curl --request POST \
 "checkout_url": "https://checkout.stripe.com/c/pay/<hash>"
 }
 
-````
+```
 
 </Accordion>
 
-<Accordion title="Check if a user has access to pro-features">
+<Accordion title="Check if a user has access to pro-features" defaultOpen={true}>
 <Note>
   The entitlement endpoint requires a customer_id. You can just use your internal
   user ID from your database (which is likely Supabase).
@@ -146,11 +147,12 @@ curl --request POST \
 {
 "allowed": true,
 }
-````
+
+```
 
 </Accordion>
 
-<Accordion title="For handling usage-based features">
+<Accordion title="For handling usage-based features" >
 
 ```plaintext Prompt
 
@@ -186,6 +188,7 @@ curl --request POST \
 }
 ]
 }
+
 ```
 
 </Accordion>
