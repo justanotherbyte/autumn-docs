@@ -7,16 +7,20 @@
     "light": "#B491FF",
     "dark": "#7C3EFF"
   },
-  "favicon": "/favicon.jpeg",
+  "favicon": "/favicon.png",
   "navigation": {
     "groups": [
       {
         "group": "Get Started",
-        "pages": ["introduction", "quickstart", "src/features"]
+        "pages": ["quickstart", "src/features"]
       },
       {
         "group": "API Reference",
-        "pages": ["api-reference/attach/post", "api-reference/entitled"]
+        "pages": [
+          "api-reference/attach/post",
+          "api-reference/entitled",
+          "api-reference/events/post"
+        ]
       },
       {
         "group": " ",
