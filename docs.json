@@ -1,0 +1,86 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "willow",
+  "name": "Autumn",
+  "colors": {
+    "primary": "#7C3EFF",
+    "light": "#B491FF",
+    "dark": "#7C3EFF"
+  },
+  "favicon": "/favicon.jpeg",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": ["introduction", "quickstart", "src/features"]
+      },
+      {
+        "group": "API Reference",
+        "pages": ["api-reference/attach/post", "api-reference/entitled"]
+      },
+      {
+        "group": " ",
+        "pages": [
+          "api-reference/customers/post",
+          "api-reference/customers/get",
+          "api-reference/billing-portal"
+        ]
+      },
+      {
+        "group": " ",
+        "pages": ["cookbooks/ai-builders"]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/assets/logo/light_logo_with_text.png",
+    "dark": "/assets/logo/dark_logo_with_text.png"
+  },
+  "api": {
+    "openapi": "api-reference/openapi.json",
+    "playground": {
+      "display": "none"
+    },
+    "examples": {
+      "languages": ["bash", "javascript", "python"]
+    }
+  },
+  "background": {
+    "color": {
+      "light": "#FAFAF9",
+      "dark": "#1a1a1a"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:hey@useautumn.com"
+      },
+      {
+        "label": "Website",
+        "href": "https://useautumn.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.useautumn.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/autumnpricing",
+      "github": "https://github.com/useautumn",
+      "linkedin": "https://linkedin.com/company/useautumn"
+    }
+  },
+  "fonts": {
+    "heading": {
+      "family": "Archivo"
+    },
+    "body": {
+      "family": "Inter"
+    }
+  }
+}

@@ -1,71 +1,42 @@
 ---
 title: Introduction
-description: "Welcome to Autumn"
+description: "Autumn is an open-source platform that lets you implement any pricing model you want."
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.svg"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.svg"
-  alt="Hero Dark"
-/>
+Autumn decouples pricing and billing logic from your codebase. Think of it like an external DB that tracks what your users are paying for and what they should get access to.
 
-## Setting up
+## Concepts
 
-The first step to world-class documentation is setting up your editing environments.
+#### Features
 
-<CardGroup cols={2}>
-  <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
-  >
-    Get your docs set up locally for easy development
-  </Card>
-  <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
-  >
-    Preview your changes before you push to make sure they're perfect
-  </Card>
-</CardGroup>
+Features are the parts of your application you charge for. They can be:
 
-## Make it yours
+- **boolean**: something a customer either has access to or not (eg, SSO auth).
+- **metered**: something a customer can use up (eg, AI credits).
 
-Update your docs to your brand and add valuable content for the best user conversion.
+When you define a feature in Autumn, you'll set its `ID`, which you'll use from your codebase to check if a user has access to it. If it's metered, you'll also set an `event_name`, which you'll use to send usage events.
 
-<CardGroup cols={2}>
-  <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
-  >
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
-  >
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/content/components/accordions"
-  >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+#### Products
+
+Products are a collection of features.
+
+Credits, Products, Entitlements, Pricing
+
+Examples
+
+<Accordion title="Credit-based product">
+  | Property | Description | | -------- | -------------------------------------
+  | | Name | Full name of user | | Age | Reported age | | Joined | Whether the
+  user joined the community |
+</Accordion>
+
+## Why use Autumn?
+
+> _"Billing is a much better use of my dev time than working on my product."_
+
+Autumn is easy to integate, and it's even easier to make any pricing changes. You'll never have to worry about billing again.
+
+1. **Dead simple integration** - Just 2 API calls to set up any pricing model. No webhooks, state syncing or server management needed.
+2. **Manages entitlement logic** - Autumn knows who has access to what and enforces limits. Just call our [/entitled](/api-reference/entitled) endpoint and we'll tell you if they have access.
+3. **Reliable billing without maintenance** - we handle all the edge cases (ie, Stripe's [258 webhook statuses](https://docs.stripe.com/api/events/types))
+4. **Make pricing changes at any time** - make pricing changes or launch new types of pricing without going through engineering. Subscriptions, usage-based, credits -- we take care of it for you.

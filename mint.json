@@ -62,20 +62,19 @@
     },
     {
       "group": "API Reference",
-      "pages": ["api-reference/attach/post", "api-reference/entitled"]
+      "pages": [
+        "api-reference/attach/post",
+        "api-reference/entitled",
+        "api-reference/events/post"
+      ]
     },
     {
       "group": "",
       "pages": [
-        "api-reference/events/post",
         "api-reference/customers/post",
         "api-reference/customers/get",
         "api-reference/billing-portal"
       ]
-    },
-    {
-      "group": "Realtime",
-      "pages": ["realtime/feature-balance", "realtime/feature-balances-list"]
     },
     {
       "group": "",
