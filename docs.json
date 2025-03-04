@@ -12,7 +12,14 @@
     "groups": [
       {
         "group": "Get Started",
-        "pages": ["quickstart", "src/features"]
+        "pages": [
+          "introduction",
+          "quickstart",
+          {
+            "group": "Entitlements",
+            "pages": ["entitlements/entitled", "entitlements/get-customer"]
+          }
+        ]
       },
       {
         "group": "API Reference",

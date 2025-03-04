@@ -3,40 +3,63 @@ title: Introduction
 description: "Autumn is an open-source platform that lets you implement any pricing model you want."
 ---
 
-Autumn decouples pricing and billing logic from your codebase. Think of it like an external DB that tracks what your users are paying for and what they should get access to.
+<img src="/assets/screenshots/hero.png" />
 
-## Concepts
-
-#### Features
-
-Features are the parts of your application you charge for. They can be:
-
-- **boolean**: something a customer either has access to or not (eg, SSO auth).
-- **metered**: something a customer can use up (eg, AI credits).
-
-When you define a feature in Autumn, you'll set its `ID`, which you'll use from your codebase to check if a user has access to it. If it's metered, you'll also set an `event_name`, which you'll use to send usage events.
-
-#### Products
-
-Products are a collection of features.
-
-Credits, Products, Entitlements, Pricing
-
-Examples
-
-<Accordion title="Credit-based product">
-  | Property | Description | | -------- | -------------------------------------
-  | | Name | Full name of user | | Age | Reported age | | Joined | Whether the
-  user joined the community |
-</Accordion>
+Autumn decouples pricing and billing logic from your codebase. Think of it like your external database that bills your users and tracks what they should get access to.
 
 ## Why use Autumn?
 
-> _"Billing is a much better use of my dev time than working on my product."_
-
-Autumn is easy to integate, and it's even easier to make any pricing changes. You'll never have to worry about billing again.
+Autumn is easy to integate and you never have to deal with billing again.
 
 1. **Dead simple integration** - Just 2 API calls to set up any pricing model. No webhooks, state syncing or server management needed.
-2. **Manages entitlement logic** - Autumn knows who has access to what and enforces limits. Just call our [/entitled](/api-reference/entitled) endpoint and we'll tell you if they have access.
-3. **Reliable billing without maintenance** - we handle all the edge cases (ie, Stripe's [258 webhook statuses](https://docs.stripe.com/api/events/types))
-4. **Make pricing changes at any time** - make pricing changes or launch new types of pricing without going through engineering. Subscriptions, usage-based, credits -- we take care of it for you.
+2. **Manages feature access** - Autumn knows who has access to what and enforces limits. Just call our [/entitled](/api-reference/entitled) endpoint and we'll tell you if they have access.
+3. **Make pricing changes at any time** - make pricing changes or launch new types of pricing without going through engineering. Subscriptions, usage-based, credits -- we take care of it for you.
+4. **Reliable billing without maintenance** - we handle all the edge cases (ie, Stripe's [258 webhook statuses](https://docs.stripe.com/api/events/types))
+
+## Concepts
+
+<Tabs>
+  <Tab title="Features">
+  Features are the parts of your application you want to charge for, and the building blocks of your products. They can be:
+
+- **Boolean**: something a customer either has access to or not (eg, SSO auth).
+- **Metered**: something a customer can use up (eg, AI credits).
+
+When you define a feature in Autumn, you'll set its `feature_id`, which you'll use from your codebase to check if a user has access to it. If it's metered, you'll also set an `event_name`, which you'll use to send usage events.
+
+You can also define a credit system, for when you want to have features draw from a balance.
+
+  </Tab>
+  <Tab title="Products">
+  Products are how you charge your users and what they get access to. They're made up of:
+    - **Entitlements** - what features your users get access to if they pay for a product.
+    - **Pricing** - how you charge your users (subscriptions, monthly vs annual, usage-based, credits, add-ons etc)
+
+Your users will pay for these products. Using the [/attach](/api-reference/attach/) endpoint will return a Stripe Checkout URL, and once the payment is complete, we'll grant the user access to the product's entitlements.
+
+  </Tab>
+  <Tab title="Entitlements">
+  Entitlements define exactly what the user gets access to when they pay for a product. You'll check if a user has access to an entitlement by calling the [/entitled](/api-reference/entitled/) endpoint.
+
+They are made up of features.
+
+| Feature       | Entitlement                               |
+| ------------- | ----------------------------------------- |
+| Chat Messages | 100 Chat Messages per month with Pro tier |
+| Pro Analytics | Access to Pro Analytics with Pro tier     |
+
+  </Tab>
+  <Tab title="Pricing">
+  Pricing is how you charge you users and how much. Autumn gives you the flexibility to support
+  - Subscriptions
+  - Usage-based & overage
+  - Add-ons
+  - Credits
+  - Different billing periods
+  - Pro-rating
+  - Seat-based pricing
+
+And more!
+
+  </Tab>
+</Tabs>
