@@ -44,6 +44,17 @@
                     "type": "string",
                     "description": "Product ID, set when creating the product in the Autumn dashboard"
                   },
+                  "product_ids": {
+                    "type": "array",
+                    "description": "List of product IDs to attach to the customer in the same subscription or transaction",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "success_url": {
+                    "type": "string",
+                    "description": "URL to redirect to after the purchase is successful"
+                  },
                   "force_checkout": {
                     "type": "boolean",
                     "default": false,
@@ -242,18 +253,18 @@
                 ]
               },
               "examples": {
-                "COUNT events": {
+                "Single event": {
                   "value": {
                     "customer_id": "john-123",
                     "event_name": "user_login"
                   }
                 },
-                "SUM events": {
+                "Sum of events": {
                   "value": {
                     "customer_id": "john-123",
                     "event_name": "compute",
                     "properties": {
-                      "compute_seconds": "12"
+                      "value": 12
                     }
                   }
                 },
@@ -262,7 +273,7 @@
                     "customer_id": "john-123",
                     "event_name": "compute",
                     "properties": {
-                      "compute_seconds": "12"
+                      "value": 12
                     },
                     "customer_data": {
                       "name": "John Yeo",
@@ -332,7 +343,7 @@
                     "event_data": {
                       "event_name": "compute",
                       "properties": {
-                        "compute_seconds": "12"
+                        "value": 12
                       }
                     }
                   }
