@@ -230,7 +230,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["customer_id", "event_name"],
+                "required": ["customer_id", "feature_id"],
                 "allOf": [
                   {
                     "properties": {
@@ -256,25 +256,21 @@
                 "Single event": {
                   "value": {
                     "customer_id": "john-123",
-                    "event_name": "user_login"
+                    "feature_id": "user-login"
                   }
                 },
-                "Sum of events": {
+                "With Value": {
                   "value": {
                     "customer_id": "john-123",
-                    "event_name": "compute",
-                    "properties": {
-                      "value": 12
-                    }
+                    "feature_id": "compute",
+                    "value": 12
                   }
                 },
                 "With customer_data": {
                   "value": {
                     "customer_id": "john-123",
-                    "event_name": "compute",
-                    "properties": {
-                      "value": 12
-                    },
+                    "feature_id": "compute",
+                    "value": 12,
                     "customer_data": {
                       "name": "John Yeo",
                       "email": "john@useautumn.com"
@@ -333,25 +329,23 @@
                 "Required": {
                   "value": {
                     "customer_id": "john-123",
-                    "feature_id": "compute_seconds"
+                    "feature_id": "compute-seconds"
                   }
                 },
                 "with event_data": {
                   "value": {
                     "customer_id": "john-123",
-                    "feature_id": "compute_seconds",
+                    "feature_id": "compute-seconds",
                     "event_data": {
-                      "event_name": "compute",
-                      "properties": {
-                        "value": 12
-                      }
+                      "feature_id": "compute-seconds",
+                      "value": 12
                     }
                   }
                 },
                 "With customer_data": {
                   "value": {
                     "customer_id": "john-123",
-                    "feature_id": "user_number",
+                    "feature_id": "user-number",
                     "customer_data": {
                       "name": "John Yeo",
                       "email": "john@useautumn.com"
@@ -427,9 +421,18 @@
       "EventData": {
         "type": "object",
         "properties": {
+          "feature_id": {
+            "type": "string",
+            "description": "ID of the feature to track usage for."
+          },
+          "value": {
+            "type": "integer",
+            "default": 1,
+            "description": "How much of the event should be counted towards the balance. Default is 1."
+          },
           "event_name": {
             "type": "string",
-            "description": "Name of the event"
+            "description": "For use in place of the feature_id. This should be used if multiple features are tracked in the same event."
           },
           "idempotency_key": {
             "type": "string",
@@ -437,7 +440,7 @@
           },
           "properties": {
             "type": "object",
-            "description": "Event properties. Can be used to send a value when using SUM aggregation."
+            "description": "Event properties."
           }
         }
       },
