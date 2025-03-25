@@ -337,7 +337,7 @@
                     "customer_id": "john-123",
                     "feature_id": "compute-seconds",
                     "event_data": {
-                      "feature_id": "compute-second",
+                      "feature_id": "compute-seconds",
                       "value": 12
                     }
                   }
