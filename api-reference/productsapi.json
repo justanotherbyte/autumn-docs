@@ -1,0 +1,184 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Product API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.useautumn.com/v1"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/products": {
+      "post": {
+        "summary": "Create a new product",
+        "operationId": "createProduct",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The unique identifier for the product"
+                  },
+                  "customer_id": {
+                    "type": "string",
+                    "description": "The unique identifier for the customer to attach the product to"
+                  },
+                  "prices": {
+                    "type": "object",
+                    "properties": {
+                      "amount": {
+                        "type": "number",
+                        "description": "Price amount in the default currency"
+                      },
+                      "bill_when": {
+                        "type": "string",
+                        "enum": ["in_advance", "in_arrears"],
+                        "description": "Billing condition"
+                      },
+                      "feature_id": {
+                        "type": "string",
+                        "description": "If billing is based on usage of a feature"
+                      },
+                      "usage_tiers": {
+                        "type": "array",
+                        "description": "Usage tiers for usage-based billing",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "from": {
+                              "type": "number"
+                            },
+                            "to": {
+                              "oneOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": ["", "unlimited"]
+                                }
+                              ]
+                            },
+                            "amount": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "billing_units": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "interval": {
+                        "type": "string",
+                        "description": "Billing interval",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  "entitlements": {
+                    "type": "object",
+                    "properties": {
+                      "feature_id": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "allowance_type": {
+                        "type": "string",
+                        "enum": ["fixed", "unlimited"]
+                      },
+                      "allowance": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "interval": {
+                        "type": "string",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  "free_trial_days": {
+                    "type": "number",
+                    "description": "How many days the product will be free",
+                    "nullable": true
+                  }
+                },
+                "example": {
+                  "id": "prod_12345",
+                  "customer_id": "cust_67890",
+                  "prices": {
+                    "amount": 100,
+                    "bill_when": "in_advance",
+                    "feature_id": "chat-messages",
+                    "usage_tiers": [
+                      {
+                        "from": 0,
+                        "to": "unlimited",
+                        "amount": 10
+                      }
+                    ],
+                    "billing_units": 1,
+                    "interval": "month"
+                  },
+                  "entitlements": {
+                    "feature_id": "entitlement_123",
+                    "allowance_type": "fixed",
+                    "allowance": "10",
+                    "interval": "month"
+                  },
+                  "free_trial": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique identifier for the created product"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["active", "inactive"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

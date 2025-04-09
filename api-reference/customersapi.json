@@ -148,8 +148,8 @@
           },
           "status": {
             "type": "string",
-            "enum": ["active"],
-            "description": "Current status of the product subscription. We only return active products."
+            "enum": ["active", "past_due", "trialing"],
+            "description": "Current status of the product subscription."
           },
           "created_at": {
             "type": "integer",

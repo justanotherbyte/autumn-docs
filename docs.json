@@ -18,7 +18,8 @@
           {
             "group": "Entitlements",
             "pages": ["entitlements/entitled", "entitlements/get-customer"]
-          }
+          },
+          "cookbooks/ai-builders"
         ]
       },
       {
@@ -31,15 +32,11 @@
       },
       {
         "group": " ",
-        "pages": [
-          "api-reference/customers/post",
-          "api-reference/customers/get",
-          "api-reference/billing-portal"
-        ]
+        "pages": ["api-reference/customers/post", "api-reference/customers/get"]
       },
       {
         "group": " ",
-        "pages": ["cookbooks/ai-builders"]
+        "pages": ["api-reference/products/post", "api-reference/billing-portal"]
       }
     ]
   },
