@@ -1,0 +1,19 @@
+/* #h2 {
+  background-color: #fff;
+}
+
+#upgrades-and-downgrades {
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  position: relative;
+  opacity: 0.5;
+}
+
+#upgrades-and-downgrades::before {
+  background-color: red;
+  width: 100%;
+  height: 100%;
+  content: "";
+  position: absolute;
+  top: 0;
+} */

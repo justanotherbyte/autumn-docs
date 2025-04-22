@@ -1,0 +1,64 @@
+---
+title: "Creating Products"
+description: "Learn about products in Autumn and how to create them"
+---
+
+Products are the separate packages that define what your customers get and how much they should be billed for it. Each product you create is a distinct combination of these features and prices.
+
+For example, you can define a separate product for all the pricing tiers (eg free plan, team plan, enterprise tier) you offer, or all your different price variations (annual billing, monthly billing, usage-based billing)
+
+## Creating a product
+
+Navigate to products section and click create product
+
+1. Fill in a name. This will be used to create a product in Stripe and show up on your checkout pages.
+2. Fill in an ID. You'll use this when using Autumn's APIs or SDKs to refer to this product.
+3. Click "Create Product". You'll be taken to the product editing page.
+
+You also have the option to duplicate a product. You can choose whether to copy it into Sandbox or the live environment. Hit the Elipses menu on the right of the product table and select "Copy".
+
+Once the product is created, you'll be taken to the product editing page. Here you can add product items, as well as set the properties of the product.
+
+## Product items
+
+Products are made up of product items. These can be:
+
+- **Features** - define the features that your customers get access to with this product
+- **Prices** - how much customers should pay for this tier. These can be one off prices or subscriptions
+- **Feature Prices** - for charging based on usage of a feature, you can add both a feature and price together
+
+## Product Properties
+
+#### Default Product
+
+Set this is the product should be automatically applied to a customer when they're created. This is typically for free products that give customers access to a limited set of features without paying.
+
+<Note>
+  If you set a product to be default, and it has a price, Autumn will still
+  apply it to the customer. However, since there are no payment details for the
+  customer by default, Autumn will send an invoice the customer's email.
+</Note>
+
+#### Add on Product
+
+Set this if the product is an add on. This will mean it can be purchased together with other products
+
+#### Product Groups
+
+If you have multiple groups of subscriptions, and customers can have a product from each of these subscription groups live at the same time, use this field. All product tiers from the same group should have the same value.
+
+## Free Trials
+
+You can set a free trial for a product with prices. This will give customers a set amount of days to try the product for free.
+
+To enable a free trial:
+
+1. Go to the [product page](https://app.useautumn.com/products)
+2. In the sidebar, you'll see a "Free Trials" section. Click on the + icon to add a new free trial
+3. In the popup, fill in the how many days the trial should last.
+4. Click "Update Product"
+
+<Note>
+  If you're using the customer `fingerprint` field, you can also choose to limit
+  the free trial to one per customer.
+</Note>

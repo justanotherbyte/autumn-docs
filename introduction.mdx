@@ -5,18 +5,19 @@ description: "Autumn is an open-source platform that lets you implement any pric
 
 <img src="/assets/screenshots/hero.png" />
 
-Autumn decouples pricing and billing logic from your codebase. Think of it like your external database that bills your users and tracks what they should get access to.
+Autumn decouples pricing and billing logic from your codebase. It's an external layer over Stripe that tracks what your customers get access to, enforces any limits you set, and bills them for it.
 
 ## Why use Autumn?
 
-Autumn is easy to integate and you never have to deal with billing again.
+Autumn is loved by hackers, founders and fast-growing startups because it's easy to integrate and **billing never has to be touched again**.
 
 1. **Dead simple integration** - Just 2 API calls to set up any pricing model. No webhooks, state syncing or server management needed.
-2. **Manages feature access** - Autumn knows who has access to what and enforces limits. Just call our [/entitled](/api-reference/entitled) endpoint and we'll tell you if they have access.
-3. **Make pricing changes at any time** - make pricing changes or launch new types of pricing without going through engineering. Subscriptions, usage-based, credits -- we take care of it for you.
-4. **Reliable billing without maintenance** - we handle all the edge cases (ie, Stripe's [258 webhook statuses](https://docs.stripe.com/api/events/types))
+2. **Managed feature access** - Autumn knows who has access to what and enforces limits. Just call our [/entitled](/api-reference/entitled) endpoint and we'll tell you if they have access.
+3. **Billing flows handled** - Upgrades, downgrades, failed payments, and more. Autumn handles all the edge cases so you don't have to.
+4. **Make pricing changes at any time** - Make pricing changes, set custom plans, or launch new types of pricing without going through engineering. Versioning, grandfathering and migrations becomes easy.
 
-## Concepts
+{/* prettier-ignore */}
+{/* ## Concepts
 
 <Tabs>
   <Tab title="Features">
@@ -62,4 +63,4 @@ They are made up of features.
 And more!
 
   </Tab>
-</Tabs>
+</Tabs> */}

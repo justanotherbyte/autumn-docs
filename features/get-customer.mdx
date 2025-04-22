@@ -1,10 +1,10 @@
 ---
-title: "Syncing All Entitlements"
+title: "Get Available Features"
 ---
 
 The simplest way to check entitlements is by using Autumn's [/entitled](/entitlements/entitled/) endpoint, to check if a user has access to a specific feature whenever it's requested.
 
-However, you may also use the [/customer](/api-reference/customers/get/) endpoint, which will return all of a user's active entitlements at once. This is useful if you want to:
+However, you can also use the [/customer](/api-reference/customers/get/) endpoint, which will return all of a user's available features and balances at once. This is useful if you want to:
 
 - Display a list of entitlements or usage balances to a user
 - Minimize the number of API calls you make
@@ -15,21 +15,21 @@ However, you may also use the [/customer](/api-reference/customers/get/) endpoin
 To sync up your application with Autumn, here are the steps you can follow:
 
 <Steps>
-  <Step title="Fetch a customer's entitlements on login">
-    Call the `/customer` endpoint to get all active entitlements
+  <Step title="Fetch a customer's features on login">
+    Call the `/customer` endpoint to get all active features and balances
   </Step>
-  <Step title="Sync entitlements with application">
-    Update your application logic to use the entitlements you fetched
+  <Step title="Sync features with application">
+    Update your application logic to use the features you fetched
   </Step>
   <Step title="Send usage events to Autumn">
     Track usage for metered features by sending events
   </Step>
-  <Step title="Refresh customer entitlements">
-    Update entitlements after recording new usage
+  <Step title="Refresh customer features">
+    Update features after recording new usage
   </Step>
 </Steps>
 
-## Fetching Customer Entitlements from Autumn
+#### 1. Fetching Customer Features
 
 When a user logs in, retrieve their current entitlements using the [/customer](/api-reference/customers/get/) endpoint. You should use the `customer_id` of the user that you set when you created the customer (typically your internal user ID).
 
@@ -52,18 +52,16 @@ async function getAutumnEntitlements(customerId) {
 }
 ```
 
-The response will include an array of entitlements:
+The response will include an array of available features:
 
 ```json Response
 {
   "entitlements": [
-    //boolean feature
     {
-      "feature_id": "premium_dashboard"
+      "feature_id": "premium-dashboard" //boolean feature
     },
-    //metered feature
     {
-      "feature_id": "api_calls",
+      "feature_id": "api-calls", //metered feature
       "interval": "monthly",
       "balance": 850,
       "unlimited": false,
@@ -73,7 +71,7 @@ The response will include an array of entitlements:
 }
 ```
 
-## Syncing Autumn Entitlements with your application
+#### 2. Syncing Autumn Entitlements with your application
 
 When a user logs in, sync their entitlements to ensure your application has the most up-to-date information. You'll need to create a mapping function to do this.
 
@@ -114,7 +112,7 @@ async function mapAutumnEntitlements(userId, autumnEntitlements) {
 }
 ```
 
-## Sending Usage Events for Metered Features
+#### 3. Sending Usage Events for Metered Features
 
 For metered features, you'll need to send usage events to Autumn whenever a user consumes a unit of that feature:
 
@@ -135,7 +133,7 @@ async function sendUsageEvent(userId, featureId) {
 }
 ```
 
-## Refreshing Entitlements After Usage
+#### 4. Refreshing Entitlements After Usage
 
 After sending a usage event, refresh the customer's entitlements to reflect the updated balance. Here's the full function covering the steps above:
 

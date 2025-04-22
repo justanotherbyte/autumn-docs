@@ -1,0 +1,214 @@
+---
+title: "Checking Access"
+description: "Learn how to check feature access with the `entitled` route"
+---
+
+When you create a product in Autumn, you define what features your customers on that product get access to.
+
+The `entitled` method returns the `allowed` property to check if a customer should have access to a feature, so you can block access or prompt them to upgrade.
+
+## Checking Metered Features
+
+Before your customer uses a feature, you can check if the customer is allowed to use it and their current usage.
+
+<Info>
+**Example Use Case:**
+
+Let's imagine you have a free product that allows 100 AI messages per month. Before your customer sends an AI message, you can check if they have any remaining messages.
+
+If they still have messages remaining, they'll be allowed to send an AI message. You can then [record the usage event](/features/recording-usage/) so Autumn can keep track of the balance.
+
+</Info>
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.useautumn.com/v1/entitled" \
+  -H "Authorization: Bearer am_sk_1234567890" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "user-123",
+    "feature_id": "ai-messages",
+  }'
+```
+
+```javascript Typescript
+import { Autumn } from "@useautumn/js";
+
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const response = await autumn.entitled({
+  customerId: "user-123",
+  featureId: "ai-messages",
+});
+```
+
+</CodeGroup>
+
+```json
+{
+  "allowed": true,
+  "balances": [
+    {
+      "feature_id": "ai-messages",
+      "balance": 100,
+      "required": 1
+    }
+  ]
+}
+```
+
+<Tip>
+Even if your product doesn't have usage limits (ie your product is purely usage-based), you can still use the above method to prevent excessive usage if a customer's payment fails.
+
+If the [product status](/products/enabling-product/#product-statuses) is `past_due`, by default, Autumn will block access to the feature.
+
+</Tip>
+
+#### Checking for a Required Quantity
+
+If you know the quantity a user will consume in advance, you can specify it with the `required_quantity` parameter. This means you can prevent a user from starting a process that would consume more than their allowance.
+
+By default, `required_quantity` is 1, so not passing this parameter will return `allowed: true` as long as the customer has a feature balance of 1 or more.
+
+<CodeGroup>
+
+```bash cURL {7}
+curl -X POST "https://api.useautumn.com/v1/entitled" \
+  -H "Authorization: Bearer am_sk_1234567890" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "user-123",
+    "feature_id": "ai-messages",
+    "required_quantity": 3
+  }'
+```
+
+```javascript Typescript {10}
+import { Autumn } from "@useautumn/js";
+
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+await autumn.entitled({
+  customerId: "user-123",
+  featureId: "ai-messages",
+  requiredQuantity: 3,
+});
+```
+
+</CodeGroup>
+
+#### Checking Feature Access and Recording Usage together
+
+In a typical workflow, you'll want to check if a customer has access to a feature and then [record the usage](/features/recording-usage/) as separate steps.
+
+However, you can check entitlement and record usage in a single API call using the `send_event` field. The usage value will be the `required_quantity` parameter.
+
+<CodeGroup>
+```bash cURL {7-8}
+curl -X POST "https://api.useautumn.com/v1/entitled" \
+  -H "Authorization: Bearer am_sk_1234567890" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "user-123",
+    "feature_id": "ai-messages",
+    "required_quantity": 3,
+    "send_event": true
+  }'
+````
+
+```javascript Typescript
+import { Autumn } from "@useautumn/js";
+
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const response = await autumn.entitled({
+  customerId: "user-123",
+  featureId: "api_calls",
+  requiredQuantity: 3,
+  sendEvent: true,
+});
+```
+
+</CodeGroup>
+
+<Warning>
+  We recommend doing these as separate steps in your application logic, so usage is only counted if the event is successful.
+
+Alternatively, you can "refund" usage with a negative usage `value` if the event fails.
+
+</Warning>
+## Checking Boolean Features
+
+For simple on/off features, use the endpoint to determine if a customer has access.
+
+You can do this on the client side on page load, using a `useEffect` function:
+
+```javascript
+async function checkAccess(customerId, featureId) {
+  const response = await fetch("https://api.useautumn.com/v1/entitled", {
+    method: "POST",
+    headers: {
+      // If using from the client side, use your Publishable key
+      Authorization: `Bearer ${AUTUMN_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      customer_id: customerId,
+      feature_id: featureId,
+    }),
+  });
+
+  const data = await response.json();
+  return data.allowed;
+}
+```
+
+The response will include an `allowed` property indicating whether the customer has access to the feature.
+
+You can do this from the client side, eg when a user clicks a button to use a feature, or from the server side when running that feature.
+
+```json Response
+{
+  "allowed": true,
+  "balances": [
+    {
+      "feature_id": "premium_dashboard",
+      "balance": null,
+      "required": null
+    }
+  ]
+}
+```
+
+{/* prettier-ignore */}
+{/* ## Creating New Customers
+
+If the `customer_id` you provide doesn't exist yet, Autumn will automatically create a new customer:
+
+```javascript
+const response = await fetch("https://api.useautumn.com/v1/entitled", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${AUTUMN_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    customer_id: "new-user-456",
+    feature_id: "basic_access",
+    customer_data: {
+      email: "user@example.com",
+      name: "New User",
+    },
+  }),
+});
+```
+
+The `customer_data` object lets you provide additional properties for the new customer. \*/}
+
+{/* prettier-ignore */}

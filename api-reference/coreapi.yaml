@@ -1,0 +1,498 @@
+openapi: 3.0.1
+info:
+  title: Autumn API
+  description: API to interact with Autumn
+  license:
+    name: MIT
+  version: 1.0.0
+
+servers:
+  - url: https://api.useautumn.com/v1
+
+security:
+  - secretKeyAuth: []
+
+paths:
+  /attach:
+    post:
+      security:
+        - publishableKeyAuthAttach: []
+      description: Returns a Stripe Checkout URL for the customer to complete their purchase, or handles the purchase if the customer's card is already on file.
+      requestBody:
+        description: Customer and product to attach
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customer_id
+                - product_id
+              properties:
+                customer_id:
+                  type: string
+                  description: Your unique identifier for the customer
+                product_id:
+                  type: string
+                  description: Product ID, set when creating the product in the Autumn dashboard
+                product_ids:
+                  type: array
+                  description: List of product IDs to attach to the customer in the same subscription or transaction
+                  items:
+                    type: string
+                success_url:
+                  type: string
+                  description: URL to redirect to after the purchase is successful
+                force_checkout:
+                  type: boolean
+                  default: false
+                  description: Always return a Stripe Checkout URL, even if the customer's card is already on file.
+                options:
+                  type: array
+                  description: An array of billing options for the product. Required for some pricing types.
+                  items:
+                    type: object
+                    properties:
+                      feature_id:
+                        type: string
+                        description: Feature ID of the feature that will be affected by the options.
+                      quantity:
+                        type: integer
+                        description: Quantity of the feature (eg number of seats) to be purchased. Required if billing is in-advance usage-based.
+                customer_data:
+                  $ref: "#/components/schemas/CustomerData"
+      x-code-samples:
+        - lang: typescript
+          label: required
+          source: |
+            import { Autumn as autumn } from 'autumn-js'
+
+            const response = await autumn.attach({
+              customer_id: 'user_123',
+              product_id: 'pro'
+            })
+        - lang: typescript
+          label: with customer_data
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            const response = await autumn.attach({
+              customer_id: 'user_123',
+              product_id: 'pro',
+              customer_data: {
+                name: 'John Yeo',
+                email: 'john@example.com'
+              }
+            });
+        - lang: curl
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/attach' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "customer_id": "user_123",
+              "product_id": "pro"
+            }'
+      responses:
+        "200":
+          description: Device attached
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  checkout_url:
+                    type: string
+                    description: URL to the Stripe checkout page. Only present if payment is required.
+                  success:
+                    type: boolean
+                    description: Indicates if the product change was successful. Only present if payment is not required.
+                  message:
+                    type: string
+                    description: Description of the action taken
+              examples:
+                checkout url:
+                  value:
+                    checkout_url: https://checkout.stripe.com/c/pay/<hash>
+                upgrades and downgrades:
+                  value:
+                    success: true
+                    message: Product change handled
+
+  /customers/{customer_id}/billing_portal:
+    post:
+      description: Get the customer's Stripe billing portal URL, so they can manage their subscription and see invoice history.
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID which you provided when creating the customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                return_url:
+                  type: string
+                  description: URL to return to after the customer is finished in the billing portal
+      x-code-samples:
+        - lang: typescript
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            const response = await autumn.customers.billingPortal('user_123', {
+              return_url: 'https://example.com/account'
+            });
+        - lang: curl
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/customers/user_123/billing_portal' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "return_url": "https://example.com/account"
+            }'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: URL to access the customer's billing portal
+              example:
+                url: https://billing.stripe.com/session/<hash>
+
+  /events:
+    post:
+      description: Send a usage event to Autumn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customer_id
+                - feature_id
+              allOf:
+                - properties:
+                    customer_id:
+                      type: string
+                      description: ID which you provided when creating the customer
+                - $ref: "#/components/schemas/EventData"
+                - properties:
+                    customer_data:
+                      $ref: "#/components/schemas/CustomerData"
+      x-code-samples:
+        - lang: typescript
+          label: with value
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            await autumn.event({
+              customer_id: 'user_123',
+              feature_id: 'messages',
+              value: 3
+            });
+
+        - lang: typescript
+          label: single event
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            await autumn.event({
+              customer_id: 'user_123', 
+              feature_id: 'messages'
+            });
+
+        - lang: typescript
+          label: with customer data
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            await autumn.event({
+              customer_id: 'user_123',
+              feature_id: 'messages', 
+              value: 12,
+              customer_data: {
+                name: 'John Yeo',
+                email: 'john@useautumn.com'
+              }
+            });
+
+        - lang: typescript
+          label: with event name
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            await autumn.event({
+              customer_id: 'user_123', 
+              event_name: 'mobile_messages',
+              value: 12
+            });
+
+        - lang: bash
+          label: with value
+          source: |
+            curl -X POST 'https://api.useautumn.com/events' \
+              -H 'Authorization: Bearer am_sk_1234567890' \
+              -H 'Content-Type: application/json' \
+              -d '{
+                "customer_id": "user_123",
+                "feature_id": "messages",
+                "value": 3
+              }'
+
+        - lang: bash
+          label: single event
+          source: |
+            curl -X POST 'https://api.useautumn.com/events' \
+              -H 'Authorization: Bearer am_sk_1234567890' \
+              -H 'Content-Type: application/json' \
+              -d '{
+                "customer_id": "user_123",
+                "feature_id": "messages"
+              }'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for the event
+                  code:
+                    type: string
+                    description: Status code indicating the result of sending the event
+                  customer_id:
+                    type: string
+                    description: Your unique identifier for the customer
+                  feature_id:
+                    type: string
+                    description: ID of the feature being tracked
+              example:
+                id: "evt_2w5dzidzFD1cESxOGnn9frVuVcm"
+                code: "event_received"
+                customer_id: "user_123"
+                feature_id: "messages"
+
+  /entitled:
+    post:
+      security:
+        - publishableKeyAuthEntitled: []
+      description: Check if a customer is allowed to use a feature
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customer_id
+                - feature_id
+              properties:
+                customer_id:
+                  type: string
+                  description: ID which you provided when creating the customer
+                feature_id:
+                  type: string
+                  description: ID of the feature to check access to
+                required_quantity:
+                  type: integer
+                  default: 1
+                  description: If you know the quantity of the feature the end user is consuming in advance. If their balance is below this quantity, `allowed` will be `false`.
+                send_event:
+                  type: boolean
+                  description: If true, a usage event will be recorded together with checking access. The `required_quantity` field will be used as the usage `value`.
+                entity_id:
+                  type: string
+                  description: If using [entity balances](/features/feature-entities) (eg, seats), the entity ID to check access for.
+                customer_data:
+                  $ref: "#/components/schemas/CustomerData"
+      x-code-samples:
+        - lang: typescript
+          label: required
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            const response = await autumn.entitled({
+              customer_id: 'user_123',
+              feature_id: 'messages'
+            });
+
+        - lang: typescript
+          label: with event
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            const response = await autumn.entitled({
+              customer_id: 'user_123',
+              feature_id: 'messages',
+              required_quantity: 12,
+              send_event: true
+            });
+
+        - lang: typescript
+          label: with customer data
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            const response = await autumn.entitled({
+              customer_id: 'user_123', 
+              feature_id: 'messages',
+              customer_data: {
+                name: 'John Yeo',
+                email: 'john@useautumn.com'
+              }
+            });
+
+        - lang: curl
+          label: required
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/entitled' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "customer_id": "user_123",
+              "feature_id": "messages"
+            }'
+
+        - lang: curl
+          label: with event
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/entitled' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "customer_id": "user_123",
+              "feature_id": "messages",
+              "required_quantity": 12,
+              "send_event": true
+            }'
+
+        - lang: curl
+          label: with customer data
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/entitled' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "customer_id": "user_123",
+              "feature_id": "messages",
+              "customer_data": {
+                "name": "John Yeo",
+                "email": "john@useautumn.com"
+              }
+            }'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allowed:
+                    type: boolean
+                    description: Whether the customer has access to the feature
+                  customer_id:
+                    type: string
+                    description: Your unique identifier for the customer
+                  feature_id:
+                    type: string
+                    description: ID of the feature being checked
+                  code:
+                    type: string
+                    description: Status code indicating the result of the check
+                  balances:
+                    type: array
+                    description: Balances of the associated feature or credit system
+                    items:
+                      type: object
+                      properties:
+                        feature_id:
+                          type: string
+                          description: ID of the feature
+                        required:
+                          type: integer
+                          description: Required amount of the feature
+                        balance:
+                          type: integer
+                          description: Current balance of the feature
+              example:
+                customer_id: "user_123"
+                feature_id: "messages"
+                code: "feature_found"
+                allowed: true
+                balances:
+                  [{ feature_id: "messages", required: 12, balance: 100 }]
+
+components:
+  schemas:
+    CustomerData:
+      type: object
+      description: Additional customer properties. These will be used if the customer's properties are not already set.
+      properties:
+        name:
+          type: string
+          description: Name of the customer
+        email:
+          type: string
+          description: Email of the customer
+        fingerprint:
+          type: string
+          description: Unique fingerprint of the customer, used to prevent free trial abuse (eg serial_number, device_id, etc)
+
+    EventData:
+      type: object
+      properties:
+        feature_id:
+          type: string
+          description: ID of the feature to track usage for.
+        value:
+          type: integer
+          default: 1
+          description: How much of the event should be counted towards the balance. Default is 1.
+        event_name:
+          type: string
+          description: An [event name](/features/recording-usage#using-event-names) can be used in place of `feature_id`. This can be used if multiple features are tracked in the same event.
+        idempotency_key:
+          type: string
+          description: Unique identifier for the event. If the an event with the same key is sent multiple times, any subsequent events will be ignored and return an error.
+        properties:
+          type: object
+          description: Event properties that you can define.
+
+    Error:
+      required:
+        - error
+        - message
+      type: object
+      properties:
+        error:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+  securitySchemes:
+    publishableKeyAuthAttach:
+      type: http
+      scheme: bearer
+      description: You can use your Secret or Publishable key for this endpoint. Using your Publishable Key will always return a `checkout_url`. Using your Secret Key allows you to handle payments automatically (eg, for plan upgrades).
+
+    secretKeyAuth:
+      type: http
+      scheme: bearer
+      description: Your secret key must be used as the Bearer token for this endpoint.
+
+    publishableKeyAuthEntitled:
+      type: http
+      scheme: bearer
+      description: You can use your Secret or Publishable key for this endpoint. To include usage events however, you must use your Secret key.

@@ -1,0 +1,170 @@
+---
+title: "Recording Usage"
+description: "Keep track of your customer's feature usage with the `event` route"
+---
+
+When customers use features in your product, you'll need to record their usage so Autumn can track it against their limits or bill them for usage.
+
+There are two ways to record usage: sending events or setting usage directly.
+
+## Sending Events
+
+The event route is recommended for tracking consumable features, like AI messages, credits or API calls. Each time a customer uses a feature, send an event to count their usage.
+
+<Tip>
+  Before recording usage, you may want to check if the customer is [allowed to
+  use the feature](/features/entitled). This prevents them from exceeding usage
+  limits defined in the product.
+</Tip>
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.useautumn.com/v1/event" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "user-123",
+"feature_id": "ai-messages",
+"value": 1
+}'
+```
+
+```javascript Typescript
+import { Autumn } from "@useautumn/js";
+
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+await autumn.event({
+  customerId: "user-123",
+  featureId: "ai-messages",
+  value: 1,
+});
+```
+
+</CodeGroup>
+```json
+{
+"message": "Event recorded successfully",
+"event_id": "event_123",
+"customer_id": "user-123",
+"feature_id": "ai-messages"
+}
+```
+<Tip>
+You can also send a negative `value` to decrement the balance counter.
+</Tip>
+## Setting Usage Directly
+
+For other features (such as seats or workspaces), you may find it easier to set usage directly, rather than incrementing Autumn's feature balance. The usage route lets you do this directly.
+
+<CodeGroup>
+
+```bash cURL {1}
+curl -X POST "https://api.useautumn.com/v1/usage" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "user-123",
+"feature_id": "seats",
+"value": 3
+}'
+```
+
+```javascript Typescript {5}
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+await autumn.usage({
+  customerId: "user-123",
+  featureId: "seats",
+  value: 3,
+});
+```
+
+</CodeGroup>
+```json
+{
+"message": "Usage set successfully",
+"customer_id": "user-123",
+"feature_id": "seats",
+}
+```
+<Warning>
+The usage route overwrites the current usage value. Use this carefully, as it can reset or override incremental usage recorded through events.
+</Warning>
+
+## Using Event Names
+
+In the above examples, we used the `feature_id` to identify the feature. You can instead use the `event_name` parameter to link usage to different events in your application. This can be useful when:
+
+- Multiple features are affected by the same user action
+- Different actions should count toward the same feature limit
+- You need to write SQL queries on events in order to get a feature's usage [coming soon!]
+
+<Info>
+**Example Use Case:**
+
+Let's imagine you have an AI writing assistant that can generate emails, social media posts, and blog posts. You want to have a limit of 100 generations per month, but of that, you only want to allow 10 blog posts.
+
+In this case, you can have 3 events: `email_generation`, `social_media_generation`, and `blog_post_generation`. <br />
+These events will be linked to 2 features: `total-generations` and `blog-posts`.
+
+`total_generations` will be tied to all 3 events, while `blog_posts` will only be tied to the `blog_post_generation` event.
+
+</Info>
+
+You can define event names in the Autumn dashboard:
+
+1. Go to the [Products Page](https://app.useautumn.com/products) and click the "Features" tab.
+2. Click on the feature you want to add an event to.
+3. In the popup, click the "event_name" button.
+4. Add all of the events you want to link to the feature.
+5. Click "Update Feature".
+
+You can then record usage for these events from your application:
+
+<CodeGroup>
+```bash cURL {8}
+curl -X POST "https://api.useautumn.com/v1/event" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "user-123",
+"feature_id": "ai-messages",
+"value": 1,
+"event_name": "blog_post_generation"
+}'
+```
+
+```javascript Typescript {10}
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+await autumn.event({
+  customerId: "user-123",
+  featureId: "ai-messages",
+  value: 1,
+  eventName: "blog_post_generation",
+});
+```
+
+</CodeGroup>
+```json
+{
+"message": "Event recorded successfully",
+"event_id": "event_123",
+"customer_id": "user-123",  
+"event_name": "blog_post_generation",
+}
+```
+
+<Warning>
+  You can only use one of `event_name` or `feature_id` when recording usage.
+  Check that you're sending the correct one in the request, especially if you're
+  using a mix of `snake_case` and `kebab-case`.
+</Warning>

@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "willow",
+  "theme": "palm",
   "name": "Autumn",
   "colors": {
     "primary": "#7C3EFF",
@@ -9,34 +9,88 @@
   },
   "favicon": "/favicon.png",
   "navigation": {
-    "groups": [
+    "anchors": [
       {
-        "group": "Get Started",
-        "pages": [
-          "introduction",
-          "quickstart",
+        "anchor": "Documentation",
+        "icon": "folder-open",
+        "groups": [
           {
-            "group": "Entitlements",
-            "pages": ["entitlements/entitled", "entitlements/get-customer"]
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart", "cookbooks/ai-builders"]
           },
-          "cookbooks/ai-builders"
+          {
+            "group": "Products",
+            "pages": [
+              "products/create-product",
+              "products/product-items",
+              "products/enabling-product",
+              "products/changing-product",
+              "products/rewards"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/entitled",
+              "features/recording-usage",
+              "features/balances",
+              "features/credits",
+              "features/feature-entities"
+            ]
+          },
+          {
+            "group": "Customers",
+            "pages": [
+              "customers/creating-customers",
+              "customers/managing-customers"
+            ]
+          },
+          {
+            "group": "Pricing Guides",
+            "pages": ["guides/credits", "guides/prepaid"]
+          }
         ]
       },
       {
-        "group": "API Reference",
-        "pages": [
-          "api-reference/attach/post",
-          "api-reference/entitled",
-          "api-reference/events/post"
+        "anchor": "API Reference",
+        "icon": "square-terminal",
+        "groups": [
+          {
+            "group": " ",
+            "pages": [
+              "api-reference/attach/post",
+              "api-reference/entitled",
+              "api-reference/events/post"
+            ]
+          },
+          {
+            "group": "Customers",
+            "pages": [
+              "api-reference/customers/post",
+              "api-reference/customers/get",
+              "api-reference/customers/update",
+              "api-reference/customers/billing-portal"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "api-reference/features/usage",
+              "api-reference/features/balances",
+              "api-reference/features/create-entity",
+              "api-reference/features/delete-entity"
+            ]
+          },
+          {
+            "group": "Products",
+            "pages": [
+              "api-reference/products/post",
+              "api-reference/products/get",
+              "api-reference/products/referral-code",
+              "api-reference/products/referral-redeem"
+            ]
+          }
         ]
-      },
-      {
-        "group": " ",
-        "pages": ["api-reference/customers/post", "api-reference/customers/get"]
-      },
-      {
-        "group": " ",
-        "pages": ["api-reference/products/post", "api-reference/billing-portal"]
       }
     ]
   },
@@ -50,7 +104,7 @@
       "display": "none"
     },
     "examples": {
-      "languages": ["bash", "javascript", "python"]
+      "languages": ["typescript", "bash"]
     }
   },
   "background": {

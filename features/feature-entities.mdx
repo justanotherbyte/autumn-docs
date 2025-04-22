@@ -1,0 +1,241 @@
+---
+title: "Entities"
+description: "Learn how to use feature entities to track balances per separate entity, such as a user or a workspace"
+---
+
+Feature entities are used to keep track of sub-balances for a feauture. For example, you may have a product that allows 500 credits **per user** per month.
+
+To start, add the feature entity as a product item in the Autumn dashboard.
+
+1. Go to the [Products Page](https://app.useautumn.com/products) and click into the product you want to add a feature entity to.
+2. Click the "+ Feature" button.
+3. Select the feature to track (eg, `credits`)
+4. Click the elipsis on the right of the feature selector and click "Add per Feature Entity"
+5. Select the entity you want to add (eg, per `user_id`)
+6. Define any included usage (eg, 500 credits per user) and add the product item.
+
+## Managing entities via the API
+
+You can manage feature entities via the `entities` route. This can be used to create, update and delete entities, such as when a seat is added or removed.
+
+<Check>
+  When you create a feature entity, a **usage event** will automatically be sent
+  that increments the count of the number of entities (eg seats) being used.
+
+This means if you create 2 entities for "seats", your usage of "seats" will be 2.
+
+</Check>
+
+<Tabs>
+    <Tab title="Create an entity">
+        <CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.useautumn.com/v1/entities" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "org_123",
+"feature_id": "feature_123",
+"entity_id": "user_abc"
+}'
+```
+
+```javascript Typescript
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const entity = await autumn.entities.create({
+  customer_id: "org_123",
+  feature_id: "feature_123",
+  entity_id: "user_abc",
+});
+```
+
+</CodeGroup>
+```json
+{
+  "message": "Entity created successfully",
+  "entity_id": "entity_123"
+}
+```
+    </Tab>
+    <Tab title="Delete an entity">
+    <CodeGroup>
+
+```bash cURL
+curl -X DELETE "https://api.useautumn.com/v1/entities" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "org_123",
+"feature_id": "feature_123",
+"entity_id": "user_abc"
+}'
+```
+
+```javascript Typescript
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const entity = await autumn.entities.delete({
+  customer_id: "org_123",
+  feature_id: "feature_123",
+  entity_id: "user_abc",
+});
+```
+
+</CodeGroup>
+```json
+{
+  "message": "Entity deleted successfully",
+  "entity_id": "entity_123"
+}
+```
+        
+    </Tab>
+</Tabs>
+
+## Manging entity balances
+
+Just like with normal features, you can check feature access and send usage events for entity.
+
+#### Check feature access
+
+<CodeGroup>
+
+```bash cURL {7-8}
+curl -X GET "https://api.useautumn.com/v1/entitled" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "org_123",
+"feature_id": "ai-messages",
+"entity_id": "user_abc"
+}'
+```
+
+```javascript Typescript {9-10}
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const entitled = await autumn.entitled({
+  customer_id: "org_123",
+  feature_id: "ai-messages",
+  entity_id: "user_abc",
+});
+```
+
+</CodeGroup>
+
+#### Send usage event
+
+<CodeGroup>
+
+```bash cURL {7-8}
+curl -X POST "https://api.useautumn.com/v1/events" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "org_123",
+"feature_id": "ai-messages",
+"entity_id": "user_abc",
+"value": 10
+}'
+```
+
+```javascript Typescript {9-10}
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const event = await autumn.events.create({
+  customer_id: "org_123",
+  feature_id: "ai-messages",
+  entity_id: "user_abc",
+  value: 10,
+});
+```
+
+</CodeGroup>
+
+#### Top-level vs entity-level balances
+
+Top-level balances are the total balance for the feature across all entities. Entity-level balances are the balance for a specific entity. You can check access and send usage events either at the top-level or entity-level.
+
+<Info>
+**Example use case**
+
+You have a product that allows 500 credits per user per month. However, the credits are shared across all users in the account.
+
+You can create a feature entity for "seats" and then check access and send usage events at the top-level.
+
+</Info>
+
+To use top-level balances, just omit the `entity_id` from your entitled request.
+
+<CodeGroup>
+
+```bash cURL
+curl -X GET "https://api.useautumn.com/v1/entitled" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "org_123",
+"feature_id": "ai-messages"
+}'
+```
+
+```javascript Typescript
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const entitled = await autumn.entitled({
+  customer_id: "org_123",
+  feature_id: "ai-messages",
+});
+```
+
+</CodeGroup>
+
+And similarly for usage events.
+
+<Note>
+This will increment the usage counter for the top-level balance, and also deduct from the first-created entity so that the sum of the the entity balances is always the same as the top-level balance.
+</Note>
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.useautumn.com/v1/events" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "org_123",
+"feature_id": "ai-messages",
+"value": 10
+}'
+```
+
+```javascript Typescript
+import { Autumn } from "@useautumn/js";
+const autumn = new Autumn({
+  apiKey: "am_sk_1234567890",
+});
+
+const event = await autumn.events({
+  customer_id: "org_123",
+  feature_id: "ai-messages",
+  value: 10,
+});
+```
+
+</CodeGroup>
