@@ -1,0 +1,151 @@
+---
+title: "Autumn with TypeScript"
+sidebarTitle: "TypeScript"
+sidebar_position: 1
+description: "Implement pricing & billing with React and Node.js"
+---
+
+Create your [Autumn account](https://app.useautumn.com/) and let's create a the pricing for a premium AI chatbot.
+
+We're going to charge users **$20 per month for 10 messages**.
+
+## 1. Create the product
+
+Create a product in the [Products](https://app.useautumn.com/products) tab.
+
+<Steps>
+  <Step>
+  <Accordion title="Create the Product">
+    Click on the "+ Product" button and name the product "Pro".
+    <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
+      <img
+        src="/assets/quickstart/create-pro.png"
+
+      />
+    </Frame>
+    </Accordion>
+
+  </Step>
+  <Step>
+  <Accordion title="Create the Messages Feature">
+  Click the "+ Feature" button, and in the feature list, select "Create new feature".
+
+  <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
+  <img src="/assets/quickstart/messages.png" />
+  </Frame>
+  </Accordion>
+  </Step>
+  <Step>
+  <Accordion title="Add the Product Items">
+  Back on the products page, create a new product and name it "Pro". Click "+ Feature" and add a limit of 10 messages per month.
+  
+  Then click "+ Price" and a price of $20 per month.
+  <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
+  <img src="/assets/quickstart/messages-item.png" className="" />
+  <img src="/assets/quickstart/price.png" className="" />
+  </Frame>
+  </Accordion>
+  </Step>
+</Steps>
+
+## 2. Install `autumn-js`
+
+```bash npm
+npm install autumn-js
+```
+
+## 3. Integrate Autumn
+
+From our application's frontend, whenever a customer wants to send a chatbot messages, we'll first check if they're allowed to.
+
+If they are, we'll send a usage event to Autumn. Autumn will then update the customer's usage and remaining balance.
+
+When they click the "Upgrade to Pro" button, they'll be redirected to a Stripe checkout page to subscribe.
+
+<Note>
+You can use a Publishable Key when making `attach` and `entitled` requests from the frontend. To handle product upgrades and downgrades however, you'll need to use a Secret Key from the backend.
+</Note>
+<CodeGroup>
+
+```jsx Client {5-7, 11, 19}
+// src/chatbot.tsx
+
+import { Autumn } from "autumn-js";
+
+const autumn = new Autumn({
+  publishableKey: import.meta.env.VITE_AUTUMN_PUBLISHABLE_KEY,
+});
+
+export default function Chatbot() {
+  const handleUpgrade = async () => {
+    let { data, error } = await autumn.attach({ productId: "pro" });
+
+    if (data?.checkout_url) {
+      window.location.href = data.checkout_url;
+    }
+  };
+
+  const checkAccess = async () => {
+    let { data, error } = await autumn.entitled({ featureId: "messages" });
+
+    if (data?.allowed) {
+      await fetch("http://localhost:8080/messages", {
+        method: "POST",
+      });
+      // Handle chatbot message from the backend
+    } else {
+      alert("You don't have access to this feature");
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={handleUpgrade}>Upgrade to Pro</button>
+      <button onClick={checkAccess}>Send message</button>
+    </div>
+  );
+}
+{
+  (" ");
+}
+```
+
+```tsx Server {6-8, 19-21}
+// src/index.ts
+
+import express from "express";
+import { Autumn } from "autumn-js";
+
+let autumn = new Autumn({
+  secretKey: "am_sk_test_...",
+});
+
+const app = express();
+app.use(express.json());
+app.listen(8080);
+
+// Express example
+app.post("/messages", async (req, res) => {
+  // Handle sending a message
+
+  // Send usage event to Autumn
+  await autumn.event({
+    featureId: "messages",
+  });
+  res.status(200).send();
+});
+```
+
+</CodeGroup>
+
+<Check>
+  Autumn will automatically create a customer if the customer ID is new.
+</Check>
+
+<Warning>
+  Make sure you've pasted in your [Stripe test secret
+  key](https://dashboard.stripe.com/test/apikeys) `sk_test_...` in the [Autumn
+  dashboard](https://app.useautumn.com/integrations/stripe).
+</Warning>
+
+# {" "}

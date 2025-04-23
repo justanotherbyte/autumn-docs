@@ -7,6 +7,10 @@
     "light": "#f5f5f5",
     "dark": "#7C3EFF"
   },
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
   "favicon": "/favicon.png",
   "navigation": {
     "anchors": [
@@ -15,8 +19,16 @@
         "icon": "folder-open",
         "groups": [
           {
-            "group": "Get Started",
-            "pages": ["introduction", "quickstart", "cookbooks/ai-builders"]
+            "group": " ",
+            "pages": ["introduction"]
+          },
+          {
+            "group": "Quickstart",
+            "pages": [
+              "quickstart/nextjs",
+              "quickstart/typescript",
+              "cookbooks/ai-builders"
+            ]
           },
           {
             "group": "Products",
@@ -95,8 +107,8 @@
     ]
   },
   "logo": {
-    "light": "/assets/logo/light_logo_with_text.png",
-    "dark": "/assets/logo/dark_logo_with_text.png"
+    "light": "/assets/logo/autumn-dark.png",
+    "dark": "/assets/logo/autumn-light.png"
   },
   "api": {
     "openapi": "api-reference/openapi.json",
@@ -109,12 +121,16 @@
   },
   "background": {
     "color": {
-      "light": "#FAFAF9",
+      "light": "#FAFAFA",
       "dark": "#1a1a1a"
     }
   },
   "navbar": {
     "links": [
+      {
+        "label": "Discord",
+        "href": "https://discord.gg/PMNwStsk"
+      },
       {
         "label": "Support",
         "href": "mailto:hey@useautumn.com"
