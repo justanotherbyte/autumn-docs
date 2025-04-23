@@ -4,7 +4,7 @@
   "name": "Autumn",
   "colors": {
     "primary": "#7C3EFF",
-    "light": "#B491FF",
+    "light": "#f5f5f5",
     "dark": "#7C3EFF"
   },
   "favicon": "/favicon.png",
@@ -101,7 +101,7 @@
   "api": {
     "openapi": "api-reference/openapi.json",
     "playground": {
-      "display": "none"
+      "display": "interactive"
     },
     "examples": {
       "languages": ["typescript", "bash"]
@@ -139,7 +139,7 @@
   },
   "fonts": {
     "heading": {
-      "family": "Archivo"
+      "family": "Inter"
     },
     "body": {
       "family": "Inter"

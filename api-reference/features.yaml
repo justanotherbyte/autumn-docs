@@ -61,6 +61,7 @@ paths:
         #     ]);
 
         - lang: curl
+          label: single entity
           source: |
             curl -X POST 'https://api.useautumn.com/v1/customers/user_123/entities' \
             -H 'Authorization: Bearer am_sk_1234567890' \
@@ -70,6 +71,24 @@ paths:
               "id": "seat_456",
               "name": "Brandon Yeo"
             }'
+
+        - lang: curl
+          label: multiple entities
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/customers/user_123/entities' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '[
+              {
+                "feature_id": "seats",
+                "id": "seat_456",
+                "name": "Brandon Yeo"
+              },
+              {
+                "feature_id": "seats",
+                "id": "seat_789",
+                "name": "John Yeo"
+            }]'
 
   /customers/{customer_id}/entities/{entity_id}:
     delete:
@@ -157,21 +176,23 @@ paths:
 components:
   schemas:
     CreateEntityRequest:
-      type: object
-      required:
-        - id
-        - feature_id
-        - name
-      properties:
-        id:
-          type: string
-          description: Your unique identifier for the entity (eg, a seat ID)
-        feature_id:
-          type: string
-          description: The feature ID associated with this entity (eg, seats). When an entity is created, a usage event will be recorded for this feature.
-        name:
-          type: string
-          description: A name or identifier for the entity (e.g., an email address)
+      type: array
+      items:
+        type: object
+        required:
+          - id
+          - feature_id
+          - name
+        properties:
+          id:
+            type: string
+            description: Your unique identifier for the entity (eg, a seat ID)
+          feature_id:
+            type: string
+            description: The feature ID associated with this entity (eg, seats). When an entity is created, a usage event will be recorded for this feature.
+          name:
+            type: string
+            description: A name or identifier for the entity (e.g., an email address)
 
     Entity:
       type: object
