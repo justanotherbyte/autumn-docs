@@ -1,7 +1,15 @@
 #content-container {
   /* padding-top: 0 !important; */
   /* border: 1px solid red; */
+  /* overflow: hidden; */
   display: flex;
+  overflow: clip;
+  padding-right: 0;
+  padding-top: 0;
+}
+
+div > div > #navbar {
+  border: 1px solid blue;
 }
 
 #content-container > div {
@@ -31,6 +39,8 @@
   border-left: 1px solid #e6e6e8;
   z-index: 100;
   background-color: #fafafa;
+  padding-right: 2rem;
+  /* top: 0; */
 
   /* padding-top: 3rem !important;
   height: 100vh;
