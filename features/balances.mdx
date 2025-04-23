@@ -26,11 +26,7 @@ curl --request GET \
 ```
 
 ```javascript Typescript
-import { Autumn } from "@useautumn/js";
-
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
+import { Autumn as autumn } from "autumn-js";
 
 const customer = await autumn.customers.get("user_123");
 ```

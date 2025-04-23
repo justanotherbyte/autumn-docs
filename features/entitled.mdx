@@ -32,13 +32,9 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```
 
 ```javascript Typescript
-import { Autumn } from "@useautumn/js";
+import { Autumn as autumn } from "autumn-js";
 
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
-
-const response = await autumn.entitled({
+const { allowed } = await autumn.entitled({
   customerId: "user-123",
   featureId: "ai-messages",
 });
@@ -86,13 +82,9 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```
 
 ```javascript Typescript {10}
-import { Autumn } from "@useautumn/js";
+import { Autumn as autumn } from "autumn-js";
 
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
-
-await autumn.entitled({
+const { allowed } = await autumn.entitled({
   customerId: "user-123",
   featureId: "ai-messages",
   requiredQuantity: 3,
@@ -108,6 +100,7 @@ In a typical workflow, you'll want to check if a customer has access to a featur
 However, you can check entitlement and record usage in a single API call using the `send_event` field. The usage value will be the `required_quantity` parameter.
 
 <CodeGroup>
+
 ```bash cURL {7-8}
 curl -X POST "https://api.useautumn.com/v1/entitled" \
   -H "Authorization: Bearer am_sk_1234567890" \
@@ -118,20 +111,16 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
     "required_quantity": 3,
     "send_event": true
   }'
-````
+```
 
 ```javascript Typescript
-import { Autumn } from "@useautumn/js";
+import { Autumn as autumn } from "autumn-js";
 
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
-
-const response = await autumn.entitled({
-  customerId: "user-123",
-  featureId: "api_calls",
-  requiredQuantity: 3,
-  sendEvent: true,
+const { allowed } = await autumn.entitled({
+  customer_id: "user-123",
+  feature_id: "api_calls",
+  required_quantity: 3,
+  send_event: true,
 });
 ```
 
@@ -150,35 +139,20 @@ For simple on/off features, use the endpoint to determine if a customer has acce
 You can do this on the client side on page load, using a `useEffect` function:
 
 ```javascript
-async function checkAccess(customerId, featureId) {
-  const response = await fetch("https://api.useautumn.com/v1/entitled", {
-    method: "POST",
-    headers: {
-      // If using from the client side, use your Publishable key
-      Authorization: `Bearer ${AUTUMN_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      customer_id: customerId,
-      feature_id: featureId,
-    }),
-  });
+import { Autumn as autumn } from "autumn-js";
 
-  const data = await response.json();
-  return data.allowed;
-}
+const { allowed } = await autumn.entitled({
+  customer_id: "user-123",
+  feature_id: "premium-dashboard",
+});
 ```
 
-The response will include an `allowed` property indicating whether the customer has access to the feature.
-
-You can do this from the client side, eg when a user clicks a button to use a feature, or from the server side when running that feature.
-
-```json Response
+```json
 {
   "allowed": true,
   "balances": [
     {
-      "feature_id": "premium_dashboard",
+      "feature_id": "premium-dashboard",
       "balance": null,
       "required": null
     }

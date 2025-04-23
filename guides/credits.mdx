@@ -84,8 +84,8 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.entitled({
-  customerId: "john-yeo",
-  featureId: "small-model-tokens",
+  customer_id: "john-yeo",
+  feature_id: "small-model-tokens",
 });
 ```
 
@@ -145,14 +145,14 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.event({
-  customerId: "john-yeo",
-  featureId: "small-model-tokens",
+  customer_id: "john-yeo",
+  feature_id: "small-model-tokens",
   value: 2000,
 });
 
 await autumn.event({
-  customerId: "john-yeo",
-  featureId: "large-model-tokens",
+  customer_id: "john-yeo",
+  feature_id: "large-model-tokens",
   value: 60,
 });
 ```
@@ -204,8 +204,8 @@ curl -X POST "https://api.useautumn.com/v1/attach" \
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.attach({
-  customerId: "john-yeo",
-  productId: "pro",
+  customer_id: "john-yeo",
+  product_id: "pro",
 });
 ```
 
@@ -272,20 +272,20 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.event({
-  customerId: "john-yeo",
-  featureId: "small-model-tokens",
+  customer_id: "john-yeo",
+  feature_id: "small-model-tokens",
   value: 50000,
 });
 
 await autumn.event({
-  customerId: "john-yeo",
-  featureId: "medium-model-tokens",
+  customer_id: "john-yeo",
+  feature_id: "medium-model-tokens",
   value: 10000,
 });
 
 await autumn.event({
-  customerId: "john-yeo",
-  featureId: "large-model-tokens",
+  customer_id: "john-yeo",
+  feature_id: "large-model-tokens",
   value: 1000,
 });
 ```

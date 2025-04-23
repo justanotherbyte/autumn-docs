@@ -33,9 +33,11 @@ curl --request POST \
 ```
 
 ```javascript Typescript
-import { autumn } from useautumn
+import { Autumn as autumn } from "autumn-js";
 
-autumn.attach(product);
+const { checkout_url } = await autumn.attach({
+  product_id: "pro-tier",
+});
 ```
 
 </CodeGroup>

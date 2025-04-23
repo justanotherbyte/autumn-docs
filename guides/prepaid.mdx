@@ -57,8 +57,8 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.entitled({
-  customerId: "john-yeo",
-  featureId: "transcription-minutes",
+  customer_id: "john-yeo",
+  feature_id: "transcription-minutes",
 });
 ```
 
@@ -105,8 +105,8 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.event({
-  customerId: "john-yeo",
-  featureId: "transcription-minutes",
+  customer_id: "john-yeo",
+  feature_id: "transcription-minutes",
   value: 10,
 });
 ```
@@ -145,8 +145,8 @@ curl -X POST "https://api.useautumn.com/v1/attach" \
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.attach({
-  customerId: "john-yeo",
-  productId: "top-up-minutes",
+  customer_id: "john-yeo",
+  product_id: "top-up-minutes",
   quantity: 420,
 });
 ```

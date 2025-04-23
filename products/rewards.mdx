@@ -86,16 +86,17 @@ curl --request POST \
   "program_id": "free-month"
 }'
 ```
-
-```javascript Typescript
+{/* prettier-ignore */}
+{/* ```javascript Typescript
 import { Autumn } from "@useautumn/js";
 const autumn = new Autumn();
 
 const referral = autumn.getReferralCode({
-  customer_id: "user_123",
-  program_id: "free-month",
+customer_id: "user_123",
+program_id: "free-month",
 });
-```
+
+````*/}
 
 </CodeGroup>
 
@@ -105,7 +106,7 @@ const referral = autumn.getReferralCode({
   "customer_id": "user_123",
   "created_at": 1744797427206
 }
-```
+````
 
 Then, from the new customer, redeem the referral code from your application.
 
@@ -120,16 +121,17 @@ curl --request POST \
   "customer_id": "<string>"
 }'
 ```
-
-```javascript Typescript
+{/* prettier-ignore */}
+{/* ```javascript Typescript
 import { Autumn } from "@useautumn/js";
 const autumn = new Autumn();
 
 const redeem = autumn.redeem({
-  code: "4EXWV1",
-  customer_id: "new_user_123",
+code: "4EXWV1",
+customer_id: "new_user_123",
 });
-```
+
+````*/}
 
 </CodeGroup>
 
@@ -140,7 +142,7 @@ const redeem = autumn.redeem({
   "applied": false,
   "reward_id": "free-month"
 }
-```
+````
 
 The reward will automatically apply on the event that you set (customer creation or product purchase). Whether the reward has been applied is marked by the `applied` field in the response.
 

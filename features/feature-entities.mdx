@@ -41,18 +41,18 @@ curl -X POST "https://api.useautumn.com/v1/entities" \
 }'
 ```
 
-```javascript Typescript
+{/* prettier-ignore */}
+{/* ```javascript Typescript
 import { Autumn } from "@useautumn/js";
 const autumn = new Autumn({
   apiKey: "am_sk_1234567890",
 });
 
 const entity = await autumn.entities.create({
-  customer_id: "org_123",
-  feature_id: "feature_123",
-  entity_id: "user_abc",
-});
-```
+customer_id: "org_123",
+feature_id: "feature_123",
+entity_id: "user_abc",
+}); ``` \*/}
 
 </CodeGroup>
 ```json
@@ -76,18 +76,18 @@ curl -X DELETE "https://api.useautumn.com/v1/entities" \
 }'
 ```
 
-```javascript Typescript
+{/* prettier-ignore */}
+{/* ```javascript Typescript
 import { Autumn } from "@useautumn/js";
 const autumn = new Autumn({
   apiKey: "am_sk_1234567890",
 });
 
 const entity = await autumn.entities.delete({
-  customer_id: "org_123",
-  feature_id: "feature_123",
-  entity_id: "user_abc",
-});
-```
+customer_id: "org_123",
+feature_id: "feature_123",
+entity_id: "user_abc",
+}); ```\*/}
 
 </CodeGroup>
 ```json
@@ -96,8 +96,9 @@ const entity = await autumn.entities.delete({
   "entity_id": "entity_123"
 }
 ```
-        
+
     </Tab>
+
 </Tabs>
 
 ## Manging entity balances
@@ -120,15 +121,12 @@ curl -X GET "https://api.useautumn.com/v1/entitled" \
 ```
 
 ```javascript Typescript {9-10}
-import { Autumn } from "@useautumn/js";
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
+import { Autumn as autumn } from "autumn-js";
 
-const entitled = await autumn.entitled({
-  customer_id: "org_123",
-  feature_id: "ai-messages",
-  entity_id: "user_abc",
+const { allowed } = await autumn.entitled({
+  customerId: "org_123",
+  featureId: "ai-messages",
+  entityId: "user_abc",
 });
 ```
 
@@ -151,12 +149,9 @@ curl -X POST "https://api.useautumn.com/v1/events" \
 ```
 
 ```javascript Typescript {9-10}
-import { Autumn } from "@useautumn/js";
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
+import { Autumn as autumn } from "autumn-js";
 
-const event = await autumn.events.create({
+const event = await autumn.event({
   customer_id: "org_123",
   feature_id: "ai-messages",
   entity_id: "user_abc",
@@ -199,9 +194,9 @@ const autumn = new Autumn({
   apiKey: "am_sk_1234567890",
 });
 
-const entitled = await autumn.entitled({
-  customer_id: "org_123",
-  feature_id: "ai-messages",
+const { allowed } = await autumn.entitled({
+  customerId: "org_123",
+  featureId: "ai-messages",
 });
 ```
 
@@ -226,14 +221,11 @@ curl -X POST "https://api.useautumn.com/v1/events" \
 ```
 
 ```javascript Typescript
-import { Autumn } from "@useautumn/js";
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
+import { Autumn as autumn } from "autumn-js";
 
-const event = await autumn.events({
-  customer_id: "org_123",
-  feature_id: "ai-messages",
+const event = await autumn.event({
+  customerId: "org_123",
+  featureId: "ai-messages",
   value: 10,
 });
 ```

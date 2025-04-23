@@ -31,14 +31,11 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 ```
 
 ```javascript Typescript
-import { Autumn } from "@useautumn/js";
+import { Autumn as autumn } from "autumn-js";
 
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
 await autumn.event({
-  customerId: "user-123",
-  featureId: "ai-messages",
+  customer_id: "user-123",
+  feature_id: "ai-messages",
   value: 1,
 });
 ```
@@ -72,28 +69,19 @@ curl -X POST "https://api.useautumn.com/v1/usage" \
 }'
 ```
 
-```javascript Typescript {5}
-import { Autumn } from "@useautumn/js";
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
-await autumn.usage({
-  customerId: "user-123",
-  featureId: "seats",
-  value: 3,
-});
-```
-
 </CodeGroup>
+
 ```json
 {
-"message": "Usage set successfully",
-"customer_id": "user-123",
-"feature_id": "seats",
+  "message": "Usage set successfully",
+  "customer_id": "user-123",
+  "feature_id": "seats"
 }
 ```
+
 <Warning>
-The usage route overwrites the current usage value. Use this carefully, as it can reset or override incremental usage recorded through events.
+  The usage route overwrites the current usage value. Use this carefully, as it
+  can reset or override incremental usage recorded through events.
 </Warning>
 
 ## Using Event Names
@@ -127,39 +115,36 @@ You can define event names in the Autumn dashboard:
 You can then record usage for these events from your application:
 
 <CodeGroup>
+
 ```bash cURL {8}
 curl -X POST "https://api.useautumn.com/v1/event" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
 "customer_id": "user-123",
-"feature_id": "ai-messages",
 "value": 1,
 "event_name": "blog_post_generation"
 }'
 ```
 
 ```javascript Typescript {10}
-import { Autumn } from "@useautumn/js";
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
+import { Autumn as autumn } from "autumn-js";
 
 await autumn.event({
-  customerId: "user-123",
-  featureId: "ai-messages",
+  customer_id: "user-123",
   value: 1,
-  eventName: "blog_post_generation",
+  event_name: "blog_post_generation",
 });
 ```
 
 </CodeGroup>
+
 ```json
 {
-"message": "Event recorded successfully",
-"event_id": "event_123",
-"customer_id": "user-123",  
-"event_name": "blog_post_generation",
+  "message": "Event recorded successfully",
+  "event_id": "event_123",
+  "customer_id": "user-123",
+  "event_name": "blog_post_generation"
 }
 ```
 

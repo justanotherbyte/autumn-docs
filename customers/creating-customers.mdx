@@ -87,11 +87,7 @@ curl -X POST https://api.autumn.com/customers \
 ```
 
 ```javascript Typescript
-import { Autumn } from "@autumn/js";
-
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
+import { Autumn as autumn } from "autumn-js";
 
 autumn.customers.create({
   id: "your-customer-id",

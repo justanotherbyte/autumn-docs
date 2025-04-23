@@ -96,9 +96,7 @@ curl -X PUT https://api.useautumn.com/customers/{customer_id} \
 ```
 
 ```javascript TypeScript
-import { Autumn } from "autumn-js";
-
-const autumn = new Autumn({ "am_sk_1234567890" });
+import { Autumn as autumn } from "autumn-js";
 
 await autumn.customers.update({
   id: "customer_id",

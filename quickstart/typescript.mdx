@@ -78,7 +78,7 @@ const autumn = new Autumn({
 
 export default function Chatbot() {
   const handleUpgrade = async () => {
-    let { data, error } = await autumn.attach({ productId: "pro" });
+    let { data, error } = await autumn.attach({ product_id: "pro" });
 
     if (data?.checkout_url) {
       window.location.href = data.checkout_url;
@@ -86,7 +86,7 @@ export default function Chatbot() {
   };
 
   const checkAccess = async () => {
-    let { data, error } = await autumn.entitled({ featureId: "messages" });
+    let { data, error } = await autumn.entitled({ feature_id: "messages" });
 
     if (data?.allowed) {
       await fetch("http://localhost:8080/messages", {
@@ -130,7 +130,7 @@ app.post("/messages", async (req, res) => {
 
   // Send usage event to Autumn
   await autumn.event({
-    featureId: "messages",
+    feature_id: "messages",
   });
   res.status(200).send();
 });

@@ -46,15 +46,11 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```
 
 ```javascript Typescript
-import { Autumn } from "@useautumn/js";
+import { Autumn as autumn } from "autumn-js";
 
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
-
-const response = await autumn.entitled({
-  customerId: "user-123",
-  featureId: "audio-transcription-minutes",
+const { allowed } = await autumn.entitled({
+  customer_id: "user-123",
+  feature_id: "audio-transcription-minutes",
 });
 ```
 
@@ -101,14 +97,11 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 ```
 
 ```javascript Typescript
-import { Autumn } from "@useautumn/js";
+import { Autumn as autumn } from "autumn-js";
 
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
 await autumn.event({
-  customerId: "user-123",
-  featureId: "audio-transcription-minutes",
+  customer_id: "user-123",
+  feature_id: "audio-transcription-minutes",
   value: 10,
 });
 ```
