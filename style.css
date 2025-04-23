@@ -96,6 +96,10 @@ h2:not(a h2) {
   word-wrap: normal;
 }
 
+h2 > span {
+  padding-right: 1rem;
+}
+
 /* h2:not(a h2) span {
   max-width: 751px;
   width: 100%;
