@@ -114,7 +114,6 @@
     "dark": "/assets/logo/autumn-light.png"
   },
   "api": {
-    "openapi": "api-reference/openapi.json",
     "playground": {
       "display": "interactive"
     },
