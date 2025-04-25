@@ -49,9 +49,12 @@ await autumn.event({
 "feature_id": "ai-messages"
 }
 ```
-<Tip>
-You can also send a negative `value` to increase the balance counter, which is useful for increasing a feature limit (such as if a customer removes a seat).
-</Tip>
+
+<Check>
+  You can also send a negative `value` to increase the balance counter, which is
+  useful for increasing a feature limit (such as if a customer removes a seat).
+</Check>
+
 ## Setting Usage Directly
 
 For other features (such as seats or workspaces), you may find it easier to set usage directly, rather than incrementing Autumn's feature balance. The usage route lets you do this directly.
