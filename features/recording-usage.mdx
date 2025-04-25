@@ -20,7 +20,7 @@ The event route is recommended for tracking consumable features, like AI message
 <CodeGroup>
 
 ```bash cURL
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/events" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -117,7 +117,7 @@ You can then record usage for these events from your application:
 <CodeGroup>
 
 ```bash cURL {8}
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/events" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
