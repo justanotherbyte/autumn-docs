@@ -238,7 +238,7 @@ paths:
         - lang: bash
           label: with value
           source: |
-            curl -X POST 'https://api.useautumn.com/events' \
+            curl -X POST 'https://api.useautumn.com/v1/events' \
               -H 'Authorization: Bearer am_sk_1234567890' \
               -H 'Content-Type: application/json' \
               -d '{
@@ -250,7 +250,7 @@ paths:
         - lang: bash
           label: single event
           source: |
-            curl -X POST 'https://api.useautumn.com/events' \
+            curl -X POST 'https://api.useautumn.com/v1/events' \
               -H 'Authorization: Bearer am_sk_1234567890' \
               -H 'Content-Type: application/json' \
               -d '{
