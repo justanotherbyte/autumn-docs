@@ -71,7 +71,7 @@ Our pro users will always have `allowed: true` as they have overage pricing enab
 
 <CodeGroup>
 ```shell cURL
-curl -X POST "https://api.useautumn.com/v1/entitled" \
+curl -X POST "https://api.useautumn.com/v1/check" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -83,7 +83,7 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-await autumn.entitled({
+await autumn.check({
   customer_id: "john-yeo",
   feature_id: "small-model-tokens",
 });
@@ -121,7 +121,7 @@ Now let's implement our usage tracking and use up our credits.
 
 ```shell cURL
 
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -130,7 +130,7 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 "value": 2000
 }'
 
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -144,13 +144,13 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-await autumn.event({
+await autumn.track({
   customer_id: "john-yeo",
   feature_id: "small-model-tokens",
   value: 2000,
 });
 
-await autumn.event({
+await autumn.track({
   customer_id: "john-yeo",
   feature_id: "large-model-tokens",
   value: 60,
@@ -167,7 +167,7 @@ await autumn.event({
 }
 ```
 
-If we call the `entitled` endpoint again (as we should before using any of the models), we can see that the `balance` and `allowance` fields have been updated. Since `allowed` is `false`, we should prompt the user to upgrade.
+If we call the `check` endpoint again (as we should before using any of the models), we can see that the `balance` and `allowance` fields have been updated. Since `allowed` is `false`, we should prompt the user to upgrade.
 
 ```json {5, 10}
 {
@@ -228,7 +228,7 @@ We can now redirect the user to the `checkout_url` to complete their purchase. O
 
 #### Going into overage
 
-Since we have overage pricing enabled, the `entitled` route will always return `allowed: true` for our pro users. Let's use up some more credits to see what happens:
+Since we have overage pricing enabled, the `check` route will always return `allowed: true` for our pro users. Let's use up some more credits to see what happens:
 
 - Small model: 50,000 tokens \* 0.1 cents per token = 5,000 cents (50 USD)
 - Medium model: 10,000 tokens \* 1 cent per token = 10,000 cents (100 USD)
@@ -240,7 +240,7 @@ Since we have overage pricing enabled, the `entitled` route will always return `
 
 ```shell cURL [expandable]
 
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -249,7 +249,7 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 "value": 50000
 }'
 
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -258,7 +258,7 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 "value": 10000
 }'
 
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -271,19 +271,19 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 ```javascript Typescript [expandable]
 import { Autumn as autumn } from "autumn-js";
 
-await autumn.event({
+await autumn.track({
   customer_id: "john-yeo",
   feature_id: "small-model-tokens",
   value: 50000,
 });
 
-await autumn.event({
+await autumn.track({
   customer_id: "john-yeo",
   feature_id: "medium-model-tokens",
   value: 10000,
 });
 
-await autumn.event({
+await autumn.track({
   customer_id: "john-yeo",
   feature_id: "large-model-tokens",
   value: 1000,

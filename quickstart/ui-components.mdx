@@ -1,0 +1,217 @@
+---
+title: "UI Components"
+description: "A set of customizable UI components, built with shadcn/ui to handle your applications's billing flows"
+---
+
+Autumn's UI library is designed to work seamlessly with our Next.js library to handle your billing flows out the box. It works for:
+
+- Purchasing a product
+- Paywalling features
+- Upgrading or downgrading a subscription
+- Cancelling a subscription
+- Dealing with failed payments [coming soon]
+
+Typically, when you make changes to your pricing model, you would need to update and test all these flows. Autumn takes care of it all.
+
+<Info>
+  Autumn's UI library makes use of [pricecn](https://pricecn.com) components, an
+  open source library of shadcn/ui pricing components that we maintain.
+</Info>
+
+## Paywall
+
+#### Install
+
+<CodeGroup>
+```bash npm
+npx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+```bash pnpm
+pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+```bash yarn
+yarn dlx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+```bash bun
+bunx --bun shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+</CodeGroup>
+
+This will download the pricing-dialog component in your `/components` directory, under a `/autumn` folder.
+
+You can swap `clean` for `classic` or `dev` to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
+
+#### Usage
+
+Pass in the `paywall-dialog` component to the `AutumnProvider` component. This allows Autumn to automatically open the paywall when they don't have access to a feature.
+
+```jsx
+import { PaywallDialog } from "@components/autumn/paywall-dialog";
+import { AutumnProvider } from "autumn-js/next";
+
+<AutumnProvider
+  customer_id={user.id} //your internal user ID
+  components={{
+    paywallDialog: PaywallDialog,
+  }}
+>
+  <Component />
+</AutumnProvider>;
+```
+
+Now when you use the `check()` function, if `allowed: false` is returned, the paywall will automatically open with the following details:
+
+- The feature they don't have access to, or have run out of
+- The next product tier they should upgrade to, in order to access the feature (or an add-on if no additional tier exists)
+- A button that lets them purchase the next tier or add-on
+
+<Info>
+**Example**
+
+In the snippet below, the button sends a message to an AI chatbot. In our `onclick` handler, we're using the `check()` function to see if the user has messages remaining. If they don't, the paywall will automatically open.
+
+</Info>
+
+```jsx
+// src/app/chat.tsx
+
+import { useAutumn } from "autumn-js/next";
+
+const ChatMessageButton = () => {
+  const { check, track } = useAutumn();
+
+  return (
+    <button
+      onClick={async () => {
+        //check if the user has messages remaining
+        const { allowed } = await check("chat-message");
+
+        //customer has used a message, so deduct one from their balance
+        if (allowed) {
+          await track({ featureId: "chat-message" });
+        }
+      }}
+    >
+      Send Message
+    </button>
+  );
+};
+```
+
+## Product Change
+
+The product change dialog will open when a customer wants to change their active product, such as when they upgrade or downgrade.
+
+#### Install
+
+<CodeGroup>
+```bash npm
+npx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+```bash pnpm
+pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+```bash yarn
+yarn dlx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+```bash bun
+bunx --bun shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+</CodeGroup>
+
+This will download the product-change-dialog component in your `/components` directory, under a `/autumn` folder.
+
+You can swap `clean` for `classic` or `dev` to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
+
+#### Usage
+
+Pass in the `product-change-dialog` component to the `AutumnProvider` component. This allows Autumn to automatically open the product change dialog when they want to change their active product.
+
+```jsx
+import { ProductChangeDialog } from "@components/autumn/product-change-dialog";
+import { AutumnProvider } from "autumn-js/next";
+
+<AutumnProvider
+  customer_id={user.id} //your internal user ID
+  components={{
+    productChangeDialog: ProductChangeDialog,
+  }}
+>
+  <Component />
+</AutumnProvider>;
+```
+
+Now when you use the `attach()` function, Autumn will first call the `check()` function to preview the product attachment. The product change dialog will open if:
+
+- The customer needs to input a quantity for their purchase (ie, if the product has prepaid prices)
+- If the customer's card is already on file (ie, for upgrades, downgrades or add-ons).
+
+If there are no inputs required and it's a new customer without a stored card, the customer will be redirected straight to the Stripe checkout page.
+
+```jsx
+import { useAutumn } from "autumn-js/next";
+
+const SelectPlanButtons = () => {
+  const { attach } = useAutumn();
+
+  return (
+    <div>
+      <button onClick={async () => await attach({ productId: "free" })}>
+        Get started for Free
+      </button>
+      <button onClick={async () => await attach({ productId: "pro" })}>
+        Upgrade to Pro
+      </button>
+    </div>
+  );
+};
+```
+
+## Pricing Table
+
+The pricing table component displays your available products, the features available in each and any prices. It synchronizes with the products you define in Autumn.
+
+#### Install
+
+<CodeGroup>
+```bash npm
+npx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+```bash pnpm
+pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+```bash yarn
+yarn dlx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+```bash bun
+bunx --bun shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+</CodeGroup>
+
+This will download the product-change-dialog component in your `/components` directory, under a `/autumn` folder.
+
+You can swap `clean` for `classic` or `dev` to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
+
+#### Usage
+
+```javascript
+import { PricingTable } from "@components/autumn/pricing-table";
+
+export const PricingTableExample = () => (
+  <div>
+    <PricingTable />
+  </div>
+);
+```

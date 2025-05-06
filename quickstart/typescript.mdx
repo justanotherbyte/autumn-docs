@@ -56,15 +56,31 @@ npm install autumn-js
 
 ## 3. Integrate Autumn
 
-From our application's frontend, whenever a customer wants to send a chatbot messages, we'll first check if they're allowed to.
+There are 3 main functions you need to integrate Autumn into your application.
 
-If they are, we'll send a usage event to Autumn. Autumn will then update the customer's usage and remaining balance.
-
-When they click the "Upgrade to Pro" button, they'll be redirected to a Stripe checkout page to subscribe.
+<Steps>
+  <Step>
+    When the customer clicks the "Upgrade to Pro" button, we call `attach()` to
+    redirect them to a Stripe checkout page.
+  </Step>
+  <Step>
+    When the customer wants to use a chatbot message, we call `check()` to check
+    if they have remaining messages and are allowed to send one.
+  </Step>
+  <Step>If they are, we call `track()` to send a usage event to Autumn.</Step>
+</Steps>
 
 <Note>
-You can use a Publishable Key when making `attach` and `entitled` requests from the frontend. To handle product upgrades and downgrades however, you'll need to use a Secret Key from the backend.
+You can use your [Publishable Key](https://app.useautumn.com/dev) when making `attach` and `check` requests from the frontend. Attach will return a `checkout_url` that you can redirect the customer to.
+
+To handle product upgrades and downgrades however, you'll need to use a Secret Key from the backend, by opening a backend endpoint and passing the `attach` result to the frontend.
+
 </Note>
+<Warning>
+  Make sure you've pasted in your [Stripe test secret
+  key](https://dashboard.stripe.com/test/apikeys) `sk_test_...` in the [Autumn
+  dashboard](https://app.useautumn.com/integrations/stripe).
+</Warning>
 <CodeGroup>
 
 ```jsx Client {5-7, 11, 19}
@@ -86,7 +102,7 @@ export default function Chatbot() {
   };
 
   const checkAccess = async () => {
-    let { data, error } = await autumn.entitled({ feature_id: "messages" });
+    let { data, error } = await autumn.check({ feature_id: "messages" });
 
     if (data?.allowed) {
       await fetch("http://localhost:8080/messages", {
@@ -129,7 +145,7 @@ app.post("/messages", async (req, res) => {
   // Handle sending a message
 
   // Send usage event to Autumn
-  await autumn.event({
+  await autumn.track({
     feature_id: "messages",
   });
   res.status(200).send();
@@ -141,11 +157,5 @@ app.post("/messages", async (req, res) => {
 <Check>
   Autumn will automatically create a customer if the customer ID is new.
 </Check>
-
-<Warning>
-  Make sure you've pasted in your [Stripe test secret
-  key](https://dashboard.stripe.com/test/apikeys) `sk_test_...` in the [Autumn
-  dashboard](https://app.useautumn.com/integrations/stripe).
-</Warning>
 
 # {" "}

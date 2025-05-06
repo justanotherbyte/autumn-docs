@@ -1,11 +1,11 @@
 ---
 title: "Checking Access"
-description: "Learn how to check feature access with the `entitled` route"
+description: "Learn how to check feature access with the `check` route"
 ---
 
 When you create a product in Autumn, you define what features your customers on that product get access to.
 
-The `entitled` method returns the `allowed` property to check if a customer should have access to a feature, so you can block access or prompt them to upgrade.
+The `check` method returns the `allowed` property to check if a customer should have access to a feature, so you can block access or prompt them to upgrade.
 
 ## Checking Metered Features
 
@@ -16,13 +16,13 @@ Before your customer uses a feature, you can check if the customer is allowed to
 
 Let's imagine you have a free product that allows 100 AI messages per month. Before your customer sends an AI message, you can check if they have any remaining messages.
 
-If they still have messages remaining, they'll be allowed to send an AI message. You can then [record the usage event](/features/recording-usage/) so Autumn can keep track of the balance.
+If they still have messages remaining, they'll be allowed to send an AI message. You can then [record the usage event](/features/tracking-usage/) so Autumn can keep track of the balance.
 
 </Info>
 <CodeGroup>
 
 ```bash cURL
-curl -X POST "https://api.useautumn.com/v1/entitled" \
+curl -X POST "https://api.useautumn.com/v1/check" \
   -H "Authorization: Bearer am_sk_1234567890" \
   -H "Content-Type: application/json" \
   -d '{
@@ -34,7 +34,7 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.entitled({
+const { allowed } = await autumn.check({
   customerId: "user-123",
   featureId: "ai-messages",
 });
@@ -71,7 +71,7 @@ By default, `required_quantity` is 1, so not passing this parameter will return 
 <CodeGroup>
 
 ```bash cURL {7}
-curl -X POST "https://api.useautumn.com/v1/entitled" \
+curl -X POST "https://api.useautumn.com/v1/check" \
   -H "Authorization: Bearer am_sk_1234567890" \
   -H "Content-Type: application/json" \
   -d '{
@@ -84,7 +84,7 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```javascript Typescript {10}
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.entitled({
+const { allowed } = await autumn.check({
   customerId: "user-123",
   featureId: "ai-messages",
   requiredQuantity: 3,
@@ -95,14 +95,14 @@ const { allowed } = await autumn.entitled({
 
 #### Checking Feature Access and Recording Usage together
 
-In a typical workflow, you'll want to check if a customer has access to a feature and then [record the usage](/features/recording-usage/) as separate steps.
+In a typical workflow, you'll want to check if a customer has access to a feature and then [record the usage](/features/tracking-usage/) as separate steps.
 
 However, you can check entitlement and record usage in a single API call using the `send_event` field. The usage value will be the `required_quantity` parameter.
 
 <CodeGroup>
 
 ```bash cURL {7-8}
-curl -X POST "https://api.useautumn.com/v1/entitled" \
+curl -X POST "https://api.useautumn.com/v1/check" \
   -H "Authorization: Bearer am_sk_1234567890" \
   -H "Content-Type: application/json" \
   -d '{
@@ -116,7 +116,7 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.entitled({
+const { allowed } = await autumn.check({
   customer_id: "user-123",
   feature_id: "api_calls",
   required_quantity: 3,
@@ -141,7 +141,7 @@ You can do this on the client side on page load, using a `useEffect` function:
 ```javascript
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.entitled({
+const { allowed } = await autumn.check({
   customer_id: "user-123",
   feature_id: "premium-dashboard",
 });
@@ -159,30 +159,3 @@ const { allowed } = await autumn.entitled({
   ]
 }
 ```
-
-{/* prettier-ignore */}
-{/* ## Creating New Customers
-
-If the `customer_id` you provide doesn't exist yet, Autumn will automatically create a new customer:
-
-```javascript
-const response = await fetch("https://api.useautumn.com/v1/entitled", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${AUTUMN_API_KEY}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    customer_id: "new-user-456",
-    feature_id: "basic_access",
-    customer_data: {
-      email: "user@example.com",
-      name: "New User",
-    },
-  }),
-});
-```
-
-The `customer_data` object lets you provide additional properties for the new customer. \*/}
-
-{/* prettier-ignore */}

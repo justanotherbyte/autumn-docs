@@ -407,4 +407,4 @@ components:
     publishableKeyAuthEntitled:
       type: http
       scheme: bearer
-      description: You can use your Secret or Publishable key for this endpoint. To include usage events however, you must use your Secret key.
+      description: You can use your Secret or Publishable key for this endpoint. To include usage event tracking however, you must use your Secret key.

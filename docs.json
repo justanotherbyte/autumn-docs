@@ -27,7 +27,11 @@
             "pages": [
               {
                 "group": "Next.js",
-                "pages": ["quickstart/nextjs", "quickstart/auth-plugins"]
+                "pages": [
+                  "quickstart/nextjs",
+                  "quickstart/auth-plugins",
+                  "quickstart/ui-components"
+                ]
               },
               "quickstart/typescript",
               "cookbooks/ai-builders"
@@ -46,8 +50,8 @@
           {
             "group": "Features",
             "pages": [
-              "features/entitled",
-              "features/recording-usage",
+              "features/check",
+              "features/tracking-usage",
               "features/balances",
               "features/credits",
               "features/feature-entities"
@@ -73,9 +77,9 @@
           {
             "group": " ",
             "pages": [
-              "api-reference/attach/post",
-              "api-reference/entitled",
-              "api-reference/events/post"
+              "api-reference/attach",
+              "api-reference/check",
+              "api-reference/track"
             ]
           },
           {
@@ -106,6 +110,16 @@
             ]
           }
         ]
+      },
+      {
+        "anchor": "Community",
+        "icon": "discord",
+        "href": "https://discord.gg/STqxY92zuS"
+      },
+      {
+        "anchor": "GitHub",
+        "icon": "github",
+        "href": "https://github.com/useautumn/autumn"
       }
     ]
   },
@@ -129,14 +143,6 @@
   },
   "navbar": {
     "links": [
-      {
-        "label": "Discord",
-        "href": "https://discord.gg/STqxY92zuS"
-      },
-      {
-        "label": "Support",
-        "href": "mailto:hey@useautumn.com"
-      },
       {
         "label": "Website",
         "href": "https://useautumn.com"

@@ -18,7 +18,7 @@ Credit systems allow you to track and limit the usage of multiple different feat
 2. Click the "Features" tab
 3. Click "+ Credit System"
 4. Add each metered feature you want to affect the credit system.
-5. For each feature, define how many credits each unit of usage (ie, the `value` field in the events route) should be worth.
+5. For each feature, define how many credits each unit of usage (ie, the `value` field in the `track` route) should be worth.
 6. Click "Create"
 
 <Info>
@@ -36,7 +36,7 @@ When implementing a credit system into your application, you should interact wit
 
 <CodeGroup>
 ```bash cURL
-curl -X POST "https://api.useautumn.com/v1/entitled" \
+curl -X POST "https://api.useautumn.com/v1/check" \
   -H "Authorization: Bearer am_sk_1234567890" \
   -H "Content-Type: application/json" \
   -d '{
@@ -48,7 +48,7 @@ curl -X POST "https://api.useautumn.com/v1/entitled" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.entitled({
+const { allowed } = await autumn.check({
   customer_id: "user-123",
   feature_id: "audio-transcription-minutes",
 });
@@ -86,7 +86,7 @@ Now we can send a usage event:
 <CodeGroup>
 
 ```bash cURL
-curl -X POST "https://api.useautumn.com/v1/event" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -99,7 +99,7 @@ curl -X POST "https://api.useautumn.com/v1/event" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-await autumn.event({
+await autumn.track({
   customer_id: "user-123",
   feature_id: "audio-transcription-minutes",
   value: 10,

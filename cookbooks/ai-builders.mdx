@@ -63,9 +63,9 @@ When you're done, you should have something like this:
 Now you're ready to integrate Autumn into your AI builder. There are two places this needs to happen:
 
 1. **On purchase**: When a user purchases a plan, you need to call our `attach` to generate a Stripe Checkout URL. Once a user pays, Autumn will attach the product to their account and they will have access to our `pro-features`
-2. **When trying to use a feature**: When a user tries to use a paid feature, you need to call our `entitled` endpoint to check if they have access to `pro-features`.
+2. **When trying to use a feature**: When a user tries to use a paid feature, you need to call our `check` endpoint to check if they have access to `pro-features`.
 
-Below are the API schemas for the `attach` and `entitled` endpoints, which you should use in your prompt. Here are some example prompts you can use:
+Below are the API schemas for the `attach` and `check` endpoints, which you should use in your prompt. Here are some example prompts you can use:
 
 <Accordion title="Create a Pricing page and call Autumn on purchase" defaultOpen={true}>
 {/* <Note>
@@ -131,12 +131,12 @@ If they are not allowed, please prompt the user to upgrade by pointing them to t
 Otherwise, allow the user to access the feature.
 The feature_id is ‘pro-features’. Please use our user ID from our DB as the customer_id.
 
-Autumn entitlement API:
+Autumn check API:
 
 **Request:**
 
 curl --request POST \
- --url https://api.useautumn.com/v1/entitled \
+ --url https://api.useautumn.com/v1/check \
  --header 'Authorization: Bearer <token>' \
  --header 'Content-Type: application/json' \
  --data '{
@@ -158,7 +158,7 @@ curl --request POST \
 
 ```plaintext Prompt
 
-For our todolist, our Free users have access to X number of todos and our Pro users have access to Y number of todos. We need to handle feature gating. Before a todo is created, call the Autumn endpoint below to check whether the user is entitled, and then record a usage event.
+For our todolist, our Free users have access to X number of todos and our Pro users have access to Y number of todos. We need to handle feature gating. Before a todo is created, call the Autumn endpoint below to check whether the user is allowed, and then record a usage event.
 If the todo is not allowed, please prompt the user to upgrade with a toast pointing them to the pricing page.
 If the todo is allowed, create the todo.
 The feature_id and event_name are both ‘todo’.
@@ -169,7 +169,7 @@ Autumn entitlement API:
 **Request:**
 
 curl --request POST \
-  --url https://api.useautumn.com/v1/entitled \
+  --url https://api.useautumn.com/v1/check \
   --header 'Authorization: Bearer <token>' \
   --header 'Content-Type: application/json' \
   --data '{

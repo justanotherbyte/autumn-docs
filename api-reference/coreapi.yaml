@@ -167,9 +167,9 @@ paths:
               example:
                 url: https://billing.stripe.com/session/<hash>
 
-  /events:
+  /track:
     post:
-      description: Send a usage event to Autumn
+      description: Track a usage event in Autumn
       requestBody:
         content:
           application/json:
@@ -193,7 +193,7 @@ paths:
           source: |
             import { Autumn as autumn } from 'autumn-js';
 
-            await autumn.event({
+            await autumn.track({
               customer_id: 'user_123',
               feature_id: 'messages',
               value: 3
@@ -204,7 +204,7 @@ paths:
           source: |
             import { Autumn as autumn } from 'autumn-js';
 
-            await autumn.event({
+            await autumn.track({
               customer_id: 'user_123', 
               feature_id: 'messages'
             });
@@ -214,7 +214,7 @@ paths:
           source: |
             import { Autumn as autumn } from 'autumn-js';
 
-            await autumn.event({
+            await autumn.track({
               customer_id: 'user_123',
               feature_id: 'messages', 
               value: 12,
@@ -229,7 +229,7 @@ paths:
           source: |
             import { Autumn as autumn } from 'autumn-js';
 
-            await autumn.event({
+            await autumn.track({
               customer_id: 'user_123', 
               event_name: 'mobile_messages',
               value: 12
@@ -238,7 +238,7 @@ paths:
         - lang: bash
           label: with value
           source: |
-            curl -X POST 'https://api.useautumn.com/v1/events' \
+            curl -X POST 'https://api.useautumn.com/v1/track' \
               -H 'Authorization: Bearer am_sk_1234567890' \
               -H 'Content-Type: application/json' \
               -d '{
@@ -250,7 +250,7 @@ paths:
         - lang: bash
           label: single event
           source: |
-            curl -X POST 'https://api.useautumn.com/v1/events' \
+            curl -X POST 'https://api.useautumn.com/v1/track' \
               -H 'Authorization: Bearer am_sk_1234567890' \
               -H 'Content-Type: application/json' \
               -d '{
@@ -283,11 +283,11 @@ paths:
                 customer_id: "user_123"
                 feature_id: "messages"
 
-  /entitled:
+  /check:
     post:
       security:
         - publishableKeyAuthEntitled: []
-      description: Check if a customer is allowed to use a feature
+      description: Check if a customer has access to a feature or product
       requestBody:
         content:
           application/json:
@@ -295,21 +295,23 @@ paths:
               type: object
               required:
                 - customer_id
-                - feature_id
               properties:
+                product_id:
+                  type: string
+                  description: ID of the product to check access to. Required if `feature_id` is not provided.
+                feature_id:
+                  type: string
+                  description: ID of the feature to check access to. Required if `product_id` is not provided.
                 customer_id:
                   type: string
                   description: ID which you provided when creating the customer
-                feature_id:
-                  type: string
-                  description: ID of the feature to check access to
-                required_quantity:
+                required_balance:
                   type: integer
                   default: 1
-                  description: If you know the quantity of the feature the end user is consuming in advance. If their balance is below this quantity, `allowed` will be `false`.
+                  description: If you know the amount of the feature the end user is consuming in advance. If their balance is below this quantity, `allowed` will be `false`.
                 send_event:
                   type: boolean
-                  description: If true, a usage event will be recorded together with checking access. The `required_quantity` field will be used as the usage `value`.
+                  description: If true, a usage event will be recorded together with checking access. The `required_balance` field will be used as the usage `value`.
                 entity_id:
                   type: string
                   description: If using [entity balances](/features/feature-entities) (eg, seats), the entity ID to check access for.
@@ -321,7 +323,7 @@ paths:
           source: |
             import { Autumn as autumn } from 'autumn-js';
 
-            const response = await autumn.entitled({
+            const response = await autumn.check({
               customer_id: 'user_123',
               feature_id: 'messages'
             });
@@ -331,10 +333,10 @@ paths:
           source: |
             import { Autumn as autumn } from 'autumn-js';
 
-            const response = await autumn.entitled({
+            const response = await autumn.check({
               customer_id: 'user_123',
               feature_id: 'messages',
-              required_quantity: 12,
+              required_balance: 12,
               send_event: true
             });
 
@@ -343,7 +345,7 @@ paths:
           source: |
             import { Autumn as autumn } from 'autumn-js';
 
-            const response = await autumn.entitled({
+            const response = await autumn.check({
               customer_id: 'user_123', 
               feature_id: 'messages',
               customer_data: {
@@ -355,7 +357,7 @@ paths:
         - lang: curl
           label: required
           source: |
-            curl -X POST 'https://api.useautumn.com/v1/entitled' \
+            curl -X POST 'https://api.useautumn.com/v1/check' \
             -H 'Authorization: Bearer am_sk_1234567890' \
             -H 'Content-Type: application/json' \
             -d '{
@@ -366,20 +368,20 @@ paths:
         - lang: curl
           label: with event
           source: |
-            curl -X POST 'https://api.useautumn.com/v1/entitled' \
+            curl -X POST 'https://api.useautumn.com/v1/check' \
             -H 'Authorization: Bearer am_sk_1234567890' \
             -H 'Content-Type: application/json' \
             -d '{
               "customer_id": "user_123",
               "feature_id": "messages",
-              "required_quantity": 12,
+              "required_balance": 12,
               "send_event": true
             }'
 
         - lang: curl
           label: with customer data
           source: |
-            curl -X POST 'https://api.useautumn.com/v1/entitled' \
+            curl -X POST 'https://api.useautumn.com/v1/check' \
             -H 'Authorization: Bearer am_sk_1234567890' \
             -H 'Content-Type: application/json' \
             -d '{
@@ -400,7 +402,7 @@ paths:
                 properties:
                   allowed:
                     type: boolean
-                    description: Whether the customer has access to the feature
+                    description: Whether the customer has access to the feature or product
                   customer_id:
                     type: string
                     description: Your unique identifier for the customer
@@ -419,7 +421,7 @@ paths:
                         feature_id:
                           type: string
                           description: ID of the feature
-                        required:
+                        required_balance:
                           type: integer
                           description: Required amount of the feature
                         balance:
@@ -431,7 +433,13 @@ paths:
                 code: "feature_found"
                 allowed: true
                 balances:
-                  [{ feature_id: "messages", required: 12, balance: 100 }]
+                  [
+                    {
+                      feature_id: "messages",
+                      required_balance: 12,
+                      balance: 100,
+                    },
+                  ]
 
 components:
   schemas:
@@ -458,10 +466,10 @@ components:
         value:
           type: integer
           default: 1
-          description: How much of the event should be counted towards the balance. Default is 1.
+          description: How much usage should be deducted from the balance. Default is 1.
         event_name:
           type: string
-          description: An [event name](/features/recording-usage#using-event-names) can be used in place of `feature_id`. This can be used if multiple features are tracked in the same event.
+          description: An [event name](/features/tracking-usage#using-event-names) can be used in place of `feature_id`. This can be used if multiple features are tracked in the same event.
         idempotency_key:
           type: string
           description: Unique identifier for the event. If the an event with the same key is sent multiple times, any subsequent events will be ignored and return an error.
@@ -495,4 +503,4 @@ components:
     publishableKeyAuthEntitled:
       type: http
       scheme: bearer
-      description: You can use your Secret or Publishable key for this endpoint. To include usage events however, you must use your Secret key.
+      description: You can use your Secret or Publishable key for this endpoint. To include usage events tracking however, you must use your Secret key.

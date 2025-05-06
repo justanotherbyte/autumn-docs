@@ -103,14 +103,14 @@ entity_id: "user_abc",
 
 ## Manging entity balances
 
-Just like with normal features, you can check feature access and send usage events for entity.
+Just like with normal features, you can check feature access and track usage events for entity.
 
 #### Check feature access
 
 <CodeGroup>
 
 ```bash cURL {7-8}
-curl -X GET "https://api.useautumn.com/v1/entitled" \
+curl -X POST "https://api.useautumn.com/v1/check" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -123,7 +123,7 @@ curl -X GET "https://api.useautumn.com/v1/entitled" \
 ```javascript Typescript {9-10}
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.entitled({
+const { allowed } = await autumn.check({
   customerId: "org_123",
   featureId: "ai-messages",
   entityId: "user_abc",
@@ -137,7 +137,7 @@ const { allowed } = await autumn.entitled({
 <CodeGroup>
 
 ```bash cURL {7-8}
-curl -X POST "https://api.useautumn.com/v1/events" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -151,7 +151,7 @@ curl -X POST "https://api.useautumn.com/v1/events" \
 ```javascript Typescript {9-10}
 import { Autumn as autumn } from "autumn-js";
 
-const event = await autumn.event({
+const event = await autumn.track({
   customer_id: "org_123",
   feature_id: "ai-messages",
   entity_id: "user_abc",
@@ -163,7 +163,7 @@ const event = await autumn.event({
 
 #### Top-level vs entity-level balances
 
-Top-level balances are the total balance for the feature across all entities. Entity-level balances are the balance for a specific entity. You can check access and send usage events either at the top-level or entity-level.
+Top-level balances are the total balance for the feature across all entities. Entity-level balances are the balance for a specific entity. You can check access and track usage events either at the top-level or entity-level.
 
 <Info>
 **Example use case**
@@ -174,12 +174,12 @@ You can create a feature entity for "seats" and then check access and send usage
 
 </Info>
 
-To use top-level balances, just omit the `entity_id` from your entitled request.
+To use top-level balances, just omit the `entity_id` from your check request.
 
 <CodeGroup>
 
 ```bash cURL
-curl -X GET "https://api.useautumn.com/v1/entitled" \
+curl -X POST "https://api.useautumn.com/v1/check" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -194,7 +194,7 @@ const autumn = new Autumn({
   apiKey: "am_sk_1234567890",
 });
 
-const { allowed } = await autumn.entitled({
+const { allowed } = await autumn.check({
   customerId: "org_123",
   featureId: "ai-messages",
 });
@@ -210,7 +210,7 @@ This will increment the usage counter for the top-level balance, and also deduct
 <CodeGroup>
 
 ```bash cURL
-curl -X POST "https://api.useautumn.com/v1/events" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -223,7 +223,7 @@ curl -X POST "https://api.useautumn.com/v1/events" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-const event = await autumn.event({
+const event = await autumn.track({
   customerId: "org_123",
   featureId: "ai-messages",
   value: 10,

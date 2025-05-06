@@ -1,7 +1,6 @@
 ---
 title: "Autumn with Next.js"
 sidebarTitle: "Get Started"
-sidebar_position: 1
 description: "Implement pricing & billing in your Next.js application"
 ---
 
@@ -54,7 +53,15 @@ Create a product in the [Products](https://app.useautumn.com/products) tab.
 npm install autumn-js
 ```
 
-## 3. Set up `<AutumnProvider>`
+## 3. Add your Autumn API key
+
+Create an [Autumn Secret API key](https://app.useautumn.com/dev) from the dashboard, and add it to your `.env.local` file.
+
+```
+AUTUMN_API_KEY=am_sk_1234567890
+```
+
+## 4. Set up `<AutumnProvider>`
 
 Wrap your application with the `<AutumnProvider>` component in your root layout.tsx file. This sets the the `customer_id` for the current user across your application.
 
@@ -92,40 +99,59 @@ export default function RootLayout({
   Your layout file must be a server component (as it is by default in Next.js).
 </Note>
 
-## 4. Integrate Autumn
+## 5. Integrate Autumn
 
-From our application's frontend, whenever a customer wants to send a chatbot messages, we'll first check if they're allowed to.
+There are 3 main functions you need to integrate Autumn into your application.
 
-If they are, we'll send a usage event to Autumn. Autumn will then update the customer's usage and remaining balance.
+<Steps>
+  <Step>
+    When the customer clicks the "Upgrade to Pro" button, we call `attach()` to
+    redirect them to a Stripe checkout page.
+  </Step>
+  <Step>
+    When the customer wants to use a chatbot message, we call `check()` to check
+    if they have remaining messages and are allowed to send one.
+  </Step>
+  <Step>If they are, we call `track()` to send a usage event to Autumn.</Step>
+</Steps>
 
-When they click the "Upgrade to Pro" button, they'll be redirected to a Stripe checkout page to subscribe.
+<Warning>
+  Make sure you've pasted in your [Stripe test secret
+  key](https://dashboard.stripe.com/test/apikeys) `sk_test_...` in the [Autumn
+  dashboard](https://app.useautumn.com/integrations/stripe).
+</Warning>
 
 ```javascript
 // app/chatbot/page.tsx
 "use client";
 
-import { useAutumn } from "autumn-js/next";
+import { useAutumn, useCustomer } from "autumn-js/next";
 
 export default function BillingPage() {
-  const { customer, attach, entitled, sendEvent } = useAutumn();
+  const { attach, check, track } = useAutumn();
+  const { customer } = useCustomer();
 
   return (
     <div>
       <h1>Welcome {customer?.name}</h1>
-      {/* Redirect to Stripe checkout page */}
-      <button onClick={() => attach({ productId: "pro" })}>
+      <button
+        onClick={() => {
+          // Redirect to Stripe checkout page
+          attach({ productId: "pro" });
+        }}
+      >
         Upgrade to Pro
       </button>
       <button
         onClick={async () => {
-          // Check if the customer is entitled to send a message
-          let { allowed } = await entitled({ featureId: "messages" });
+          // Check if the customer is allowed to send a message
+          let { allowed } = await check({ featureId: "messages" });
 
+          // Send a usage event to Autumn if allowed
           if (allowed) {
-            // Send a usage event to Autumn
-            await event({ featureId: "messages" });
+            await track({ featureId: "messages" });
           } else {
-            alert("You don't have access to this feature");
+            alert("You don't have access to any more messages");
           }
         }}
       >
@@ -140,10 +166,6 @@ export default function BillingPage() {
   Autumn will automatically create a customer if the customer ID is new.
 </Check>
 
-<Warning>
-  Make sure you've pasted in your [Stripe test secret
-  key](https://dashboard.stripe.com/test/apikeys) `sk_test_...` in the [Autumn
-  dashboard](https://app.useautumn.com/integrations/stripe).
-</Warning>
+## 6. Congrats!
 
-{" "}
+You've now integrated Autumn into your Next.js application. You can now plug in [Autumn's shadcn/ui components](/quickstart/ui-components) to handle things like upgrades/downgrades, paywalls and pricing table.

@@ -2,7 +2,7 @@
 title: "Get Available Features"
 ---
 
-The simplest way to check entitlements is by using Autumn's [/entitled](/entitlements/entitled/) endpoint, to check if a user has access to a specific feature whenever it's requested.
+The simplest way to check entitlements is by using Autumn's [/check](/api-reference/check/) endpoint, to check if a user has access to a specific feature whenever it's requested.
 
 However, you can also use the [/customer](/api-reference/customers/get/) endpoint, which will return all of a user's available features and balances at once. This is useful if you want to:
 
@@ -21,7 +21,7 @@ To sync up your application with Autumn, here are the steps you can follow:
   <Step title="Sync features with application">
     Update your application logic to use the features you fetched
   </Step>
-  <Step title="Send usage events to Autumn">
+  <Step title="Track usage events with Autumn">
     Track usage for metered features by sending events
   </Step>
   <Step title="Refresh customer features">
@@ -112,13 +112,13 @@ async function mapAutumnEntitlements(userId, autumnEntitlements) {
 }
 ```
 
-#### 3. Sending Usage Events for Metered Features
+#### 3. Tracking Usage Events for Metered Features
 
 For metered features, you'll need to send usage events to Autumn whenever a user consumes a unit of that feature:
 
 ```Javascript Javascript
-async function sendUsageEvent(userId, featureId) {
-  const response = await fetch("https://api.useautumn.com/v1/events", {
+async function trackUsageEvent(userId, featureId) {
+  const response = await fetch("https://api.useautumn.com/v1/track", {
     method: "POST",
     headers: {
       // Must use Secret key for events
@@ -140,7 +140,7 @@ After sending a usage event, refresh the customer's entitlements to reflect the 
 ```Javascript Javascript
 async function trackUsageAndRefreshEntitlements(userId, featureId) {
   // 1. Send the usage event
-  await sendUsageEvent(userId, featureId);
+  await trackUsageEvent(userId, featureId);
 
   // 2. Fetch the updated entitlements
   const updatedEntitlements = await getAutumnEntitlements(userId);

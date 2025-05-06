@@ -1,6 +1,6 @@
 ---
-title: "Recording Usage"
-description: "Keep track of your customer's feature usage with the `event` route"
+title: "Tracking Usage"
+description: "Keep track of your customer's feature usage with the `track` route"
 ---
 
 When customers use features in your product, you'll need to record their usage so Autumn can track it against their limits or bill them for usage.
@@ -13,14 +13,14 @@ The event route is recommended for tracking consumable features, like AI message
 
 <Tip>
   Before recording usage, you may want to check if the customer is [allowed to
-  use the feature](/features/entitled). This prevents them from exceeding usage
+  use the feature](/features/check). This prevents them from exceeding usage
   limits defined in the product.
 </Tip>
 
 <CodeGroup>
 
 ```bash cURL
-curl -X POST "https://api.useautumn.com/v1/events" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -33,7 +33,7 @@ curl -X POST "https://api.useautumn.com/v1/events" \
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-await autumn.event({
+await autumn.track({
   customer_id: "user-123",
   feature_id: "ai-messages",
   value: 1,
@@ -120,7 +120,7 @@ You can then record usage for these events from your application:
 <CodeGroup>
 
 ```bash cURL {8}
-curl -X POST "https://api.useautumn.com/v1/events" \
+curl -X POST "https://api.useautumn.com/v1/track" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
@@ -133,7 +133,7 @@ curl -X POST "https://api.useautumn.com/v1/events" \
 ```javascript Typescript {10}
 import { Autumn as autumn } from "autumn-js";
 
-await autumn.event({
+await autumn.track({
   customer_id: "user-123",
   value: 1,
   event_name: "blog_post_generation",

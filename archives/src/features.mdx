@@ -1,11 +1,11 @@
 ---
-title: 'Features'
+title: "Features"
 ---
-
 
 In Autumn, there are 2 types of features you can create: `boolean` and `metered`. When defining a boolean or metered feature, the `id` you enter is what you'll use to check whether a customer has access later on.
 
 ### Configuring a metered feature
+
 For metered features, you need to pass in:
 
 1. One or more event names
@@ -23,21 +23,22 @@ When calculating the usage of a metered feature, Autumn will first filter all ev
 />
 
 #### Example of sending event with property
+
 In the example below, if there is a metered event `minutes` which sums over the property `length`, then the following event will increment the metered feature by 2.
+
 ```js
-await fetch('https://api.useautumn.com/v1/events', {
+await fetch("https://api.useautumn.com/v1/track", {
   method: "POST",
-  headers: {Authorization: 'Bearer <token>', 'Content-Type': 'application/json'},
+  headers: {
+    Authorization: "Bearer <token>",
+    "Content-Type": "application/json",
+  },
   body: JSON.stringify({
-    "customer_id": "cus_123",
-    "event_name": "minutes",
-    "properties": {
-      "length": 2
-    }
-  })
-})
+    customer_id: "cus_123",
+    event_name: "minutes",
+    properties: {
+      length: 2,
+    },
+  }),
+});
 ```
-
-
-
-
