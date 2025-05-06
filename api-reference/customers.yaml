@@ -181,7 +181,6 @@ components:
               current_period_end: 1680327823000,
             },
           ]
-        add_ons: []
         features:
           [
             {
@@ -285,11 +284,6 @@ components:
         products:
           type: array
           description: List of products the customer has access to
-          items:
-            $ref: "#/components/schemas/CustomerProduct"
-        add_ons:
-          type: array
-          description: List of add-ons the customer has access to
           items:
             $ref: "#/components/schemas/CustomerProduct"
         features:
