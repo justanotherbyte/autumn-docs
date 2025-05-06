@@ -123,7 +123,7 @@ There are 3 main functions you need to integrate Autumn into your application.
 
 ```javascript
 // app/chatbot/page.tsx
-"use client";
+"use client"; // As Autumn is a client-side library
 
 import { useAutumn, useCustomer } from "autumn-js/next";
 
@@ -161,6 +161,11 @@ export default function BillingPage() {
   );
 }
 ```
+
+<Note>
+  `autumn-js/next` is a client-side library, so the component that uses it must
+  be a client component.
+</Note>
 
 <Check>
   Autumn will automatically create a customer if the customer ID is new.
