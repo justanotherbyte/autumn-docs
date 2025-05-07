@@ -20,7 +20,7 @@
         "groups": [
           {
             "group": " ",
-            "pages": ["introduction"]
+            "pages": ["introduction", "understanding"]
           },
           {
             "group": "Quickstart",
