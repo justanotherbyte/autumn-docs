@@ -265,6 +265,11 @@
             "nullable": true,
             "description": "The feature ID of the product item. Should be `null` for prices."
           },
+          "feature_type": {
+            "type": "string",
+            "enum": ["single_use", "continuous_use"],
+            "description": "Single use features are used once and then depleted, like API calls or credits. Continuous use features are those being used on an ongoing-basis, like storage or seats."
+          },
           "included_usage": {
             "oneOf": [
               { "type": "number" },
@@ -275,35 +280,37 @@
           },
           "interval": {
             "type": "string",
-            "description": "The reset or billing interval of the product item."
+            "nullable": true,
+            "description": "The reset or billing interval of the product item. If null, feature will have no reset date, and if there's a price, it will be billed one-off."
           },
           "usage_model": {
             "type": "string",
             "enum": ["prepaid", "pay_per_use"],
-            "description": "Whether the feature should be prepaid upfront or billed pay per use. "
+            "description": "Whether the feature should be prepaid upfront or billed for how much they use end of billing period. "
           },
           "price": {
             "type": "number",
+            "nullable": true,
             "description": "The price of the product item. Should be `null` if tiered pricing is set."
           },
           "billing_units": {
             "type": "number",
-            "description": "The billing units of the product item."
+            "nullable": true,
+            "description": "The billing units of the product item (eg $1 for 30 credits). Should be `null` if the feature is prepaid."
           },
           "entity_feature_id": {
             "type": "string",
+            "nullable": true,
             "description": "The feature ID of the entity (like seats) to track sub-balances for."
-          },
-          "reset_usage_on_billing": {
-            "type": "boolean",
-            "description": "Whether the usage should be reset on the billing interval. Only applies to priced features."
           },
           "reset_usage_when_enabled": {
             "type": "boolean",
-            "description": "Whether the usage should be reset when the feature is enabled."
+            "nullable": true,
+            "description": "Whether the usage should be reset when the product is enabled."
           },
           "tiers": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PriceTier"
             }
