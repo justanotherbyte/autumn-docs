@@ -15,6 +15,12 @@ The auth plugin configuration accepts the following fields:
 
 This config is passed to the [`<AutumnProvider />` component](/quickstart/nextjs#3-set-up-%3Cautumnprovider%3E) that wraps your Next.js application.
 
+<Note>
+  If you're using an Auth Plugin, then you don't need to pass the `customerId`
+  prop into AutumnProvider, as we'll get this automatically from the auth
+  provider.
+</Note>
+
 ## Providers
 
 #### Better-Auth
@@ -30,6 +36,11 @@ import { auth } from "@/lib/auth";
     instance: auth, // Your server-side better-auth instance
     useOrg: true, // Set to true if organizations are your customers
   }}
+  //optional: pass customer data to Autumn
+  customerData={{
+    name: "John Doe",
+    email: "john@doe.com",
+  }}
 >
   {children}
 </AutumnProvider>;
@@ -41,6 +52,11 @@ import { auth } from "@/lib/auth";
 <AutumnProvider
   authPlugin={{
     provider: "supabase",
+  }}
+  //optional: pass customer data to Autumn
+  customerData={{
+    name: "John Doe",
+    email: "john@doe.com",
   }}
 >
   {children}
@@ -64,6 +80,11 @@ import { auth } from "@/lib/auth";
   authPlugin={{
     provider: "clerk",
     useOrg: true, // Set to true if organizations are your customers
+  }}
+  //optional: pass customer data to Autumn
+  customerData={{
+    name: "John Doe",
+    email: "john@doe.com",
   }}
 >
   {children}
