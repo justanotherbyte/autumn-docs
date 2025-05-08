@@ -14,20 +14,18 @@ To start, add the feature entity as a product item in the Autumn dashboard.
 5. Select the entity you want to add (eg, per `user_id`)
 6. Define any included usage (eg, 500 credits per user) and add the product item.
 
-## Managing entities via the API
+## Creating entities
 
-You can manage feature entities via the `entities` route. This can be used to create, update and delete entities, such as when a seat is added or removed.
+You can manage feature entities via the `entities` route. This can be used to create, update and delete entities, such as when a seat or workspace is added or removed.
 
 <Check>
-  When you create a feature entity, a **usage event** will automatically be sent
+  When you create an entity, a **usage event** will automatically be sent
   that increments the count of the number of entities (eg seats) being used.
 
-This means if you create 2 entities for "seats", your usage of "seats" will be 2.
+This means if you create 2 entities for "seats", your usage of "seats" will be 2, allowing Autumn to bill accordingly if there's a price set.
 
 </Check>
 
-<Tabs>
-    <Tab title="Create an entity">
         <CodeGroup>
 
 ```bash cURL
@@ -52,71 +50,15 @@ const entity = await autumn.entities.create("org_123", {
 ```
 
 </CodeGroup>
-
-{/* prettier-ignore */}
-{/* ```javascript Typescript
-import { Autumn } from "@useautumn/js";
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
-
-const entity = await autumn.entities.create({
-customer_id: "org_123",
-feature_id: "feature_123",
-entity_id: "user_abc",
-}); ``` \*/}
-
 ```json
 {
   "success": true
 }
 ```
 
-    </Tab>
-    <Tab title="Delete an entity">
+## Managing entity balances
 
-<CodeGroup>
-
-```bash cURL
-curl -X DELETE "https://api.useautumn.com/v1/customers/org_123/entities/user_abc" \
--H "Authorization: Bearer am_sk_1234567890" \
--H "Content-Type: application/json" \
-```
-
-```javascript Typescript
-import { Autumn as autumn } from "autumn-js";
-
-await autumn.entities.delete("org_123", "user_abc");
-```
-
-{/* prettier-ignore */}
-{/* ```javascript Typescript
-import { Autumn } from "@useautumn/js";
-const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
-});
-
-const entity = await autumn.entities.delete({
-customer_id: "org_123",
-feature_id: "feature_123",
-entity_id: "user_abc",
-}); ```\*/}
-
-</CodeGroup>
-```json
-{
-  "message": "Entity deleted successfully",
-  "entity_id": "entity_123"
-}
-```
-
-    </Tab>
-
-</Tabs>
-
-## Manging entity balances
-
-Just like with normal features, you can check feature access and track usage events for entity.
+Just like with normal features, you can check feature access and track usage events for each entity.
 
 #### Check feature access
 
@@ -137,9 +79,9 @@ curl -X POST "https://api.useautumn.com/v1/check" \
 import { Autumn as autumn } from "autumn-js";
 
 const { allowed } = await autumn.check({
-  customerId: "org_123",
-  featureId: "ai-messages",
-  entityId: "user_abc",
+  customer_id: "org_123",
+  feature_id: "ai-messages",
+  entity_id: "user_abc",
 });
 ```
 
@@ -174,9 +116,9 @@ const event = await autumn.track({
 
 </CodeGroup>
 
-#### Top-level vs entity-level balances
+#### Customer-level vs entity-level balances
 
-Top-level balances are the total balance for the feature across all entities. Entity-level balances are the balance for a specific entity. You can check access and track usage events either at the top-level or entity-level.
+A customer-level balances is the total balance for the feature across all entities. Entity-level balances are the balance for a specific entity. You can check access and track usage events either at the customer-level or entity-level.
 
 <Info>
 **Example use case**
@@ -204,12 +146,12 @@ curl -X POST "https://api.useautumn.com/v1/check" \
 ```javascript Typescript
 import { Autumn } from "@useautumn/js";
 const autumn = new Autumn({
-  apiKey: "am_sk_1234567890",
+  secretKey: "am_sk_1234567890",
 });
 
 const { allowed } = await autumn.check({
-  customerId: "org_123",
-  featureId: "ai-messages",
+  customer_id: "org_123",
+  feature_id: "ai-messages",
 });
 ```
 
@@ -237,10 +179,38 @@ curl -X POST "https://api.useautumn.com/v1/track" \
 import { Autumn as autumn } from "autumn-js";
 
 const event = await autumn.track({
-  customerId: "org_123",
-  featureId: "ai-messages",
+  customer_id: "org_123",
+  feature_id: "ai-messages",
   value: 10,
 });
 ```
 
 </CodeGroup>
+
+## Deleting Entities
+
+<Check>
+  Just as creating an entity sent a usage event for the associated feature,
+  deleting an entity will decrease the usage.
+</Check>
+
+<CodeGroup>
+
+```bash cURL
+curl -X DELETE "https://api.useautumn.com/v1/customers/org_123/entities/user_abc" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+```
+
+```javascript Typescript
+import { Autumn as autumn } from "autumn-js";
+
+await autumn.entities.delete("org_123", "user_abc");
+```
+
+</CodeGroup>
+```json
+{
+  "success": true,
+}
+```
