@@ -30,6 +30,7 @@ This means if you create 2 entities for "seats", your usage of "seats" will be 2
     <Tab title="Create an entity">
         <CodeGroup>
 
+<CodeGroup>
 ```bash cURL
 curl -X POST "https://api.useautumn.com/v1/entities" \
 -H "Authorization: Bearer am_sk_1234567890" \
@@ -40,6 +41,18 @@ curl -X POST "https://api.useautumn.com/v1/entities" \
 "entity_id": "user_abc"
 }'
 ```
+
+```javascript Typescript
+import { Autumn as autumn } from "autumn-js";
+
+const entity = await autumn.entities.create("1234", {
+  id: "ent_abc",
+  name: "test",
+  feature_id: "website",
+});
+```
+
+</CodeGroup>
 
 {/* prettier-ignore */}
 {/* ```javascript Typescript
@@ -61,9 +74,11 @@ entity_id: "user_abc",
   "entity_id": "entity_123"
 }
 ```
+
     </Tab>
     <Tab title="Delete an entity">
-    <CodeGroup>
+
+<CodeGroup>
 
 ```bash cURL
 curl -X DELETE "https://api.useautumn.com/v1/entities" \
@@ -74,6 +89,12 @@ curl -X DELETE "https://api.useautumn.com/v1/entities" \
 "feature_id": "feature_123",
 "entity_id": "user_abc"
 }'
+```
+
+```javascript Typescript
+import { Autumn as autumn } from "autumn-js";
+
+await autumn.entities.delete("1234", "ent_abc");
 ```
 
 {/* prettier-ignore */}
