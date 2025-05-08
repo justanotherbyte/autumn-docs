@@ -30,25 +30,24 @@ This means if you create 2 entities for "seats", your usage of "seats" will be 2
     <Tab title="Create an entity">
         <CodeGroup>
 
-<CodeGroup>
 ```bash cURL
-curl -X POST "https://api.useautumn.com/v1/entities" \
+curl -X POST "https://api.useautumn.com/v1/customers/org_123/entities" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
 -d '{
-"customer_id": "org_123",
-"feature_id": "feature_123",
-"entity_id": "user_abc"
+"feature_id": "seats",
+"id": "user_abc",
+"name": "Brandon Yeo"
 }'
 ```
 
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-const entity = await autumn.entities.create("1234", {
-  id: "ent_abc",
-  name: "test",
-  feature_id: "website",
+const entity = await autumn.entities.create("org_123", {
+  id: "user_abc",
+  name: "Brandon Yeo",
+  feature_id: "seats",
 });
 ```
 
@@ -67,11 +66,9 @@ feature_id: "feature_123",
 entity_id: "user_abc",
 }); ``` \*/}
 
-</CodeGroup>
 ```json
 {
-  "message": "Entity created successfully",
-  "entity_id": "entity_123"
+  "success": true
 }
 ```
 
@@ -81,20 +78,15 @@ entity_id: "user_abc",
 <CodeGroup>
 
 ```bash cURL
-curl -X DELETE "https://api.useautumn.com/v1/entities" \
+curl -X DELETE "https://api.useautumn.com/v1/customers/org_123/entities/user_abc" \
 -H "Authorization: Bearer am_sk_1234567890" \
 -H "Content-Type: application/json" \
--d '{
-"customer_id": "org_123",
-"feature_id": "feature_123",
-"entity_id": "user_abc"
-}'
 ```
 
 ```javascript Typescript
 import { Autumn as autumn } from "autumn-js";
 
-await autumn.entities.delete("1234", "ent_abc");
+await autumn.entities.delete("org_123", "user_abc");
 ```
 
 {/* prettier-ignore */}
