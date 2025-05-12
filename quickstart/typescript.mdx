@@ -83,7 +83,7 @@ To handle product upgrades and downgrades however, you'll need to use a Secret K
 </Warning>
 <CodeGroup>
 
-```jsx Client {5-7, 11, 19}
+```jsx Client {5-7, 13, 24}
 // src/chatbot.tsx
 
 import { Autumn } from "autumn-js";
@@ -93,8 +93,13 @@ const autumn = new Autumn({
 });
 
 export default function Chatbot() {
+  const user_id = auth().id; // get your internal user id
+
   const handleUpgrade = async () => {
-    let { data, error } = await autumn.attach({ product_id: "pro" });
+    let { data, error } = await autumn.attach({
+      customer_id: user_id,
+      product_id: "pro",
+    });
 
     if (data?.checkout_url) {
       window.location.href = data.checkout_url;
@@ -102,7 +107,10 @@ export default function Chatbot() {
   };
 
   const checkAccess = async () => {
-    let { data, error } = await autumn.check({ feature_id: "messages" });
+    let { data, error } = await autumn.check({
+      customer_id: user_id,
+      feature_id: "messages",
+    });
 
     if (data?.allowed) {
       await fetch("http://localhost:8080/messages", {
