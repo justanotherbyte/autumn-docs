@@ -145,10 +145,10 @@ export default function BillingPage() {
       <button
         onClick={async () => {
           // Check if the customer is allowed to send a message
-          let { allowed } = await check({ featureId: "messages" });
+          let { data } = await check({ featureId: "messages" });
 
           // Send a usage event to Autumn if allowed
-          if (allowed) {
+          if (data.allowed) {
             await track({ featureId: "messages" });
           } else {
             alert("You don't have access to any more messages");
