@@ -88,7 +88,7 @@ h2:not(a h2) {
   border-bottom: 1px solid #e6e6e8;
   border-top: 1px solid #e6e6e8;
   color: #52525b !important;
-  font-size: 1.25rem !important;
+  font-size: 1rem !important;
   margin: 3rem -100% 1rem -6.2rem !important;
   z-index: 2;
   max-width: calc(100vw + 6.2rem);
@@ -104,6 +104,10 @@ h2 > span {
   max-width: 751px;
   width: 100%;
 } */
+
+* {
+  border-radius: 3px !important;
+}
 
 #sidebar-content {
   background-color: #f5f5f5;

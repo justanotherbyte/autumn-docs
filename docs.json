@@ -25,15 +25,8 @@
           {
             "group": "Quickstart",
             "pages": [
-              {
-                "group": "Next.js",
-                "pages": [
-                  "quickstart/nextjs",
-                  "quickstart/auth-plugins",
-                  "quickstart/ui-components"
-                ]
-              },
-              "quickstart/typescript",
+              "quickstart/quickstart",
+              "quickstart/ui-components",
               "cookbooks/ai-builders"
             ]
           },
