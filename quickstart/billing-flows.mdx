@@ -1,0 +1,375 @@
+---
+title: "Billing Flows"
+sidebarTitle: "Billing Flows"
+description: "Using Autumn to manage billing flows like upgrading, cancelling, paywalls and more"
+---
+
+Autumn handles your billing flows, so you don't need to build and maintain user flows like:
+
+- Purchasing a product
+- Inputting quantities for prepaid products
+- Upgrading, downgrading, cancelling or renewing a product's subscription
+- Paywalling features
+- Failed payments [coming soon]
+
+You can use our customizable shadcn/ui components to handle these out-of-the-box, or use our React hooks and SDK to roll your own.
+
+## Product Change
+
+The product change dialog will open when a customer wants to change their active product, such as when they upgrade or downgrade, to let them preview how much will be charged, and confirm the change.
+
+#### Install
+
+<CodeGroup>
+```bash npm
+npx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+```bash pnpm
+pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+```bash yarn
+yarn dlx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+```bash bun
+bunx --bun shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```
+
+</CodeGroup>
+<img
+  src="/assets/quickstart/ui-components/product-change-dialog.png"
+  alt="Product Change Dialog"
+  className="border"
+/>
+
+This will download the product-change-dialog component in your `/components` directory, under a `/autumn` folder.
+
+You can swap `clean` for `classic` or `dev` to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
+
+#### Usage
+
+Pass in the `product-change-dialog` component to the `AutumnProvider` component. This allows Autumn to automatically open the product change dialog when they want to change their active product.
+
+```jsx
+import ProductChangeDialog from "@components/autumn/product-change-dialog";
+import { useAutumn } from "autumn-js/react";
+
+<Button
+  onClick={async () =>
+    await attach({
+      productId: "pro",
+      dialog: ProductChangeDialog,
+    })
+  }
+/>;
+```
+
+Now when you use the `attach()` hook, Autumn will first call the `check({withPreview: true})` function to preview the purchase. The product change dialog will open if:
+
+- The customer needs to input a quantity for their purchase (ie, if the product has prepaid prices)
+- If the customer's payment method is already on file (ie, for upgrades, downgrades or add-ons).
+
+When the customer confirms the purchase, Autumn will attach the product to the customer.
+
+<Check>
+  If there are no inputs required and it's a new customer (without an existing
+  payment method), the customer will be redirected straight to the Stripe
+  checkout page.
+</Check>
+
+#### Scenarios
+
+The `check({withPreview: true})` call can return a `preview` object that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
+
+| Scenario    | Description                                                                                               |
+| ----------- | --------------------------------------------------------------------------------------------------------- |
+| `upgrade`   | The customer is upgrading their product                                                                   |
+| `downgrade` | The customer is downgrading to another paid tier                                                          |
+| `cancel`    | The customer is downgrading to a free product                                                             |
+| `renew`     | The customer is reactivating a product that was previously cancelled                                      |
+| `scheduled` | The product is already scheduled to start at a future date (eg, for downgrades), so no changes are needed |
+| `active`    | The customer already has the product active, so no changes are needed                                     |
+
+When you install the component, a `/lib/autumn/get-product-change-texts.tsx` file is also installed. This file contains the dialog texts for each scenario, which you can customize how you want.
+
+```tsx /lib/autumn/get-product-change-texts.tsx [expandable]
+import { CheckProductFormattedPreview } from "autumn-js";
+
+export const getProductChangeTexts = (
+  preview: CheckProductFormattedPreview
+) => {
+  const {
+    scenario,
+    product_name,
+    recurring,
+    current_product_name,
+    next_cycle_at,
+  } = preview;
+
+  const nextCycleAtStr = next_cycle_at
+    ? new Date(next_cycle_at).toLocaleDateString()
+    : undefined;
+
+  switch (scenario) {
+    case "scheduled":
+      return {
+        title: <p>Scheduled product already exists</p>,
+        message: <p>You already have this product scheduled to start soon.</p>,
+      };
+
+    case "active":
+      return {
+        title: <p>Product already active</p>,
+        message: <p>You are already subscribed to this product.</p>,
+      };
+
+    case "new":
+      if (recurring) {
+        return {
+          title: <p>Subscribe to {product_name}</p>,
+          message: (
+            <p>
+              By clicking confirm, you will be subscribed to {product_name} and
+              your card will be charged immediately.
+            </p>
+          ),
+        };
+      } else {
+        return {
+          title: <p>Purchase {product_name}</p>,
+          message: (
+            <p>
+              By clicking confirm, you will purchase {product_name} and your
+              card will be charged immedaitely.
+            </p>
+          ),
+        };
+      }
+
+    case "renew":
+      return {
+        title: <p>Renew</p>,
+        message: (
+          <p>
+            By clicking confirm, you will renew your subscription to{" "}
+            {product_name}.
+          </p>
+        ),
+      };
+
+    case "upgrade":
+      return {
+        title: <p>Upgrade to {product_name}</p>,
+        message: (
+          <p>
+            By clicking confirm, you will upgrade your subscription to{" "}
+            {product_name} and your card will be charged immediately.
+          </p>
+        ),
+      };
+
+    case "downgrade":
+      return {
+        title: <p>Downgrade to {product_name}</p>,
+        message: (
+          <p>
+            By clicking confirm, your current subscription to{" "}
+            {current_product_name} will be cancelled and a new subscription to{" "}
+            {product_name} will begin on {nextCycleAtStr}.
+          </p>
+        ),
+      };
+
+    case "cancel":
+      return {
+        title: <p>Cancel</p>,
+        message: (
+          <p>
+            By clicking confirm, your subscription to {current_product_name}{" "}
+            will end on {nextCycleAtStr}.
+          </p>
+        ),
+      };
+
+    default:
+      return {
+        title: <p>Change Subscription</p>,
+        message: <p>You are about to change your subscription.</p>,
+      };
+  }
+};
+```
+
+## Paywall
+
+A paywall that prompts users to upgrade to the next tier when they hit a usage limit, or don't have access to a feature.
+
+#### Install
+
+<CodeGroup>
+```bash npm
+npx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+```bash pnpm
+pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+```bash yarn
+yarn dlx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+```bash bun
+bunx --bun shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```
+
+</CodeGroup>
+
+<img
+  src="/assets/quickstart/ui-components/paywall-dialog.png"
+  alt="Paywall Dialog"
+  className="border"
+/>
+
+This will download the `pricing-dialog` component in your `/components` directory, under a `/autumn` folder.
+
+You can swap `clean` for `classic` or `dev` in the installation URL to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
+
+#### Usage
+
+Pass in the `paywall-dialog` component to the `check` function (exported from the `useAutumn` hook).
+
+```jsx
+import PaywallDialog from "@components/autumn/paywall-dialog";
+import { useAutumn } from "autumn-js/react";
+
+const { check } = useAutumn();
+
+const { data, error } = await check({
+  featureId: "ai-messages",
+  dialog: PaywallDialog,
+});
+```
+
+Now when you use the `check()` function, Autumn will automatically pass in the `withPreview: true` parameter. If `data.allowed: false` is returned for the feature, the paywall will open with the following details:
+
+- The feature they don't have access to, or have run out of
+- The next product tier they should upgrade to, in order to access the feature (or an add-on if no additional tier exists)
+- A button that lets them purchase the next tier or add-on
+
+#### Scenarios
+
+The `check({withPreview: true})` call can return a `preview` object that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
+
+| Scenario       | Description                                        |
+| -------------- | -------------------------------------------------- |
+| `usage_limit`  | The customer has hit a usage limit for the feature |
+| `feature_flag` | The customer doesn't have access to the feature    |
+
+The `preview` object also contains a `products` array, which contains the products that the customer can purchase to access the feature.
+
+When the `pricing-dialog` component is installed, a `/lib/autumn/get-paywall-texts.tsx` file is also installed. This file contains the dialog texts for each scenario (depending on the available products), which you can customize how you want.
+
+```tsx /lib/autumn/get-paywall-texts.tsx [expandable]
+import { CheckFeatureFormattedPreview } from "autumn-js";
+
+export const getPaywallDialogTexts = (
+  preview: CheckFeatureFormattedPreview
+) => {
+  const { scenario, products, feature_name } = preview;
+
+  if (products.length == 0) {
+    switch (scenario) {
+      case "usage_limit":
+        return {
+          title: `Feature Unavailable`,
+          message: `You have reached the usage limit for ${feature_name}. Please contact us to increase your limit.`,
+        };
+      default:
+        return {
+          title: "Feature Unavailable",
+          message:
+            "This feature is not available for your account. Please contact us to enable it.",
+        };
+    }
+  }
+
+  const nextProduct = products[0];
+
+  const isAddOn = nextProduct && nextProduct.is_add_on;
+
+  const title = nextProduct.free_trial
+    ? `Start trial for ${nextProduct.name}`
+    : nextProduct.is_add_on
+    ? `Purchase ${nextProduct.name}`
+    : `Upgrade to ${nextProduct.name}`;
+
+  let message = "";
+  if (isAddOn) {
+    message = `Please purchase the ${nextProduct.name} add-on to continue using ${feature_name}.`;
+  } else {
+    message = `Please upgrade to the ${nextProduct.name} plan to continue using ${feature_name}.`;
+  }
+
+  switch (scenario) {
+    case "usage_limit":
+      return {
+        title: title,
+        message: `You have reached the usage limit for ${feature_name}. ${message}`,
+      };
+    case "feature_flag":
+      return {
+        title: title,
+        message: `This feature is not available for your account. ${message}`,
+      };
+    default:
+      return {
+        title: "Feature Unavailable",
+        message: "This feature is not available for your account.",
+      };
+  }
+};
+```
+
+## Pricing Table
+
+The pricing table component displays your available products, the features available in each and any prices. It synchronizes with the products you define in Autumn.
+
+#### Install
+
+<CodeGroup>
+```bash npm
+npx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+```bash pnpm
+pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+```bash yarn
+yarn dlx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+```bash bun
+bunx --bun shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
+```
+
+</CodeGroup>
+
+This will download the product-change-dialog component in your `/components` directory, under a `/autumn` folder.
+
+You can swap `clean` for `classic` or `dev` to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
+
+#### Usage
+
+```javascript
+import { PricingTable } from "@components/autumn/pricing-table";
+
+export const PricingTableExample = () => (
+  <div>
+    <PricingTable />
+  </div>
+);
+```

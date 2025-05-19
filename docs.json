@@ -26,7 +26,7 @@
             "group": "Quickstart",
             "pages": [
               "quickstart/quickstart",
-              "quickstart/ui-components",
+              "quickstart/billing-flows",
               "cookbooks/ai-builders"
             ]
           },

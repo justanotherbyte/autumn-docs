@@ -33,10 +33,13 @@ curl --request POST \
 ```
 
 ```javascript Typescript
-import { Autumn as autumn } from "autumn-js";
+import { Autumn } from "autumn-js";
 
-const { checkout_url } = await autumn.attach({
-  product_id: "pro-tier",
+const autumn = new Autumn({ secretKey: "am_sk_..." });
+
+const { data } = await autumn.attach({
+  customer_id: "user_123",
+  product_id: "pro",
 });
 ```
 

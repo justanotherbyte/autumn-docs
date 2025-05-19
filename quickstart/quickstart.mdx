@@ -45,7 +45,7 @@ Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
 
 ## 2. Install `autumn-js`
 
-To implement the Pro plan into your app, install the Autumn library.
+To add the Pro plan to your app, first install the Autumn library.
 
 <CodeGroup>
 
@@ -238,10 +238,15 @@ fastify.route({
 ```
 
 </CodeGroup>
+<Check>
+  Autumn will automatically create a customer if the customer ID is new.
+</Check>
 
 ## 4. Set up `<AutumnProvider />`
 
-Client side, wrap your application with the `<AutumnProvider>` component.
+Client side, wrap your application with the `<AutumnProvider>` component, and pass in your backend URL.
+
+<Note>Backend URL is typically passed in as an environment variable.</Note>
 
 ```jsx
 import { AutumnProvider } from "autumn-js/react";
@@ -254,12 +259,7 @@ export default function RootLayout({
   return (
     <html>
       <body>
-        <AutumnProvider
-          backendUrl="http://localhost:8000"
-          getBearerToken={async () => {
-            // optional (primarily for frameworks with separate backend / frontend)
-          }}
-        >
+        <AutumnProvider backendUrl="http://localhost:8000">
           {children}
         </AutumnProvider>
       </body>
@@ -268,9 +268,12 @@ export default function RootLayout({
 }
 ```
 
-<Note>
-  Your layout file must be a server component (as it is by default in Next.js).
-</Note>
+<Info>
+  `AutumnProvider` can also take in a `getBearerToken` function, which should be used
+  for auth frameworks with separate backend and frontend, eg using Clerk with
+  Express.
+
+</Info>
 
 ## 5. Integrate Autumn
 
@@ -346,10 +349,6 @@ autumn.track({
 
 </CodeGroup>
 
-<Check>
-  Autumn will automatically create a customer if the customer ID is new.
-</Check>
-
 ## 6. Congrats!
 
-You've now integrated Autumn into your application. You can now plug in [Autumn's shadcn/ui components](/quickstart/ui-components) to handle things like upgrades/downgrades, paywalls and pricing table.
+You've now integrated Autumn into your application. Next, learn how to handle [billing flows](/quickstart/billing-flows) like upgrades, cancellations and paywalls by using Autumn's shadcn/ui components or building your own.
