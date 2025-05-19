@@ -81,7 +81,7 @@ When the customer confirms the purchase, Autumn will attach the product to the c
 
 #### Scenarios
 
-The `check({withPreview: true})` call can return a `preview` object that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
+The `check({withPreview: true})` call can return a [`preview` object](/api-reference/check#response-feature-preview) that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
 
 | Scenario    | Description                                                                                               |
 | ----------- | --------------------------------------------------------------------------------------------------------- |
@@ -92,7 +92,7 @@ The `check({withPreview: true})` call can return a `preview` object that contain
 | `scheduled` | The product is already scheduled to start at a future date (eg, for downgrades), so no changes are needed |
 | `active`    | The customer already has the product active, so no changes are needed                                     |
 
-When you install the component, a `/lib/autumn/get-product-change-texts.tsx` file is also installed. This file contains the dialog texts for each scenario, which you can customize how you want.
+When you install `product-change-dialog`, a `/lib/autumn/get-product-change-texts.tsx` file is also installed. This file contains the dialog texts for each scenario, which you can customize how you want.
 
 ```tsx /lib/autumn/get-product-change-texts.tsx [expandable]
 import { CheckProductFormattedPreview } from "autumn-js";
@@ -261,7 +261,7 @@ Now when you use the `check()` function, Autumn will automatically pass in the `
 
 #### Scenarios
 
-The `check({withPreview: true})` call can return a `preview` object that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
+The `check({withPreview: true})` call can return a [`preview` object](/api-reference/check#response-product-preview) that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
 
 | Scenario       | Description                                        |
 | -------------- | -------------------------------------------------- |
