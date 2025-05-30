@@ -1,6 +1,6 @@
 ---
-title: "Get Started"
-sidebarTitle: "Get Started"
+title: "Quickstart"
+sidebarTitle: "Quickstart"
 description: "Implement your app's pricing model in under 5 minutes"
 ---
 
@@ -74,9 +74,9 @@ bun add autumn-js
 
 ## 3. Add your Autumn secret key
 
-Create an [Autumn Secret API key](https://app.useautumn.com/dev) from the dashboard, and add it to your `.env` file.
+Create an [Autumn Secret API key](https://app.useautumn.com/dev) from the dashboard, and add it to your backend `.env` file.
 
-```
+```bash .env
 AUTUMN_SECRET_KEY=am_sk_1234567890
 ```
 
@@ -242,11 +242,18 @@ fastify.route({
   Autumn will automatically create a customer if the customer ID is new.
 </Check>
 
-## 4. Set up `<AutumnProvider />`
+## 5. Set up `<AutumnProvider />`
 
 Client side, wrap your application with the `<AutumnProvider>` component, and pass in your backend URL.
 
-<Note>Backend URL is typically passed in as an environment variable.</Note>
+<Note>
+  If you're using a fullstack framework like Next.js, your backend URL will be
+  the same as your frontend URL (eg http://localhost:3000).
+</Note>
+
+```bash .env
+AUTUMN_BACKEND_URL=http://localhost:8000
+```
 
 ```jsx
 import { AutumnProvider } from "autumn-js/react";
@@ -259,7 +266,7 @@ export default function RootLayout({
   return (
     <html>
       <body>
-        <AutumnProvider backendUrl="http://localhost:8000">
+        <AutumnProvider backendUrl={process.env.AUTUMN_BACKEND_URL}>
           {children}
         </AutumnProvider>
       </body>
@@ -275,80 +282,84 @@ export default function RootLayout({
 
 </Info>
 
-## 5. Integrate Autumn
+## 6. Set up Payments
 
-There are 3 key functions you need to integrate the Pro plan (and any other pricing model) into your app:
+Call `attach` to redirect the customer to a Stripe checkout page when they want to purchase the Pro plan. Once they've paid, Autumn will grant them access to the features we defined.
 
-<Steps>
-  <Step>
-    When the customer clicks the "Upgrade to Pro" button, we call `attach()` to
-    redirect them to a Stripe checkout page.
-    <Warning>
-      Make sure you've pasted in your [Stripe test secret
-      key](https://dashboard.stripe.com/test/apikeys) `sk_test_...` in the
-      [Autumn dashboard](https://app.useautumn.com/integrations/stripe).
-    </Warning>
-  </Step>
-  <Step>
-    When the customer wants to use a chatbot message, we call `check()` to check
-    if they have remaining messages and are allowed to send one.
-  </Step>
-  <Step>If they are, we call `track()` to send a usage event to Autumn.</Step>
-</Steps>
+<Warning>
+  Make sure you've pasted in your [Stripe test secret
+  key](https://dashboard.stripe.com/test/apikeys) `sk_test_...` in the [Autumn
+  dashboard](https://app.useautumn.com/integrations/stripe).
+</Warning>
 
-<Note>
-From the frontend, you can use Autumn's React hooks to check feature permissions, handle billing flows and display customer billing data.
+```jsx React {9}
+import { useAutumn } from "autumn-js/react";
 
-Autumn's backend SDK can be used to also check feature permissions, and track feature usage.
+export default function PurchaseButton() {
+  const { attach } = useAutumn();
 
-</Note>
+  return (
+    <button
+      onClick={async () => {
+        await attach({ productId: "pro" });
+      }}
+    >
+      Upgrade to Pro
+    </button>
+  );
+}
+```
+
+## 7. Integrate Pricing Logic
+
+There are 3 key functions you need to handle the billing logic once the customer has purchased the Pro plan:
+
+- `check` to see if the customer is allowed to send a message.
+- `track` a usage event in Autumn.
+- `customer` to display usage data in the UI.
 
 <CodeGroup>
 
-```jsx Client
-// app/chatbot/page.tsx
-
+```jsx Client {11, 15, 16}
 import { useAutumn, useCustomer } from "autumn-js/react";
 
-export default function BillingPage() {
-  const { attach, check } = useAutumn();
+export default function SendChatMessage() {
+  const { check } = useAutumn();
   const { customer, refetch } = useCustomer();
 
   return (
     <>
-      <h1>Welcome {customer?.name}</h1>
-      <button onClick={async () => await attach({ productId: "pro" })}>
-        Purchase
-      </button>
       <button
         onClick={async () => {
           let { data } = await check({ featureId: "messages" });
-          if (!data?.allowed) {
+
+          if (data?.allowed) {
+            //... send chatbot message server-side, then
+            await refetch(); // refetch customer usage data
+            alert("Remaining messages: " + customer.features.messages.balance);
+          } else {
             alert("You're out of messages");
           }
         }}
       >
-        Send
+        Send Message
       </button>
     </>
   );
 }
 ```
 
-```typescript Server
-// app/chatbot/page.tsx
-import { Autumn } from "autumn-js";
-
-const autumn = new Autumn({ secretKey: "am_sk_..." });
+```typescript Server {3}
+import { Autumn as autumn } from "autumn-js";
 
 autumn.track({
-  customer_id: "user_123",
+  customer_id: "user_123", // same id as in the autumn handler
   feature_id: "messages",
 });
 ```
 
 </CodeGroup>
 
-## 6. Congrats!
+## 8. Next steps
 
-You've now integrated Autumn into your application. Next, learn how to handle [billing flows](/quickstart/billing-flows) like upgrades, cancellations and paywalls by using Autumn's shadcn/ui components or building your own.
+Nice! You've now integrated Autumn into your application. Next, learn how to handle [billing flows](/quickstart/billing-flows) like upgrades, cancellations and paywalls by using Autumn's shadcn/ui components or building your own.

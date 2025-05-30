@@ -23,7 +23,7 @@
             "pages": ["introduction", "understanding"]
           },
           {
-            "group": "Quickstart",
+            "group": "Get Started",
             "pages": [
               "quickstart/quickstart",
               "quickstart/billing-flows",
@@ -99,7 +99,8 @@
               "api-reference/products/post",
               "api-reference/products/get",
               "api-reference/products/referral-code",
-              "api-reference/products/referral-redeem"
+              "api-reference/products/referral-redeem",
+              "api-reference/products/cancel"
             ]
           }
         ]

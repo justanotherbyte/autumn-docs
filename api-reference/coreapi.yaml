@@ -537,6 +537,97 @@ paths:
                 allowed: true
                 balance: { balance: 100, required_balance: 12 }
 
+  /cancel:
+    post:
+      security:
+        - secretKeyAuth: []
+      description: Cancel a customer's subscription or product attachment
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customer_id
+                - product_id
+              properties:
+                customer_id:
+                  type: string
+                  description: Your unique identifier for the customer
+                product_id:
+                  type: string
+                  description: Product ID to cancel for the customer
+                entity_id:
+                  type: string
+                  description: If using [entities](/features/feature-entities), the entity to cancel the product for.
+      x-code-samples:
+        - lang: typescript
+          label: required
+          source: |
+            import { Autumn as autumn } from 'autumn-js'
+
+            const response = await autumn.cancel({
+              customer_id: 'user_123',
+              product_id: 'lite'
+            })
+        - lang: typescript
+          label: with entity
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
+
+            const response = await autumn.cancel({
+              customer_id: 'user_123',
+              product_id: 'lite',
+              entity_id: '1'
+            });
+        - lang: curl
+          label: required
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/cancel' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "customer_id": "user_123",
+              "product_id": "lite"
+            }'
+        - lang: curl
+          label: with entity
+          source: |
+            curl -X POST 'https://api.useautumn.com/v1/cancel' \
+            -H 'Authorization: Bearer am_sk_1234567890' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "customer_id": "user_123",
+              "product_id": "lite",
+              "entity_id": "1"
+            }'
+      responses:
+        "200":
+          description: Product cancelled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates if the cancellation was successful
+                  message:
+                    type: string
+                    description: Description of the action taken
+                  customer_id:
+                    type: string
+                    description: Your unique identifier for the customer
+                  product_id:
+                    type: string
+                    description: Product ID that was cancelled
+              example:
+                success: true
+                message: "Product cancelled successfully"
+                customer_id: "user_123"
+                product_id: "lite"
+
 components:
   schemas:
     CustomerData:
@@ -563,6 +654,9 @@ components:
           type: integer
           default: 1
           description: How much usage should be deducted from the balance. Default is 1.
+        entity_id:
+          type: string
+          description: If using [entity balances](/features/feature-entities) (eg, seats), the entity ID to track usage for.
         event_name:
           type: string
           description: An [event name](/features/tracking-usage#using-event-names) can be used in place of `feature_id`. This can be used if multiple features are tracked in the same event.
