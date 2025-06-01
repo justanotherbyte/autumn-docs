@@ -1,6 +1,6 @@
 ---
 title: "Billing Flows via the API"
-sidebarTitle: "with the API"
+sidebarTitle: "roll your own"
 description: "Use Autumn's API or SDK to roll your own upgrade/downgrade flows, paywalls and more."
 ---
 
@@ -12,49 +12,13 @@ Autumn handles your billing flows, so you don't need to build and maintain user 
 - Paywalling features
 - Failed payments [coming soon]
 
-You can use our customizable shadcn/ui components to handle these out-of-the-box, or use our React hooks and SDK to roll your own.
+This page covers how to roll your own billing flows using our API or SDK. Alternatively, you can use our customizable [shadcn/ui components](/quickstart/shadcn) to handle these out-of-the-box.
 
 ## Product Change
 
-Autumn's `attach` function can be used to enable a product for a customer. Typically when automatically charging a customer's card, you'll want them to confirm the payment. This is useful for upgrade, downgrade or add-on payment flows.
+Typically when charging a customer's card, you'll want them to confirm the payment beforehand. This is useful for upgrade, downgrade or add-on payment flows.
 
-To handle this, call `check`, with `with_preview: true` before the attach call to get purchase preview information that can be displayed to the customer. When they confirm the purchase, you can then call `attach` to enable the product.
-
-<CodeGroup>
-
-```typescript React
-import { useAutumn } from "autumn-js/react";
-
-const { check } = useAutumn();
-
-const { data, error } = await check({
-  productId: "pro",
-  withPreview: true,
-});
-```
-
-```typescript Node.js
-import { Autumn as autumn } from "autumn-js";
-
-const { data, error } = await autumn.check({
-  customer_id: "cus_123",
-  product_id: "pro",
-  with_preview: true,
-});
-```
-
-```bash cURL
-curl -X POST https://api.useautumn.com/v1/check \
-  -H "Authorization: Bearer am_sk_xxxxxxxxxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "cus_123",
-    "product_id": "pro",
-    "with_preview": true
-  }'
-```
-
-</CodeGroup>
+The `check` function has a `with_preview` parameter that can be used to get purchase preview information that can be displayed to the customer.
 
 <CodeGroup>
 ```json Upgrade [expandable]
@@ -147,6 +111,50 @@ curl -X POST https://api.useautumn.com/v1/check \
 }
 ```
 
+```json Downgrade [expandable]
+{
+  "customer_id": "user_1234",
+  "code": "product_found",
+  "product_id": "pro",
+  "allowed": false,
+  "preview": {
+    "title": "Downgrade to Pro",
+    "message": "By clicking confirm, your current subscription to Ultra will end on 22 Jun 2025 and a new subscription to Pro will begin.",
+    "scenario": "downgrade",
+    "product_id": "pro",
+    "product_name": "Pro",
+    "recurring": true,
+    "next_cycle_at": 1750604867000,
+    "current_product_name": "Ultra",
+    "error_on_attach": false,
+    "product": {
+      "id": "pro",
+      "name": "Pro",
+      "group": null,
+      "env": "sandbox",
+      "is_add_on": false,
+      "is_default": false,
+      "version": 1,
+      "created_at": 1747912396998,
+      "items": [
+        {
+          "type": "price",
+          "feature_id": null,
+          "interval": "month",
+          "price": 5
+        },
+        {
+          "type": "feature",
+          "feature_id": "premium_support",
+          "feature_type": "static"
+        }
+      ],
+      "free_trial": null
+    }
+  }
+}
+```
+
 ```json New Purchase
 {
   "customer_id": "user_123",
@@ -159,29 +167,22 @@ curl -X POST https://api.useautumn.com/v1/check \
 
 </CodeGroup>
 
-The `check({with_preview: true})` call can return a [`preview` object](/api-reference/check#response-feature-preview) that contains a `scenario` enum, which can be used to control the dialog's contents. `scenario` can be one of the following:
+There are two options for handling these flows:
 
-| Scenario    | Description                                                                                               |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
-| `upgrade`   | The customer is upgrading their product                                                                   |
-| `downgrade` | The customer is downgrading to another paid tier                                                          |
-| `cancel`    | The customer is downgrading to a free product                                                             |
-| `renew`     | The customer is reactivating a product that was previously cancelled                                      |
-| `scheduled` | The product is already scheduled to start at a future date (eg, for downgrades), so no changes are needed |
-| `active`    | The customer already has the product active, so no changes are needed                                     |
-
-A preview object will be returned if there's an input from the customer required:
-
-- The customer needs to input a quantity for their purchase (ie, if the product has prepaid prices)
-- If the customer's payment method is already on file (ie, for upgrades, downgrades or add-ons).
-
-Otherwise, `preview` will be `null`, and you can just call `attach()` directly to generate a checkout URL.
-
-Now you can either build your own flow from scratch, or pass in a component to the `attach()` function.
+1. Pass in a component to the `attach` React hook
+2. Build your own flow from scratch
 
 <Tabs>
 <Tab title="Pass in a component">
-  You can pass in a custom component (such as a dialog) to the `attach()` function. This will pass down `open`, `setOpen` and `preview` props within a `params` object to the component. You can use these to build your own dialog, or customize our [pre-built shadcn/ui dialog](/quickstart/shadcn).
+  You can pass in a custom [component](/quickstart/shadcn) (such as a dialog) to the `attach()` hook. This will automatically call `check` with `with_preview: true` and pass down a `params` object to the component.
+
+Params contains the following properties:
+
+- `open`: A boolean that will be true if an input is required from the customer, such as to confirm a purchase or input a quantity.
+- `setOpen`: A function that will be used to close the dialog.
+- `preview`: The preview object returned from the `check` function.
+
+If there is no `preview` object, `open` will be `false` and the customer will be directed directly to a checkout page.
 
 <CodeGroup>
 
@@ -241,6 +242,46 @@ export const CustomDialog = ({ open, setOpen, preview }: CustomDialogProps) => {
 </Tab>
   <Tab title="Build your own">
 
+  <CodeGroup>
+
+```typescript React
+import { useAutumn } from "autumn-js/react";
+
+const { check } = useAutumn();
+
+const { data, error } = await check({
+  productId: "pro",
+  withPreview: true,
+});
+```
+
+```typescript Node.js
+import { Autumn as autumn } from "autumn-js";
+
+const { data, error } = await autumn.check({
+  customer_id: "cus_123",
+  product_id: "pro",
+  with_preview: true,
+});
+```
+
+```bash cURL
+curl -X POST https://api.useautumn.com/v1/check \
+  -H "Authorization: Bearer am_sk_xxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "cus_123",
+    "product_id": "pro",
+    "with_preview": true
+  }'
+```
+
+</CodeGroup>
+
+The [`preview` object](/api-reference/check#response-feature-preview) that is returned from the `check` function can be used to control the dialog's contents. `preview` can also be `null` if there is no input required from the customer, suggesting that the customer can be directed directly to a checkout page.
+
+Example implementation:
+
 ```jsx [expandable]
 import { useAutumn } from "autumn-js/react";
 
@@ -271,133 +312,270 @@ export default function PurchaseButton() {
   </Tab>
 </Tabs>
 
+If `preview` is returned, it will contain a `scenario` enum, which can be one of the following:
+
+| Scenario    | Description                                                                                               |
+| ----------- | --------------------------------------------------------------------------------------------------------- |
+| `upgrade`   | The customer is upgrading their product                                                                   |
+| `downgrade` | The customer is downgrading to another paid tier                                                          |
+| `cancel`    | The customer is downgrading to a free product                                                             |
+| `renew`     | The customer is reactivating a product that was previously cancelled                                      |
+| `scheduled` | The product is already scheduled to start at a future date (eg, for downgrades), so no changes are needed |
+| `active`    | The customer already has the product active, so no changes are needed                                     |
+
+You can use this to control the dialog's contents.
+
 ## Paywall
 
 A paywall that prompts users to upgrade to the next tier when they hit a usage limit, or don't have access to a feature.
 
-#### Install
+The `check` function has a `with_preview` parameter that can be used to get paywall preview information when a customer doesn't have access to a feature. This will contain information about the next product tier (or an add-on) they should upgrade to, in order to access the feature.
 
 <CodeGroup>
-```bash npm
-npx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
-````
 
-```bash pnpm
-pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```json Usage Limit [expandable]
+{
+  "customer_id": "user_1234",
+  "feature_id": "chat_messages",
+  "required_balance": 1,
+  "code": "feature_found",
+  "allowed": false,
+  "unlimited": false,
+  "balance": 0,
+  "preview": {
+    "title": "Upgrade to Pro",
+    "message": "You have run out of messages. Please upgrade to Pro to continue using this feature.",
+    "scenario": "usage_limit",
+    "feature_id": "chat_messages",
+    "feature_name": "messages",
+    "products": [
+      {
+        "id": "pro",
+        "name": "Pro",
+        "group": null,
+        "env": "sandbox",
+        "is_add_on": false,
+        "is_default": false,
+        "version": 2,
+        "created_at": 1748802907591,
+        "items": [
+          {
+            "type": "price",
+            "feature_id": null,
+            "interval": "month",
+            "price": 55
+          },
+          {
+            "type": "feature",
+            "feature_id": "chat_messages",
+            "feature_type": "single_use",
+            "included_usage": 300,
+            "interval": "month",
+            "reset_usage_when_enabled": true
+          },
+          {
+            "type": "feature",
+            "feature_id": "premium_support",
+            "feature_type": "static"
+          }
+        ],
+        "free_trial": null
+      }
+    ],
+    "upgrade_product_id": "pro"
+  }
+}
 ```
 
-```bash yarn
-yarn dlx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```json Feature Flag [expandable]
+{
+  "customer_id": "user_1234",
+  "feature_id": "premium_support",
+  "code": "feature_found",
+  "allowed": false,
+  "preview": {
+    "scenario": "feature_flag",
+    "title": "Feature Unavailable",
+    "feature_id": "premium_support",
+    "feature_name": "Premium support",
+    "message": "Your current plan does not include the Premium support feature. Please contact us to get access.",
+    "products": [],
+    "upgrade_product_id": null
+  }
+}
 ```
 
-```bash bun
-bunx --bun shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
+```json Feature Allowed [expandable]
+{
+  "customer_id": "user_1234",
+  "feature_id": "chat_messages",
+  "required_balance": 1,
+  "code": "feature_found",
+  "allowed": true,
+  "unlimited": false,
+  "balance": 1,
+  "preview": null
+}
 ```
 
 </CodeGroup>
 
-<img
-  src="/assets/quickstart/ui-components/paywall-dialog.png"
-  alt="Paywall Dialog"
-  className="border"
-/>
+There are two options for handling these flows:
 
-This will download the `pricing-dialog` component in your `/components` directory, under a `/autumn` folder.
+1. Pass in a component to the `check` React hook
+2. Build your own flow from scratch
 
-You can swap `clean` for `classic` or `dev` in the installation URL to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
+<Tabs>
+<Tab title="Pass in a component">
+You can pass in a custom component (such as a dialog) to the check() hook. This will automatically call check with with_preview: true and pass down a params object to the component.
 
-#### Usage
+Params contains the following properties:
 
-Pass in the `paywall-dialog` component to the `check` function (exported from the `useAutumn` hook).
+- open: A boolean that will be true if the feature is not allowed and a paywall should be shown.
+- setOpen: A function that will be used to close the dialog.
+- preview: The preview object returned from the check function.
 
-```jsx
-import PaywallDialog from "@components/autumn/paywall-dialog";
+If the feature is allowed, open will be false and no paywall will be shown.
+
+<CodeGroup>
+```jsx FeatureButton.tsx [expandable]
+import { useAutumn } from "autumn-js/react";
+import PaywallDialog from "./PaywallDialog";
+
+export default function FeatureButton() {
+  const { check } = useAutumn();
+  
+  return (
+    <button
+      onClick={async () => {
+        await check({
+          featureId: "chat_messages",
+          dialog: CustomPaywallDialog,
+        });
+      }}
+    >
+      Send Message
+    </button>
+  );
+}
+```
+
+```jsx CustomPaywallDialog.tsx [expandable]
+import { Button } from "../ui/button";
 import { useAutumn } from "autumn-js/react";
 
-const { check } = useAutumn();
+interface PaywallDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  preview: any;
+}
+export const CustomPaywallDialog = ({
+  open,
+  setOpen,
+  preview,
+}: PaywallDialogProps) => {
+  const { attach } = useAutumn();
+  return (
+    <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full max-w-md items-center z-100">
+      {open && (
+        <div className="flex flex-col gap-2 bg-white p-10 shadow-md border">
+          <h3>{preview.title}</h3>
+          <p>{preview.message}</p>
+          {preview.upgrade_product_id && (
+            <Button
+              onClick={() => attach({ productId: preview.upgrade_product_id })}
+            >
+              Upgrade Now
+            </Button>
+          )}
+          <Button onClick={() => setOpen(false)}>Close</Button>
+        </div>
+      )}
+    </div>
+  );
+};
+```
 
+</CodeGroup>
+
+</Tab>
+<Tab title="Build your own">
+<CodeGroup>
+
+```typescript React
+import { useAutumn } from "autumn-js/react";
+const { check } = useAutumn();
 const { data, error } = await check({
-  featureId: "ai-messages",
-  dialog: PaywallDialog,
+  featureId: "chat_messages",
+  withPreview: true,
 });
 ```
 
-Now when you use the `check()` function, Autumn will automatically pass in the `withPreview: true` parameter. If `data.allowed: false` is returned for the feature, the paywall will open with the following details:
-
-- The feature they don't have access to, or have run out of
-- The next product tier they should upgrade to, in order to access the feature (or an add-on if no additional tier exists)
-- A button that lets them purchase the next tier or add-on
-
-#### Scenarios
-
-The `check({withPreview: true})` call can return a [`preview` object](/api-reference/check#response-product-preview) that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
-
-| Scenario       | Description                                        |
-| -------------- | -------------------------------------------------- |
-| `usage_limit`  | The customer has hit a usage limit for the feature |
-| `feature_flag` | The customer doesn't have access to the feature    |
-
-The `preview` object also contains a `products` array, which contains the products that the customer can purchase to access the feature.
-
-When the `pricing-dialog` component is installed, a `/lib/autumn/get-paywall-texts.tsx` file is also installed. This file contains the dialog texts for each scenario (depending on the available products), which you can customize how you want.
-
-```tsx /lib/autumn/get-paywall-texts.tsx [expandable]
-import { CheckFeatureFormattedPreview } from "autumn-js";
-
-export const getPaywallDialogTexts = (
-  preview: CheckFeatureFormattedPreview
-) => {
-  const { scenario, products, feature_name } = preview;
-
-  if (products.length == 0) {
-    switch (scenario) {
-      case "usage_limit":
-        return {
-          title: `Feature Unavailable`,
-          message: `You have reached the usage limit for ${feature_name}. Please contact us to increase your limit.`,
-        };
-      default:
-        return {
-          title: "Feature Unavailable",
-          message:
-            "This feature is not available for your account. Please contact us to enable it.",
-        };
-    }
-  }
-
-  const nextProduct = products[0];
-
-  const isAddOn = nextProduct && nextProduct.is_add_on;
-
-  const title = nextProduct.free_trial
-    ? `Start trial for ${nextProduct.name}`
-    : nextProduct.is_add_on
-    ? `Purchase ${nextProduct.name}`
-    : `Upgrade to ${nextProduct.name}`;
-
-  let message = "";
-  if (isAddOn) {
-    message = `Please purchase the ${nextProduct.name} add-on to continue using ${feature_name}.`;
-  } else {
-    message = `Please upgrade to the ${nextProduct.name} plan to continue using ${feature_name}.`;
-  }
-
-  switch (scenario) {
-    case "usage_limit":
-      return {
-        title: title,
-        message: `You have reached the usage limit for ${feature_name}. ${message}`,
-      };
-    case "feature_flag":
-      return {
-        title: title,
-        message: `This feature is not available for your account. ${message}`,
-      };
-    default:
-      return {
-        title: "Feature Unavailable",
-        message: "This feature is not available for your account.",
-      };
-  }
-};
+```typescript Node.js
+import { Autumn as autumn } from "autumn-js";
+const { data, error } = await autumn.check({
+  customer_id: "cus_123",
+  feature_id: "chat_messages",
+  with_preview: true,
+});
 ```
+
+```bash cURL
+curl -X POST https://api.useautumn.com/v1/check \
+-H "Authorization: Bearer am_sk_xxxxxxxxxx" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "cus_123",
+"feature_id": "chat_messages",
+"with_preview": true
+}'
+```
+
+</CodeGroup>
+The preview object that is returned from the check function can be used to control the paywall's contents. preview will be null if the feature is allowed and no paywall should be shown.
+
+Example implementation:
+
+```jsx [expandable]
+import { useAutumn } from "autumn-js/react";
+
+export default function FeatureButton() {
+  const { check, attach } = useAutumn();
+
+  return (
+    <button
+      onClick={async () => {
+        const { data } = await check({
+          featureId: "chat_messages",
+          withPreview: true,
+        });
+
+        if (!data?.allowed && data?.preview) {
+          if (
+            window.confirm(`${data.preview.title}: ${data.preview.message}`)
+          ) {
+            if (data.preview.upgrade_product_id) {
+              await attach({
+                productId: data.preview.upgrade_product_id,
+              });
+            }
+          }
+        }
+      }}
+    >
+      Send Message
+    </button>
+  );
+}
+```
+
+</Tab>
+</Tabs>
+
+If preview is returned, it will contain a scenario enum, which can be one of the following:
+| Scenario | Description |
+| ------------- | --------------------------------------------------------------------------- |
+| `usage_limit` | The customer has hit a usage limit for the feature |
+| `feature_flag` | The customer doesn't have access to the feature |
+
+You can use this to control the paywall's contents.
