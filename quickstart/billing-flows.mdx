@@ -1,7 +1,7 @@
 ---
-title: "Billing Flows"
-sidebarTitle: "Billing Flows"
-description: "Using Autumn to manage billing flows like upgrading, cancelling, paywalls and more"
+title: "Billing Flows via the API"
+sidebarTitle: "with the API"
+description: "Use Autumn's API or SDK to roll your own upgrade/downgrade flows, paywalls and more."
 ---
 
 Autumn handles your billing flows, so you don't need to build and maintain user flows like:
@@ -16,72 +16,150 @@ You can use our customizable shadcn/ui components to handle these out-of-the-box
 
 ## Product Change
 
-The product change dialog will open when a customer wants to change their active product, such as when they upgrade or downgrade, to let them preview how much will be charged, and confirm the change.
+Autumn's `attach` function can be used to enable a product for a customer. Typically when automatically charging a customer's card, you'll want them to confirm the payment. This is useful for upgrade, downgrade or add-on payment flows.
 
-#### Install
+To handle this, call `check`, with `with_preview: true` before the attach call to get purchase preview information that can be displayed to the customer. When they confirm the purchase, you can then call `attach` to enable the product.
 
 <CodeGroup>
-```bash npm
-npx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+
+```typescript React
+import { useAutumn } from "autumn-js/react";
+
+const { check } = useAutumn();
+
+const { data, error } = await check({
+  productId: "pro",
+  withPreview: true,
+});
 ```
 
-```bash pnpm
-pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```typescript Node.js
+import { Autumn as autumn } from "autumn-js";
+
+const { data, error } = await autumn.check({
+  customer_id: "cus_123",
+  product_id: "pro",
+  with_preview: true,
+});
 ```
 
-```bash yarn
-yarn dlx shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
-```
-
-```bash bun
-bunx --bun shadcn@latest add https://ui.useautumn.com/classic/product-change-dialog.json
+```bash cURL
+curl -X POST https://api.useautumn.com/v1/check \
+  -H "Authorization: Bearer am_sk_xxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "cus_123",
+    "product_id": "pro",
+    "with_preview": true
+  }'
 ```
 
 </CodeGroup>
-<img
-  src="/assets/quickstart/ui-components/product-change-dialog.png"
-  alt="Product Change Dialog"
-  className="border"
-/>
 
-This will download the product-change-dialog component in your `/components` directory, under a `/autumn` folder.
-
-You can swap `clean` for `classic` or `dev` to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
-
-#### Usage
-
-Pass in the `product-change-dialog` component to the `AutumnProvider` component. This allows Autumn to automatically open the product change dialog when they want to change their active product.
-
-```jsx
-import ProductChangeDialog from "@components/autumn/product-change-dialog";
-import { useAutumn } from "autumn-js/react";
-
-<Button
-  onClick={async () =>
-    await attach({
-      productId: "pro",
-      dialog: ProductChangeDialog,
-    })
-  }
-/>;
+<CodeGroup>
+```json Upgrade [expandable]
+{
+    "customer_id": "user_1234",
+    "code": "product_found",
+    "product_id": "ultra",
+    "allowed": false,
+    "preview": {
+        "title": "Upgrade to Ultra",
+        "message": "By clicking confirm, you will upgrade your plan to Ultra and the following amount will be charged to your card immediately:",
+        "scenario": "upgrade",
+        "product_id": "ultra",
+        "product_name": "Ultra",
+        "recurring": true,
+        "next_cycle_at": 1750604867000,
+        "current_product_name": "Pro",
+        "items": [
+            {
+                "price": "-$3.53",
+                "description": "Unused time on Pro after 31 May 2025"
+            },
+            {
+                "price": "$7.06",
+                "description": "Remaining time on Ultra after 31 May 2025"
+            }
+        ],
+        "options": [
+            {
+                "feature_id": "seats",
+                "feature_name": "seats",
+                "billing_units": 1,
+                "included_usage": 0,
+                "price": 4
+            }
+        ],
+        "due_today": {
+            "price": 3.53,
+            "currency": "USD"
+        },
+        "due_next_cycle": {
+            "price": 10,
+            "currency": "USD"
+        },
+        "product": {
+            "id": "ultra",
+            "name": "Ultra",
+            "group": null,
+            "env": "sandbox",
+            "is_add_on": false,
+            "is_default": false,
+            "version": 1,
+            "created_at": 1747926427301,
+            "items": [
+                {
+                    "type": "price",
+                    "feature_id": null,
+                    "interval": "month",
+                    "price": 10
+                },
+                {
+                    "type": "priced_feature",
+                    "feature_id": "seats",
+                    "feature_type": "continuous_use",
+                    "included_usage": 0,
+                    "interval": "month",
+                    "price": null,
+                    "tiers": [
+                        {
+                            "to": "inf",
+                            "amount": 4
+                        }
+                    ],
+                    "usage_model": "prepaid",
+                    "billing_units": 1,
+                    "reset_usage_when_enabled": true
+                },
+                {
+                    "type": "feature",
+                    "feature_id": "chat_messages",
+                    "feature_type": "single_use",
+                    "included_usage": 20,
+                    "interval": "month",
+                    "reset_usage_when_enabled": true
+                }
+            ],
+            "free_trial": null
+        }
+    }
+}
 ```
 
-Now when you use the `attach()` hook, Autumn will first call the `check({withPreview: true})` function to preview the purchase. The product change dialog will open if:
+```json New Purchase
+{
+  "customer_id": "user_123",
+  "code": "product_found",
+  "product_id": "ultra",
+  "allowed": false,
+  "preview": null
+}
+```
 
-- The customer needs to input a quantity for their purchase (ie, if the product has prepaid prices)
-- If the customer's payment method is already on file (ie, for upgrades, downgrades or add-ons).
+</CodeGroup>
 
-When the customer confirms the purchase, Autumn will attach the product to the customer.
-
-<Check>
-  If there are no inputs required and it's a new customer (without an existing
-  payment method), the customer will be redirected straight to the Stripe
-  checkout page.
-</Check>
-
-#### Scenarios
-
-The `check({withPreview: true})` call can return a [`preview` object](/api-reference/check#response-feature-preview) that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
+The `check({with_preview: true})` call can return a [`preview` object](/api-reference/check#response-feature-preview) that contains a `scenario` enum, which can be used to control the dialog's contents. `scenario` can be one of the following:
 
 | Scenario    | Description                                                                                               |
 | ----------- | --------------------------------------------------------------------------------------------------------- |
@@ -92,115 +170,106 @@ The `check({withPreview: true})` call can return a [`preview` object](/api-refer
 | `scheduled` | The product is already scheduled to start at a future date (eg, for downgrades), so no changes are needed |
 | `active`    | The customer already has the product active, so no changes are needed                                     |
 
-When you install `product-change-dialog`, a `/lib/autumn/get-product-change-texts.tsx` file is also installed. This file contains the dialog texts for each scenario, which you can customize how you want.
+A preview object will be returned if there's an input from the customer required:
 
-```tsx /lib/autumn/get-product-change-texts.tsx [expandable]
-import { CheckProductFormattedPreview } from "autumn-js";
+- The customer needs to input a quantity for their purchase (ie, if the product has prepaid prices)
+- If the customer's payment method is already on file (ie, for upgrades, downgrades or add-ons).
 
-export const getProductChangeTexts = (
-  preview: CheckProductFormattedPreview
-) => {
-  const {
-    scenario,
-    product_name,
-    recurring,
-    current_product_name,
-    next_cycle_at,
-  } = preview;
+Otherwise, `preview` will be `null`, and you can just call `attach()` directly to generate a checkout URL.
 
-  const nextCycleAtStr = next_cycle_at
-    ? new Date(next_cycle_at).toLocaleDateString()
-    : undefined;
+Now you can either build your own flow from scratch, or pass in a component to the `attach()` function.
 
-  switch (scenario) {
-    case "scheduled":
-      return {
-        title: <p>Scheduled product already exists</p>,
-        message: <p>You already have this product scheduled to start soon.</p>,
-      };
+<Tabs>
+<Tab title="Pass in a component">
+  You can pass in a custom component (such as a dialog) to the `attach()` function. This will pass down `open`, `setOpen` and `preview` props within a `params` object to the component. You can use these to build your own dialog, or customize our [pre-built shadcn/ui dialog](/quickstart/shadcn).
 
-    case "active":
-      return {
-        title: <p>Product already active</p>,
-        message: <p>You are already subscribed to this product.</p>,
-      };
+<CodeGroup>
 
-    case "new":
-      if (recurring) {
-        return {
-          title: <p>Subscribe to {product_name}</p>,
-          message: (
-            <p>
-              By clicking confirm, you will be subscribed to {product_name} and
-              your card will be charged immediately.
-            </p>
-          ),
-        };
-      } else {
-        return {
-          title: <p>Purchase {product_name}</p>,
-          message: (
-            <p>
-              By clicking confirm, you will purchase {product_name} and your
-              card will be charged immedaitely.
-            </p>
-          ),
-        };
-      }
+```jsx PurchaseButton.tsx [expandable]
+import { useAutumn } from "autumn-js/react";
+import CustomDialog from "./CustomDialog";
 
-    case "renew":
-      return {
-        title: <p>Renew</p>,
-        message: (
-          <p>
-            By clicking confirm, you will renew your subscription to{" "}
-            {product_name}.
-          </p>
-        ),
-      };
+export default function PurchaseButton() {
+  const { attach } = useAutumn();
 
-    case "upgrade":
-      return {
-        title: <p>Upgrade to {product_name}</p>,
-        message: (
-          <p>
-            By clicking confirm, you will upgrade your subscription to{" "}
-            {product_name} and your card will be charged immediately.
-          </p>
-        ),
-      };
+  return (
+    <button
+      onClick={async () => {
+        await attach({
+          productId: product.id,
+          dialog: CustomDialog,
+        });
+      }}
+    >
+      Upgrade to Pro
+    </button>
+  );
+}
+```
 
-    case "downgrade":
-      return {
-        title: <p>Downgrade to {product_name}</p>,
-        message: (
-          <p>
-            By clicking confirm, your current subscription to{" "}
-            {current_product_name} will be cancelled and a new subscription to{" "}
-            {product_name} will begin on {nextCycleAtStr}.
-          </p>
-        ),
-      };
+```jsx CustomDialog.tsx [expandable]
+import { Button } from "../ui/button";
+import { useAutumn } from "autumn-js/react";
 
-    case "cancel":
-      return {
-        title: <p>Cancel</p>,
-        message: (
-          <p>
-            By clicking confirm, your subscription to {current_product_name}{" "}
-            will end on {nextCycleAtStr}.
-          </p>
-        ),
-      };
+interface CustomDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  preview: any;
+}
 
-    default:
-      return {
-        title: <p>Change Subscription</p>,
-        message: <p>You are about to change your subscription.</p>,
-      };
-  }
+export const CustomDialog = ({ open, setOpen, preview }: CustomDialogProps) => {
+  const { attach } = useAutumn();
+
+  console.log(preview?.product_id);
+  return (
+    <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full max-w-md items-center z-100">
+      {open && (
+        <div className="flex flex-col gap-2 bg-white p-10 shadow-md border">
+          <p>{preview.scenario}</p>
+          <Button onClick={() => attach({ productId: preview?.product_id })}>
+            Confirm
+          </Button>
+          <Button onClick={() => setOpen(false)}>Close Dialog</Button>
+        </div>
+      )}
+    </div>
+  );
 };
 ```
+
+</CodeGroup>
+</Tab>
+  <Tab title="Build your own">
+
+```jsx [expandable]
+import { useAutumn } from "autumn-js/react";
+
+export default function PurchaseButton() {
+  const { attach } = useAutumn();
+
+  return (
+    <button
+      onClick={async () => {
+        const { data } = await check({
+          productId: product.id,
+          withPreview: true,
+        });
+
+        if (data?.preview && window.confirm(data.preview.scenario)) {
+          await attach({
+            productId: product.id,
+          });
+        }
+      }}
+    >
+      Upgrade to Pro
+    </button>
+  );
+}
+```
+
+  </Tab>
+</Tabs>
 
 ## Paywall
 
@@ -211,7 +280,7 @@ A paywall that prompts users to upgrade to the next tier when they hit a usage l
 <CodeGroup>
 ```bash npm
 npx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
-```
+````
 
 ```bash pnpm
 pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/paywall-dialog.json
@@ -331,45 +400,4 @@ export const getPaywallDialogTexts = (
       };
   }
 };
-```
-
-## Pricing Table
-
-The pricing table component displays your available products, the features available in each and any prices. It synchronizes with the products you define in Autumn.
-
-#### Install
-
-<CodeGroup>
-```bash npm
-npx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
-```
-
-```bash pnpm
-pnpm dlx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
-```
-
-```bash yarn
-yarn dlx shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
-```
-
-```bash bun
-bunx --bun shadcn@latest add https://ui.useautumn.com/classic/pricing-table.json
-```
-
-</CodeGroup>
-
-This will download the product-change-dialog component in your `/components` directory, under a `/autumn` folder.
-
-You can swap `clean` for `classic` or `dev` to use a different style that suits your brand. View them all at [pricecn.com](https://pricecn.com).
-
-#### Usage
-
-```javascript
-import { PricingTable } from "@components/autumn/pricing-table";
-
-export const PricingTableExample = () => (
-  <div>
-    <PricingTable />
-  </div>
-);
 ```

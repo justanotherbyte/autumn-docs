@@ -1,0 +1,136 @@
+---
+title: "useCustomer()"
+description: "Access a customer's state and use it to display information in your React app"
+---
+
+The `useCustomer` hook provides access to customer data and related operations. You can use it from your frontend to retrieve customer information, manage loading states, and create entities.
+
+To use Autumn's React hooks, you should set up the `autumnHandler` in your
+backend and the `<AutumnProvider />` in your frontend, as described in the
+[quickstart guide](/quickstart). This gives the hooks access to the customerId making the request.
+
+## Parameters
+
+<ParamField body="expand" type="string[]">
+  Array of additional data to include in the customer response. Options may
+  include `invoices`, `trials_used` or `rewards`.
+</ParamField>
+
+## `customer`
+
+The customer object containing all customer data.
+
+```jsx
+import { useCustomer } from "autumn-js/react";
+
+export default function CustomerProfile() {
+  const { customer } = useCustomer({ expand: ["invoices"] });
+
+  return (
+    <div>
+      <h2>Customer Profile</h2>
+      <p>Name: {customer?.name}</p>
+      <p>Email: {customer?.email}</p>
+      <p>Balance: {customer?.features.chat_messages?.balance}</p>
+    </div>
+  );
+}
+```
+
+## `refetch`
+
+Function to manually refetch the customer data, eg when updating a customer's usage or balance to display.
+
+```jsx
+import { useCustomer } from "autumn-js/react";
+
+export default function CustomerWithRefresh() {
+  const { customer, refetch } = useCustomer();
+  const { track } = useAutumn();
+
+  const sendMessage = async () => {
+    await track({ featureId: "chat_messages" });
+    await refetch();
+  };
+
+  return <button onClick={sendMessage}>Send Message</button>;
+}
+```
+
+## `createEntity`
+
+Function to create one or more entities for the customer.
+
+```jsx
+import { useCustomer } from "autumn-js/react";
+
+export default function CreateUserSeat() {
+  const { createEntity } = useCustomer();
+
+  const handleCreateSeat = async () => {
+    const { data, error } = await createEntity({
+      id: "user_abc",
+      name: "John Doe",
+      featureId: "seats",
+    });
+    console.log("Created entity:", data);
+  };
+}
+
+return <button onClick={handleCreateSeat}>Create User Seat</button>;
+```
+
+**Parameters**
+
+<ParamField body="id" type="string" required>
+  The ID of the entity to create.
+</ParamField>
+
+<ParamField body="name" type="string">
+  Display name for the entity.
+</ParamField>
+
+<ParamField body="featureId" type="string">
+  The feature ID for the entity being created. Must be a `continuous_use`
+  feature.
+</ParamField>
+
+## `isLoading`
+
+Boolean indicating whether the customer data is currently being fetched.
+
+```jsx
+import { useCustomer } from "autumn-js/react";
+
+export default function CustomerLoader() {
+  const { customer, isLoading } = useCustomer();
+
+  if (isLoading) {
+    return <div>Loading customer data...</div>;
+  }
+
+  return <div>Welcome, {customer?.name}!</div>;
+}
+```
+
+## `error`
+
+Any error that occurred while fetching customer data.
+
+```jsx
+import { useCustomer } from "autumn-js/react";
+
+export default function CustomerWithError() {
+  const { customer, error, isLoading } = useCustomer();
+
+  if (error) {
+    return <div>Error loading customer: {error.message}</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return <div>Customer: {customer?.name}</div>;
+}
+```
