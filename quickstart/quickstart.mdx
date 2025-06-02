@@ -80,9 +80,9 @@ Create an [Autumn Secret API key](https://app.useautumn.com/dev) from the dashbo
 AUTUMN_SECRET_KEY=am_sk_1234567890
 ```
 
-## 4. Mount the Autumn handler
+## 4. Mount the Autumn handler server-side
 
-This creates routes in the `/api/autumn/*` path, used by Autumn's React [hooks](/docs/hooks).
+This creates routes in the `/api/autumn/*` path, used by Autumn's React [hooks](/api-reference/hooks/useAutumn).
 
 The handler takes in an identify function that returns a `customerId`. This is typically your internal user ID or organization ID from your auth provider. These examples use better-auth.
 
@@ -242,7 +242,7 @@ fastify.route({
   Autumn will automatically create a customer if the customer ID is new.
 </Check>
 
-## 5. Set up `<AutumnProvider />`
+## 5. Set up `<AutumnProvider />` client-side
 
 Client side, wrap your application with the `<AutumnProvider>` component, and pass in your backend URL.
 

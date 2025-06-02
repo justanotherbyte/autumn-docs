@@ -47,6 +47,28 @@ Set this if the product is an add on. This will mean it can be purchased togethe
 
 If you have multiple groups of subscriptions, and customers can have a product from each of these subscription groups live at the same time, use this field. All product tiers from the same group should have the same value.
 
+<Info>
+**Example**
+
+Let's say you have two different types of chatbots - one for customer support and one for sales. You want customers to be able to have both types of chatbots at the same time, but only one tier from each type.
+
+You would create two product groups:
+
+1. "Customer Support Chatbots" (group: "support")
+
+   - Basic ($49/month - 1,000 tickets)
+   - Advanced ($149/month - 5,000 tickets)
+   - Enterprise ($399/month - Unlimited tickets)
+
+2. "Sales Chatbots" (group: "sales")
+   - Starter ($79/month - 500 leads)
+   - Growth ($199/month - 2,000 leads)
+   - Enterprise ($499/month - Unlimited leads)
+
+This way, a customer could have both the "Advanced Support" chatbot and the "Sales Assistant" chatbot active at the same time, but they couldn't have both "Basic Support" and "Advanced Support" active together.
+
+</Info>
+
 ## Free Trials
 
 You can set a free trial for a product with prices. This will give customers a set amount of days to try the product for free.

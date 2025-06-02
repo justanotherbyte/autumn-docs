@@ -5,17 +5,20 @@ description: "Easily interact with Autumn's core functions from your React front
 
 The `useAutumn` hook provides access to Autumn's core functions. You can use it from your frontend to handle payments, upgrades/downgrades, check permissions and track usage.
 
-To use Autumn's React hooks, you should set up the `autumnHandler` in your
-backend and the `<AutumnProvider />` in your frontend, as described in the
-[quickstart guide](/quickstart). This gives the hooks access to the customerId making the request.
+<Note>
+  To use Autumn's React hooks, you should set up the `autumnHandler` in your
+  backend and the `<AutumnProvider />` in your frontend, as described in the
+  [quickstart guide](/quickstart/quickstart#4-mount-the-autumn-handler). This
+  gives the hooks access to the customerId making the request.
+</Note>
 
 ## `attach()`
 
 Opens a checkout URL for the user to make a payment. If the payment method already exists, the purchase will be handled automatically (eg, for upgrades/downgrades).
 
 <Tip>
-  You should call the `check` function before calling `attach`, to show
-  confirmation modals to the user before upgrading or downgrading.
+  Check out the [billing flows](/quickstart/billing-flows) page to see how to
+  handle upgrade/downgrade confirmation flows.
 </Tip>
 
 ```jsx
