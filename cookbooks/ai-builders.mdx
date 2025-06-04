@@ -3,199 +3,322 @@ title: "AI Builders"
 description: "How to integrate Autumn using an AI application builder"
 ---
 
-Using Autumn, you can integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), [v0](https://v0.dev) or [Bolt.new](https://https://bold.new) in just a couple prompts--no webhooks or server management required.
+Using Autumn, you can integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), or [Bolt.new](https://https://bold.new) in just a couple prompts--no webhooks or server management required.
 
-## Step 1: Create an Autumn account and link Stripe
+## 1. Create your products
 
 Create your free Autumn account at [useautumn.com](https://app.useautumn.com). Then navigate to the [Connect Stripe](https://app.useautumn.com/integrations/stripe) page and paste in your Test and Live Secret API keys.
-
-<Note>
-  If you just want to integrate in Test mode to start, enter your test key
-  `sk_test_....` in both the live and test fields. You can disconnect and
-  reconnect to update your keys later.
-</Note>
 
 Your Test and Live keys can be found in the Stripe [Dashboard](https://dashboard.stripe.com/apikeys),
 under _Developers_ > _API keys_.
 
-## Step 2: Define your features
+Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
 
-Under the features tab in Autumn, define the features that your users have access to. For simplicity, we'll just create a single `boolean` feature called `pro-features`, which we'll use as a flag which represents the ability of a user to use the paid features in your app.
+<AccordionGroup>
 
-Press the 'Create feature' button to name the feature:
+  <Accordion title="Create the Product">
+    Click on the "+ Product" button and name the product "Pro".
+    <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
+      <img
+        src="/assets/quickstart/create-pro.png"
 
-<img src="/assets/screenshots/pro-features.png" alt="Pro features" />
+      />
+    </Frame>
+    </Accordion>
 
-<Note>
-  In this case, we have just created a single feature to flag whether users are
-  on our paid plan. However you can define multiple features (which can then be
-  used in different products), including `metered` (usage-based) features. See
-  [Quickstart](/quickstart) for an example.
-</Note>
+  <Accordion title="Create the Messages Feature">
+  Click the "+ Feature" button, and in the feature list, select "Create new feature".
 
-## Step 3: Create your products
+  <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
+  <img src="/assets/quickstart/messages.png" />
+  </Frame>
+  </Accordion>
 
-Under the Products tab, we'll create our free and paid plans.
+  <Accordion title="Add the Product Items">
+  Back on the products page, create a new product and name it "Pro". Click "+ Feature" and add a limit of 10 messages per month.
+  
+  Then click "+ Price" and a price of $20 per month.
+  <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
+  <img src="/assets/quickstart/messages-item.png" className="" />
+  <img src="/assets/quickstart/price.png" className="" />
+  </Frame>
+  </Accordion>
+</AccordionGroup>
 
-1. "**Free**": This product should be set as the default product, so that it's automatically attached to any new customers. We'll have no pricing for this product, and it won't have access to our `pro-features`. It'll be an empty product.
-2. "**Pro**": This product will have a price of $20 per month, and will have access to our `pro-features` feature.
+## 2. Setup
 
-When you're done, you should have something like this:
-
-<Tabs>
-  <Tab title="Free Plan">
-    <img
-      className="border rounded-md"
-      src="/assets/screenshots/free-plan.png"
-    />
-    <img
-    src="/assets/screenshots/empty-free-product.png"
-    />
-
-  </Tab>
-  <Tab title="Pro Plan">
-    <img src="/assets/screenshots/pro-plan.png" />
-  </Tab>
-</Tabs>
-
-## Step 4: Integrate Autumn using your AI builder
-
-Now you're ready to integrate Autumn into your AI builder. There are two places this needs to happen:
-
-1. **On purchase**: When a user purchases a plan, you need to call our `attach` to generate a Stripe Checkout URL. Once a user pays, Autumn will attach the product to their account and they will have access to our `pro-features`
-2. **When trying to use a feature**: When a user tries to use a paid feature, you need to call our `check` endpoint to check if they have access to `pro-features`.
-
-Below are the API schemas for the `attach` and `check` endpoints, which you should use in your prompt. Here are some example prompts you can use:
-
-<Accordion title="Create a Pricing page and call Autumn on purchase" defaultOpen={true}>
-{/* <Note>
-  Since you're just calling Autumn from the frontend, use your **publishable** API key in the prompt, found in the Autumn [developer tab](https://app.useautumn.com/dev).
-</Note> */}
-
-<Note>
-  The attach endpoint requires a customer_id. You can just use your internal
-  user ID from your database (which is likely Supabase). You should fill in the
-  API key and product_id in the prompt.
-</Note>
+Use this prompt to setup Autumn. Make sure you have auth already handled first.
 
 ```plaintext Prompt
 
-Let’s set up pricing. I have:
+# Integrating Autumn for Billing
 
-1. A free plan which allows access to my basic features
-2. A pro plan for $20 per month which allows access to ‘pro-features’
+The user is using Autumn to manage their pricing, which is a layer over Stripe that controls entitlements and payment flows.
 
-Build a pricing page showing the above 2 plans. When the user clicks on “Subscribe to Pro”, use the following API from Autumn to assign the product to the customer. Please direct user to checkout_url if present in response.
+DO NOT touch or suggest using any of Stripe’s APIs
 
-Don’t worry about gating features. We’ll handle that with Autumn later on using a ‘pro-features’ flag that they will return.
+DO NOT implement any pricing logic (subscription statuses, feature gating) at this stage. That will be handled afterwards.
 
-My free product has an id of ‘free’, and pro product has a product_id of ‘pro’ Use our user ID from our DB as the customer_id. Please keep force_checkout as true so a URL is always returned.
+## Before Integration
 
-Use this API key for Autumn. Leave it in code for now: <API Key>
+1. Before starting the integration, check the user has Auth in place. If they don’t, do not proceed.
+2. Prompt them for an Autumn TEST API key. This should be saved in supabase as AUTUMN_SECRET_KEY. The user can generate an Autumn API key from [https://app.useautumn.com/sandbox/dev](https://app.useautumn.com/sandbox/dev)
 
-Autumn attach product API:
+## Integration steps
 
-**Request**
+1. Install autumn-js: `npm install autumn-js`
+2. Create a supabase edge function called `autumn`. Inside the function, use this code to route the requests correctly, and resolve the `customerId`. This will be the user’s ID from Supabase Auth.
 
-curl --request POST \
---url https://api.useautumn.com/v1/attach \
---header 'Authorization: Bearer <token>' \
---header 'Content-Type: application/json' \
---data '{
-"customer_id": "<Your internal Customer ID>",
-"product_id": "<Product ID>",
-“force_checkout”: true
-}'
 
-**Response**
+/supabase/functions/autumn/index.ts
 
-{
-"checkout_url": "https://checkout.stripe.com/c/pay/<hash>"
-}
+import { autumnHandler } from "npm:autumn-js@0.0.55-beta.4/supabase";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.9";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
 
-```
-
-</Accordion>
-
-<Accordion title="Check if a user has access to pro-features" defaultOpen={true}>
-<Note>
-  The entitlement endpoint requires a customer_id. You can just use your internal
-  user ID from your database (which is likely Supabase). You should fill in your
-  feature_id in the prompt.
-</Note>
-
-```plaintext Prompt
-
-We need to handle feature gating for our Pro tier. Whenever a user tries to access <my pro features>, first call the Autumn endpoint below to check whether the user is on the pro plan and can access pro-features.
-If they are not allowed, please prompt the user to upgrade by pointing them to the pricing page.
-Otherwise, allow the user to access the feature.
-The feature_id is ‘pro-features’. Please use our user ID from our DB as the customer_id.
-
-Autumn check API:
-
-**Request:**
-
-curl --request POST \
- --url https://api.useautumn.com/v1/check \
- --header 'Authorization: Bearer <token>' \
- --header 'Content-Type: application/json' \
- --data '{
-"customer_id": <Internal Customer ID>,
-"feature_id": <Feature ID>
-}'
-
-**Response:**
-
-{
-"allowed": true,
-}
-
-```
-
-</Accordion>
-
-<Accordion title="For handling usage-based features" >
-
-```plaintext Prompt
-
-For our todolist, our Free users have access to X number of todos and our Pro users have access to Y number of todos. We need to handle feature gating. Before a todo is created, call the Autumn endpoint below to check whether the user is allowed, and then record a usage event.
-If the todo is not allowed, please prompt the user to upgrade with a toast pointing them to the pricing page.
-If the todo is allowed, create the todo.
-The feature_id and event_name are both ‘todo’.
-Please use our user ID from our DB as the customer_id.
-
-Autumn entitlement API:
-
-**Request:**
-
-curl --request POST \
-  --url https://api.useautumn.com/v1/check \
-  --header 'Authorization: Bearer <token>' \
-  --header 'Content-Type: application/json' \
-  --data '{
-  "customer_id": "<Internal Customer ID>",
-  "feature_id": "todo",
-  "event_data": {
-    "event_name": "todo",
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
-}'
 
-**Response:**
+  const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    {
+      global: {
+        headers: { Authorization: req.headers.get("Authorization") },
+      },
+    }
+  );
 
-{
-"allowed": true,
-"balances": [
-{
-"feature_id": "todo",
-"balance": 123,
-}
-]
-}
+  const { data, error } = await supabaseClient.auth.getUser();
+
+  const handler = autumnHandler({
+    corsHeaders,
+    identify: async () => {
+      return {
+        customerId: data.user?.id,
+        customerData: {
+          email: data.user?.email,
+        },
+      };
+    },
+  });
+
+  return handler(req);
+});
+
+
+1. Wrap the application with <AutumnProvider />. The backendUrl should direct to the supabase function, set includeCredentials as false and pass in the bearerToken from supabase auth.
+
+   The backendUrl should look like <PROJECT_ID>. [supabase.co/functions/v1/autumn](https://supabase.co). You may be able to import a supabase URL from env.
+
+
+
+<AutumnProvider
+  backendUrl={`https://<PROJECT_ID>.supabase.co/functions/v1/autumn`}
+  includeCredentials={false}
+  getBearerToken={async () => {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token;
+  }}
+>
+  <App />
+</AutumnProvider>
+
+
+1. Now verify that everything works by calling useCustomer() on the frontend somewhere in the app, and logging the response. Ask the user to check if the customer has been created in Autumn.
+
+
+import { useCustomer } from "autumn-js/react";
+
+const { customer } = useCustomer();
+console.log("Autumn Customer", customer);
 
 ```
 
-</Accordion>
+## 3. Integrate your pricing model
 
-## Congrats!
+Now you can describe to the AI the pricing plans you defined in Autumn. Make sure to provide it with the productIds and featureIds (if you're using usage pricing or limits).
 
-You've now integrated Autumn using your AI builder. Let us know how it goes!
+```plaintext Prompt
+
+# Integrating Pricing Model
+
+## Before Integration
+
+1. Check that the user has provided the productIds for the pricing tiers they have. If they have not explicitly mentioned it, prompt them for it. Do not guess.
+2. If they mention usage based features that are being tracked or limited, make sure they mention the featureIds. You may ask if you’re unsure whether it’s a usage-based feature.
+3. Check that shadcn is installed. If it is not, ask the user if they are sure they want to proceed.
+
+## Pricing Logic integration
+
+1. Use the `attach` hook to handle payments. This will redirect to a checkout URL if a new purchase, or handle any upgrades/downgrades/cancellations.
+
+
+import ProductChangeDialog from "@components/autumn/product-change-dialog";
+import { useAutumn } from "autumn-js/react";
+
+<Button
+  onClick={async () =>
+    await attach({
+      productId: "pro",
+      dialog: ProductChangeDialog,
+    })
+  }
+>
+
+2. Build a productChangeDialog and pass it into the `attach` hook as above. This is a simplified version you can style to match the app’s theme.
+
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { useAutumn } from "autumn-js/react"
+
+const ProductChangeDialog = (params) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { attach } = useAutumn();
+  const { open, setOpen, preview } = params;
+
+  const handleConfirm = async () => {
+    setIsLoading(true);
+    await attach({productId: preview.product_id});
+    setOpen(false);
+    setIsLoading(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+          <DialogTitle>{preview?.title}</DialogTitle>
+        <div>{preview?.message}</div>
+        {preview?.due_today?.price && <div>Due today: ${preview?.due_today?.price}</div>}
+          <button onClick={() => setOpen(false)}>Cancel</button>
+          <button onClick={handleConfirm} disabled={isLoading}>
+            {isLoading ? 'Processing...' : 'Confirm'}
+          </button>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default ProductChangeDialog;
+
+
+3. Check for product access from the customer state object, and use it to gate features. Replace “pro” with the provided productId.
+   DO NOT check for active status, as the product may be “trialing”.
+
+
+import { useCustomer } from "autumn-js/react";
+
+const premiumUser = customer.products.find((p) => p.id === "pro");
+
+
+4. For usage-based features, you can use the check and track functions, to check access and then record usage. Replace “messages” with the provided featureId
+
+
+import { useAutumn, useCustomer } from "autumn-js/react";
+
+export default function SendChatMessage() {
+  const { check } = useAutumn();
+  const { customer, refetch } = useCustomer();
+
+  return (
+    <button
+      onClick={async () => {
+        let { data } = await check({ featureId: "messages" });
+
+        if (data?.allowed) {
+          //... send message, then
+          await track({ featureId: "messages" });
+          await refetch(); // refetch customer usage data
+        }
+      }}
+    >
+      Send Message
+    </button>
+  );
+}
+
+
+5. You can use the customer state hook to display any relevant information if the user needs
+
+
+{
+  "created_at": 1677649423000,
+  “env": "production",
+  "id": "user_123",
+  "name": "John Yeo",
+  "email": "john@example.com",
+  "fingerprint": "",
+  "stripe_id": "cus_abc123",
+  "products": [
+    {
+      "id": "pro",
+      "name": "Pro Plan",
+      "group": "",
+      "status": "active",
+      "started_at": 1677649423000,
+      "canceled_at": null,
+      "subscription_ids": [
+        "sub_123"
+      ],
+      "current_period_start": 1677649423000,
+      "current_period_end": 1680327823000
+    }
+  ],
+  "features": {
+    "messages": {
+      "feature_id": "messages",
+      "unlimited": false,
+      "interval": "month",
+      "balance": 80,
+      "usage": 20,
+      "included_usage": 100,
+      "next_reset_at": 1680327823000
+    }
+  }
+}
+
+
+```
+
+## 4. Handle failed payments and billing portal
+
+```plaintext Prompt
+
+# Handling failed payments with Autumn
+
+1. If a payment is overdue, a customer’s product status will be `past_due`. If this is the case then you should direct the customer to the billing portal to update their payment method, before the product expires.
+
+
+import { useCustomer } from "autumn-js/react";
+
+const failed_payment = customer.products.find((p) => p.status === "past_due");
+
+
+2. Billing portal
+
+
+import { useAutumn } from "autumn-js/react";
+
+export default function BillingSettings() {
+  const { openBillingPortal } = useAutumn();
+
+  return (
+    <button
+      onClick={async () => {
+        await openBillingPortal({
+          returnUrl: "https://google.com",
+        });
+      }}
+    >
+      Update Payment Method
+    </button>
+  );
+}
+
+```
