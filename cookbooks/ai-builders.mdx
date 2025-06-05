@@ -5,6 +5,16 @@ description: "How to integrate Autumn using an AI application builder"
 
 Using Autumn, you can integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), or [Bolt.new](https://https://bold.new) in just a couple prompts--no webhooks or server management required.
 
+<iframe
+  width="560"
+  height="315"
+  src="https://youtu.be/Yiz_7KQXI-k"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
 ## 1. Create your products
 
 Create your free Autumn account at [useautumn.com](https://app.useautumn.com). Then navigate to the [Connect Stripe](https://app.useautumn.com/integrations/stripe) page and paste in your Test and Live Secret API keys.
@@ -72,7 +82,7 @@ DO NOT implement any pricing logic (subscription statuses, feature gating) at th
 
 /supabase/functions/autumn/index.ts
 
-import { autumnHandler } from "npm:autumn-js@0.0.55-beta.4/supabase";
+import { autumnHandler } from "npm:autumn-js/supabase";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.9";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -143,7 +153,7 @@ console.log("Autumn Customer", customer);
 
 ## 3. Integrate your pricing model
 
-Now you can describe to the AI the pricing plans you defined in Autumn. Make sure to provide it with the productIds and featureIds (if you're using usage pricing or limits).
+Now you can describe to the AI the pricing plans you defined in Autumn (eg free tier has 3 messages, pro tier is 5 usd per month etc). Make sure to provide it with the productIds and featureIds (if you're using usage pricing or limits).
 
 ```plaintext Prompt
 
