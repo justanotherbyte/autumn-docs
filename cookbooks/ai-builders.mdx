@@ -3,9 +3,7 @@ title: "AI Builders"
 description: "How to integrate Autumn using an AI application builder"
 ---
 
-Using Autumn, you can integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), or [Bolt.new](https://https://bold.new) in just a couple prompts--no webhooks or server management required.
-
-This guide is only for applications that use Supabase functions as their backend.
+Using Autumn, you can integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), [Bolt.new](https://https://bolt.new) or [Replit](https://replit.com) in just a couple prompts--no webhooks or server management required.
 
 <iframe
   width="560"
@@ -61,7 +59,9 @@ Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
 
 Use this prompt to setup Autumn. Make sure you have auth already handled first.
 
-```plaintext Prompt
+<CodeGroup>
+
+```plaintext Lovable / Bolt.new
 
 # Integrating Autumn for Billing
 
@@ -153,11 +153,79 @@ console.log("Autumn Customer", customer);
 
 ```
 
+```plaintext Replit
+
+# Integrating Autumn for Billing
+
+The user is using Autumn to manage their pricing, which is a layer over Stripe that controls entitlements and payment flows.
+
+DO NOT touch or suggest using any of Stripe’s APIs
+
+DO NOT implement any pricing logic (subscription statuses, feature gating) at this stage. That will be handled afterwards.
+
+## Before Integration
+
+1. Before starting the integration, check the user has Auth in place. If they don’t, do not proceed.
+2. Prompt them for an Autumn TEST API key. This should be saved in the env as AUTUMN_SECRET_KEY. The user can generate an Autumn API key from [https://app.useautumn.com/sandbox/dev](https://app.useautumn.com/sandbox/dev)
+
+## Integration steps
+
+1. Install autumn-js: `npm install autumn-js`
+2. Mount the Autumn handler server-side, which will be used by Autumn’s frontend react hooks. The handler takes in an identify function that returns a customerId, which should be resolved from auth. The below is an example from better auth, but you should use Replit Auth
+
+//index.ts
+
+import { autumnHandler } from "autumn-js/express";
+
+app.use(express.json()); // need to parse request body before autumnHandler
+  app.use(
+    "/api/autumn",
+    autumnHandler({
+      identify: async (req: any) => {
+        if (!req.isAuthenticated() || !req.user?.claims?.sub) {
+          throw new Error("User not authenticated");
+        }
+
+        const user = await storage.getUser(req.user.claims.sub);
+        return {
+          customerId: req.user.claims.sub,
+          customerData: {
+            name: user?.firstName && user?.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : user?.email?.split('@')[0] || "User",
+            email: user?.email || req.user.claims.email,
+          },
+        };
+      },
+    })
+  );
+
+3. Wrap the frontend application with <AutumnProvider />. The backendUrl should direct to the server. If this is a fullstack app then an empty string is okay.
+
+<AutumnProvider
+backendUrl=””
+>
+<App />
+</AutumnProvider>
+
+4. Now verify that everything works by calling useCustomer() on the frontend somewhere in the app, and logging the response. Ask the user to check if the customer has been created in Autumn.
+
+import { useCustomer } from "autumn-js/react";
+
+const { customer } = useCustomer();
+console.log("Autumn Customer", customer);
+
+```
+
+</CodeGroup>
+
 ## 3. Integrate your pricing model
 
-Now you can describe to the AI the pricing plans you defined in Autumn (eg free tier has 3 messages, pro tier is 5 usd per month etc). Make sure to provide it with the productIds and featureIds (if you're using usage pricing or limits).
+Now you can describe to the AI the pricing plans you defined in Autumn (eg free tier has 3 messages, pro tier is 5 usd per month etc). Make sure to provide it with the productIds and featureIds (if you're using usage pricing or limits). Then, paste in the prompt below.
 
-```plaintext Prompt
+> I have a free and a pro tier. My free tier has 3 messages and pro has 100 messages for $10 per month. The product IDs are "free" and "pro", and the feature ID is "messages".
+
+```plaintext
 
 # Integrating Pricing Model
 
@@ -300,7 +368,9 @@ export default function SendChatMessage() {
 
 ## 4. Handle failed payments and billing portal
 
-```plaintext Prompt
+Lastly, handle what should happen when a user's payment fails and redirect them to the billing portal to manage or cancel their subscription.
+
+```plaintext
 
 # Handling failed payments with Autumn
 
