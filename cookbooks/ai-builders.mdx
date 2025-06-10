@@ -3,7 +3,7 @@ title: "AI Builders"
 description: "How to integrate Autumn using an AI application builder"
 ---
 
-Using Autumn, you can integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), [Bolt.new](https://https://bolt.new) or [Replit](https://replit.com) in just a couple prompts--no webhooks or server management required.
+Using Autumn, you can reliably integrate Stripe with your AI application builder like [Lovable](https://www.lovable.dev), [Bolt.new](https://https://bolt.new), [Replit](https://replit.com) or [v0](https://v0.dev) in just a couple prompts--no webhooks or server management required.
 
 <iframe
   width="560"
@@ -171,7 +171,7 @@ DO NOT implement any pricing logic (subscription statuses, feature gating) at th
 ## Integration steps
 
 1. Install autumn-js: `npm install autumn-js`
-2. Mount the Autumn handler server-side, which will be used by Autumn’s frontend react hooks. The handler takes in an identify function that returns a customerId, which should be resolved from auth. The below is an example from better auth, but you should use Replit Auth
+2. Mount the Autumn handler server-side, which will be used by Autumn’s frontend react hooks. The handler takes in an identify function that returns a customerId, which should be resolved from auth (likely Replit Auth).
 
 //index.ts
 
@@ -209,6 +209,91 @@ backendUrl=””
 </AutumnProvider>
 
 4. Now verify that everything works by calling useCustomer() on the frontend somewhere in the app, and logging the response. Ask the user to check if the customer has been created in Autumn.
+
+import { useCustomer } from "autumn-js/react";
+
+const { customer } = useCustomer();
+console.log("Autumn Customer", customer);
+
+```
+
+```plaintext v0
+
+# Integrating Autumn for Billing
+
+The user is using Autumn to manage their pricing, which is a layer over Stripe that controls entitlements and payment flows.
+
+DO NOT touch or suggest using any of Stripe’s APIs
+
+DO NOT implement any pricing logic (subscription statuses, feature gating) at this stage. That will be handled afterwards.
+
+## Before Integration
+
+1. Before starting the integration, check the user has Auth in place. If they don’t, do not proceed.
+2. Prompt them for an Autumn TEST SECRET API key. This should be saved in the env variables as AUTUMN_SECRET_KEY, so tell them to do so. The user can generate an Autumn API key from [https://app.useautumn.com/sandbox/dev](https://app.useautumn.com/sandbox/dev)
+
+## Integration steps
+
+1. Install autumn-js: `npm install autumn-js`
+2. Mount the Autumn handler server-side, which will be used by Autumn’s frontend react hooks. The handler takes in an identify function that returns a customerId, which should be resolved from auth.
+
+// app/api/autumn/[...all]/route.ts
+
+import { autumnHandler } from "autumn-js/next"
+
+import { getSession } from "@/lib/session"
+
+export const { GET, POST } = autumnHandler({
+
+identify: async (request) => {
+
+// Use our existing session management
+
+const cookieHeader = request.headers.get("cookie") || ""
+
+const requestHeaders = new Headers()
+
+ requestHeaders.set("cookie", cookieHeader)
+
+// Get the user session
+
+const session = await getSession()
+
+if (!session) {
+
+return null
+
+ }
+
+// Return the customer information for Autumn
+
+return {
+
+ customerId: session.userId,
+
+ customerData: {
+
+ name: session.name,
+
+ email: session.email,
+
+ },
+
+ }
+
+ },
+
+})
+
+3.Wrap the frontend application with <AutumnProvider />. The backendUrl should direct to the server. If this is a fullstack app then an empty string is okay.
+
+<AutumnProvider
+backendUrl=””
+>
+<App />
+</AutumnProvider>
+
+4.Now verify that everything works by calling useCustomer() on the frontend somewhere in the app, and logging the response. Ask the user to check if the customer has been created in Autumn.
 
 import { useCustomer } from "autumn-js/react";
 

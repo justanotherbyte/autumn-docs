@@ -251,9 +251,10 @@ Client side, wrap your application with the `<AutumnProvider>` component, and pa
   the same as your frontend URL (eg http://localhost:3000).
 </Note>
 
-```bash .env
-AUTUMN_BACKEND_URL=http://localhost:8000
-```
+<CodeGroup>
+  ```bash .env (Next.js) NEXT_PUBLIC_AUTUMN_BACKEND_URL=http://localhost:3000
+  ``` ```bash .env (Vite) AUTUMN_BACKEND_URL=http://localhost:8000 ```
+</CodeGroup>
 
 ```jsx
 import { AutumnProvider } from "autumn-js/react";
