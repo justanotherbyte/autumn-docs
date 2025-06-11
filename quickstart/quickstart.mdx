@@ -112,7 +112,7 @@ export const { GET, POST } = autumnHandler({
 ```
 
 ```typescript React Router
-// app/routes/api.autumn.$.ts
+// app/routes/api.autumn.tsx
 
 import { autumnHandler } from "autumn-js/react-router";
 import { auth } from "../lib/auth.server";
@@ -132,6 +132,14 @@ export const { loader, action } = autumnHandler({
     };
   },
 });
+
+//routes.ts
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
+
+export default [
+  index("routes/home.tsx"),
+  route("api/autumn/*", "routes/api.autumn.tsx"),
+] satisfies RouteConfig;
 ```
 
 ```typescript Tanstack Start
