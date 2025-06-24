@@ -90,12 +90,12 @@ The `check({withPreview: true})` call can return a [`preview` object](/api-refer
 | `scheduled` | The product is already scheduled to start at a future date (eg, for downgrades), so no changes are needed |
 | `active`    | The customer already has the product active, so no changes are needed                                     |
 
-When you install `attach-dialog`, a `/lib/autumn/attach-content.tsx` file is also installed. This file contains the dialog texts for each scenario, which you can customize how you want.
+When you install `attach-dialog`, a `@/lib/autumn/attach-content.tsx` file is also installed. This file contains the dialog texts for each scenario, which you can customize how you want.
 
 ```tsx /lib/autumn/get-attach-content.tsx [expandable]
-import { CheckProductFormattedPreview } from "autumn-js";
+import { CheckProductPreview } from "autumn-js";
 
-export const getAttachContent = (preview: CheckProductFormattedPreview) => {
+export const getAttachContent = (preview: CheckProductPreview) => {
   const {
     scenario,
     product_name,
@@ -236,7 +236,7 @@ This will download the `check-dialog` component in your `/components` directory,
 Pass in the `check-dialog` component to the `check` function (exported from the `useAutumn` hook).
 
 ```jsx
-import CheckDialog from "@components/autumn/check-dialog";
+import CheckDialog from "@/components/autumn/check-dialog";
 import { useAutumn } from "autumn-js/react";
 
 const { check } = useAutumn();
@@ -267,11 +267,9 @@ The `preview` object also contains a `products` array, which contains the produc
 When the `check-dialog` component is installed, a `/lib/autumn/check-content.tsx` file is also installed. This file contains the dialog texts for each scenario (depending on the available products), which you can customize how you want.
 
 ```tsx /lib/autumn/get-check-content.tsx [expandable]
-import { CheckFeatureFormattedPreview } from "autumn-js";
+import { CheckFeaturePreview } from "autumn-js";
 
-export const getPaywallDialogTexts = (
-  preview: CheckFeatureFormattedPreview
-) => {
+export const getPaywallDialogTexts = (preview: CheckFeaturePreview) => {
   const { scenario, products, feature_name } = preview;
 
   if (products.length == 0) {
