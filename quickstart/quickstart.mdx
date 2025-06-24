@@ -1,7 +1,7 @@
 ---
 title: "Quickstart"
 sidebarTitle: "Quickstart"
-description: "Implement your app's pricing model in under 5 minutes"
+description: "Implement your app's payments and pricing model in under 5 minutes"
 ---
 
 Create your [Autumn account](https://app.useautumn.com/) and let's create the pricing for a premium AI chatbot.
@@ -80,9 +80,9 @@ Create an [Autumn Secret API key](https://app.useautumn.com/dev) from the dashbo
 AUTUMN_SECRET_KEY=am_sk_1234567890
 ```
 
-## 4. Mount the Autumn handler server-side
+## 4. Mount the Autumn handler
 
-This creates routes in the `/api/autumn/*` path, which will be used by Autumn's frontend React [hooks](/api-reference/hooks/useAutumn). These routes interact with Autumn's API (eg `attach`, `check`, `track`, `customer`) to handle the billing logic.
+This creates server-side routes in the `/api/autumn/*` path, which will be used by Autumn's frontend React [library](/api-reference/hooks/useAutumn). These routes interact with Autumn's API (eg `attach`, `check`, `track`, `customer`) to handle the billing logic.
 
 The handler takes in an identify function that returns a `customerId`. This is typically your internal user ID or organization ID from your auth provider. These examples use better-auth.
 
@@ -245,12 +245,57 @@ fastify.route({
 });
 ```
 
+```typescript Supabase
+//supabase/functions/autumn/index.ts
+
+import { autumnHandler } from "npm:autumn-js/supabase";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.9";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  //supabase auth
+  const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    {
+      global: {
+        headers: { Authorization: req.headers.get("Authorization") },
+      },
+    }
+  );
+
+  const { data, error } = await supabaseClient.auth.getUser();
+
+  const handler = autumnHandler({
+    corsHeaders,
+    identify: async () => {
+      return {
+        customerId: data.user?.id,
+        customerData: {
+          email: data.user?.email,
+        },
+      };
+    },
+  });
+
+  return handler(req);
+});
+```
+
 </CodeGroup>
 <Check>
   Autumn will automatically create a customer if the customer ID is new.
 </Check>
 
-## 5. Set up `<AutumnProvider />` client-side
+## 5. Set up `<AutumnProvider />`
 
 Client side, wrap your application with the `<AutumnProvider>` component, and pass in your backend URL. This lets Autumn know how to reach the backend handler you mounted in the previous step.
 
@@ -261,17 +306,18 @@ Client side, wrap your application with the `<AutumnProvider>` component, and pa
 
 <CodeGroup>
 
-```bash .env (Next.js)
+```bash Next.js
 NEXT_PUBLIC_AUTUMN_BACKEND_URL=http://localhost:3000
 ```
 
-```bash .env (Vite)
-AUTUMN_BACKEND_URL=http://localhost:8000
+```bash Vite
+VITE_AUTUMN_BACKEND_URL=http://localhost:8000
 ```
 
 </CodeGroup>
 
-```jsx
+<CodeGroup>
+```jsx Next.js
 import { AutumnProvider } from "autumn-js/react";
 
 export default function RootLayout({
@@ -282,7 +328,7 @@ export default function RootLayout({
   return (
     <html>
       <body>
-        <AutumnProvider backendUrl={process.env.AUTUMN_BACKEND_URL}>
+        <AutumnProvider backendUrl={process.env.NEXT_PUBLIC_AUTUMN_BACKEND_URL}>
           {children}
         </AutumnProvider>
       </body>
@@ -291,6 +337,28 @@ export default function RootLayout({
 }
 ```
 
+```jsx Vite
+import { AutumnProvider } from "autumn-js/react";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode,
+}) {
+  return (
+    <html>
+      <body>
+        <AutumnProvider backendUrl={import.meta.env.VITE_AUTUMN_BACKEND_URL}>
+          {children}
+        </AutumnProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+</CodeGroup>
+
 <Info>
   `AutumnProvider` can also take in a `getBearerToken` function, which should be used
   for auth frameworks with separate backend and frontend, eg using Clerk with
@@ -298,9 +366,11 @@ export default function RootLayout({
 
 </Info>
 
-## 6. Set up Payments
+## 6. Enable Payments
 
 Call `attach` to redirect the customer to a Stripe checkout page when they want to purchase the Pro plan. Once they've paid, Autumn will grant them access to the features we defined.
+
+You can check this is successful in the dashboard under the customers tab.
 
 <Warning>
   Make sure you've pasted in your [Stripe test secret
@@ -326,7 +396,7 @@ export default function PurchaseButton() {
 }
 ```
 
-## 7. Integrate Pricing Logic
+## 7. Handle Pricing Logic
 
 There are 3 key functions you need to handle the billing logic once the customer has purchased the Pro plan:
 
