@@ -17,9 +17,28 @@ Call `attach` from your application with:
 - a `customer_id` (your internal user ID)
 - the Autumn `product_id` (defined when the product was created).
 
-You can redirect the customer to the `checkout_url` returned to complete the payment.
+If there's no existing payment method for the customer, a checkout URL will be generated.
 
 <CodeGroup>
+
+```tsx React
+import { useAutumn } from "autumn-js/react";
+
+const { attach } = useAutumn();
+
+<Button onClick={() => attach({ product_id: "pro" })} />;
+```
+
+```javascript Node.js
+import { Autumn } from "autumn-js";
+
+const autumn = new Autumn({ secretKey: "am_sk_..." });
+
+const { data } = await autumn.attach({
+  customer_id: "user_123",
+  product_id: "pro",
+});
+```
 
 ```shell cURL
 curl --request POST \
@@ -32,23 +51,27 @@ curl --request POST \
 }'
 ```
 
-```javascript Typescript
-import { Autumn } from "autumn-js";
-
-const autumn = new Autumn({ secretKey: "am_sk_..." });
-
-const { data } = await autumn.attach({
-  customer_id: "user_123",
-  product_id: "pro",
-});
-```
-
 </CodeGroup>
-```json
+
+<CodeGroup>
+```json Checkout required
 {
-  "checkout_url": "https://checkout.stripe.com/....."
+  "checkout_url": "https://checkout.stripe.com/cx/...",
+  "customer_id": "123",
+  "product_ids": ["pro"],
+  "code": "checkout_created",
+  "message": "Successfully created checkout for customer 123, product(s) Pro",
 }
 ```
+```json Payment method exists
+{
+  "customer_id": "123",
+  "product_ids": ["free"],
+  "code": "downgrade_scheduled",
+  "message": "Successfully downgraded from Ultra to Free"
+}
+```
+</CodeGroup>
 
 <Tip>
   If the `customer_id` you send doesn't already exist, Autumn will automatically
