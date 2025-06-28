@@ -379,10 +379,10 @@ You can check this is successful in the dashboard under the customers tab.
 </Warning>
 
 ```jsx React {9}
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function PurchaseButton() {
-  const { attach } = useAutumn();
+  const { attach } = useCustomer();
 
   return (
     <button
@@ -406,23 +406,22 @@ There are 3 key functions you need to handle the billing logic once the customer
 
 <CodeGroup>
 
-```jsx Client {11, 15, 16}
+```jsx Client
 import { useAutumn, useCustomer } from "autumn-js/react";
 
 export default function SendChatMessage() {
-  const { check } = useAutumn();
-  const { customer, refetch } = useCustomer();
+  const { customer, allowed, refetch } = useCustomer();
 
   return (
     <>
       <button
         onClick={async () => {
-          let { data } = await check({ featureId: "messages" });
-
-          if (data?.allowed) {
+          if (allowed({ featureId: "messages" })) {
             //... send chatbot message server-side, then
             await refetch(); // refetch customer usage data
-            alert("Remaining messages: " + customer.features.messages.balance);
+            alert(
+              "Remaining messages: " + customer?.features.messages?.balance
+            );
           } else {
             alert("You're out of messages");
           }
@@ -435,11 +434,11 @@ export default function SendChatMessage() {
 }
 ```
 
-```typescript Server {3}
+```typescript Server
 import { Autumn as autumn } from "autumn-js";
 
 autumn.track({
-  customer_id: "user_123", // same id as in the autumn handler
+  customer_id: "user_123", // same internal user id as in the autumn handler
   feature_id: "messages",
 });
 ```

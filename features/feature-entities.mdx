@@ -5,28 +5,62 @@ description: "Learn how to use feature entities to track balances per separate e
 
 Feature entities are used to keep track of sub-balances for a feauture. For example, you may have a product that allows 500 credits **per user** per month.
 
-To start, add the feature entity as a product item in the Autumn dashboard.
+## Product setup
 
-1. Go to the [Products Page](https://app.useautumn.com/products) and click into the product you want to add a feature entity to.
-2. Click the "+ Feature" button.
-3. Select the feature to track (eg, `credits`)
-4. Click the elipsis on the right of the feature selector and click "Add per Feature Entity"
-5. Select the entity you want to add (eg, per `user_id`)
-6. Define any included usage (eg, 500 credits per user) and add the product item.
+There are two ways you can handle entities depending on your use case.
+
+1. **Entity product items**: this is the simplest way of handling entities, and keeps everything under 1 subscription.
+2. **Attaching a product to an entity**: if an entity can have its own subscription tiers, then you can attach a product directly at the entity level by passing the entity ID into an attach function. Each will be under its own subscription in Stripe with the billing cycles synced.
+
+<Info>
+**Example**
+
+Max has a team product, where each seat under the team gets access to 30 meeting note summaries per month. Since his seats all cost the same and get access to the same features, he can create a product with entity items.
+
+Jamie's also has a team product, but each user can either be under a Free tier or a Pro tier, where the pro tier gives the seat access to more meeting note summaries. In this case, Jamie can create a free tier and pro tier as normal, without entity items, and just `attach` these products at the entity level.
+
+</Info>
+
+#### Entity product items
 
 ## Creating entities
 
 You can manage feature entities via the `entities` route. This can be used to create, update and delete entities, such as when a seat or workspace is added or removed.
 
-<Check>
-  When you create an entity, a **usage event** will automatically be sent
-  that increments the count of the number of entities (eg seats) being used.
+When you create an entity, a **usage event** will automatically be sent that increments the count of the number of entities (eg seats) being used.
 
 This means if you create 2 entities for "seats", your usage of "seats" will be 2, allowing Autumn to bill accordingly if there's a price set.
 
-</Check>
+<Tip>
+  Creating an entity is only a required step if the entity is billable (eg if
+  there's a price per seat). If the entities don't have an associated price,
+  then you can skip this step and auto-create it from the `check` and `track`
+  functions.
+</Tip>
 
-        <CodeGroup>
+ <CodeGroup>
+
+```tsx React
+import { useCustomer } from "autumn-js/react";
+
+const { createEntity } = useCustomer();
+
+const { data, error } = await createEntity({
+  id: "user_abc",
+  name: "John Doe",
+  featureId: "seats",
+});
+```
+
+```javascript Node.js
+import { Autumn as autumn } from "autumn-js";
+
+const entity = await autumn.entities.create("org_123", {
+  id: "user_abc",
+  name: "Brandon Yeo",
+  feature_id: "seats",
+});
+```
 
 ```bash cURL
 curl -X POST "https://api.useautumn.com/v1/customers/org_123/entities" \
@@ -39,22 +73,7 @@ curl -X POST "https://api.useautumn.com/v1/customers/org_123/entities" \
 }'
 ```
 
-```javascript Typescript
-import { Autumn as autumn } from "autumn-js";
-
-const entity = await autumn.entities.create("org_123", {
-  id: "user_abc",
-  name: "Brandon Yeo",
-  feature_id: "seats",
-});
-```
-
 </CodeGroup>
-```json
-{
-  "success": true
-}
-```
 
 ## Managing entity balances
 
@@ -63,6 +82,20 @@ Just like with normal features, you can check feature access and track usage eve
 #### Check feature access
 
 <CodeGroup>
+
+```tsx React
+
+```
+
+```javascript Node.js
+import { Autumn as autumn } from "autumn-js";
+
+const { allowed } = await autumn.check({
+  customer_id: "org_123",
+  feature_id: "ai-messages",
+  entity_id: "user_abc",
+});
+```
 
 ```bash cURL {7-8}
 curl -X POST "https://api.useautumn.com/v1/check" \
@@ -73,16 +106,6 @@ curl -X POST "https://api.useautumn.com/v1/check" \
 "feature_id": "ai-messages",
 "entity_id": "user_abc"
 }'
-```
-
-```javascript Typescript {9-10}
-import { Autumn as autumn } from "autumn-js";
-
-const { allowed } = await autumn.check({
-  customer_id: "org_123",
-  feature_id: "ai-messages",
-  entity_id: "user_abc",
-});
 ```
 
 </CodeGroup>
@@ -121,7 +144,7 @@ const event = await autumn.track({
 A customer-level balances is the total balance for the feature across all entities. Entity-level balances are the balance for a specific entity. You can check access and track usage events either at the customer-level or entity-level.
 
 <Info>
-**Example use case**
+**Example**
 
 You have a product that allows 500 credits per user per month. However, the credits are shared across all users in the account.
 
@@ -131,58 +154,11 @@ You can create a feature entity for "seats" and then check access and send usage
 
 To use top-level balances, just omit the `entity_id` from your check request.
 
-<CodeGroup>
-
-```bash cURL
-curl -X POST "https://api.useautumn.com/v1/check" \
--H "Authorization: Bearer am_sk_1234567890" \
--H "Content-Type: application/json" \
--d '{
-"customer_id": "org_123",
-"feature_id": "ai-messages"
-}'
-```
-
-```javascript Typescript
-import { Autumn as autumn } from "autumn-js";
-
-const { allowed } = await autumn.check({
-  customer_id: "org_123",
-  feature_id: "ai-messages",
-});
-```
-
-</CodeGroup>
-
-And similarly for usage events.
-
 <Note>
-This will increment the usage counter for the top-level balance, and also deduct from the first-created entity so that the sum of the the entity balances is always the same as the top-level balance.
+  This will increment the usage counter for the top-level balance, and also
+  deduct from the first-created entity so that the sum of the the entity
+  balances is always the same as the top-level balance.
 </Note>
-<CodeGroup>
-
-```bash cURL
-curl -X POST "https://api.useautumn.com/v1/track" \
--H "Authorization: Bearer am_sk_1234567890" \
--H "Content-Type: application/json" \
--d '{
-"customer_id": "org_123",
-"feature_id": "ai-messages",
-"value": 10
-}'
-```
-
-```javascript Typescript
-import { Autumn as autumn } from "autumn-js";
-
-const event = await autumn.track({
-  customer_id: "org_123",
-  feature_id: "ai-messages",
-  value: 10,
-});
-```
-
-</CodeGroup>
 
 ## Deleting Entities
 
