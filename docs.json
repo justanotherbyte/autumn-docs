@@ -73,13 +73,12 @@
           {
             "group": "Hooks",
             "pages": [
-              "api-reference/hooks/useAutumn",
               "api-reference/hooks/useCustomer",
               "api-reference/hooks/useEntity"
             ]
           },
           {
-            "group": " ",
+            "group": "Core",
             "pages": [
               "api-reference/attach",
               "api-reference/check",

@@ -63,6 +63,12 @@ paths:
                   description: If using [entities](/features/feature-entities), the entity to attach the product to.
                 customer_data:
                   $ref: "#/components/schemas/CustomerData"
+                metadata:
+                  type: object
+                  description: Additional metadata to pass onto Stripe.
+                checkout_session_params:
+                  type: object
+                  description: Additional parameters to pass onto Stripe when creating the checkout session.
       x-code-samples:
         - lang: typescript
           label: required
@@ -561,6 +567,9 @@ paths:
                 entity_id:
                   type: string
                   description: If using [entities](/features/feature-entities), the entity to cancel the product for.
+                cancel_immediately:
+                  type: boolean
+                  description: Whether to cancel the product immediately. If false, the product will be cancelled at the end of the billing cycle.
       x-code-samples:
         - lang: typescript
           label: required
@@ -605,28 +614,6 @@ paths:
       responses:
         "200":
           description: Product cancelled successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    description: Indicates if the cancellation was successful
-                  message:
-                    type: string
-                    description: Description of the action taken
-                  customer_id:
-                    type: string
-                    description: Your unique identifier for the customer
-                  product_id:
-                    type: string
-                    description: Product ID that was cancelled
-              example:
-                success: true
-                message: "Product cancelled successfully"
-                customer_id: "user_123"
-                product_id: "lite"
 
 components:
   schemas:
