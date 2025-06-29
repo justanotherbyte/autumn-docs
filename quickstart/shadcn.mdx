@@ -1,7 +1,7 @@
 ---
-title: "Billing Flows using shadcn/ui components"
-sidebarTitle: "shadcn/ui components"
-description: "Drop in Autumn's shadcn/ui components to handle upgrades, downgrades, paywalls etc"
+title: "React and shadcn/ui components"
+sidebarTitle: "React and shadcn/ui"
+description: "Drop in Autumn's components to handle upgrades, downgrades, paywalls etc"
 ---
 
 Autumn handles your billing flows, so you don't need to build and maintain user flows like:
@@ -12,13 +12,111 @@ Autumn handles your billing flows, so you don't need to build and maintain user 
 - Paywalling features
 - Failed payments [coming soon]
 
-You can use our customizable shadcn/ui components to handle these out-of-the-box, or use our React hooks and SDK to roll your own.
+Autumn offers the components in 2 forms: React components to drop in, or customizable shadcn/ui components that can be downloaded and edited.
+
+## Pricing Table
+
+The pricing table component displays your available products, the features available in each and any prices. You can also pass in a `productDetails` prop to add information to the pricing card contents.
+
+**React**
+
+```jsx
+import { PricingTable } from "autumn-js/react";
+```
+
+**shadcn/ui**
+
+<CodeGroup>
+```bash npm
+npx shadcn@latest add https://ui.useautumn.com/pricing-table
+```
+
+```bash pnpm
+pnpm dlx shadcn@latest add https://ui.useautumn.com/pricing-table
+```
+
+```bash yarn
+yarn dlx shadcn@latest add https://ui.useautumn.com/pricing-table
+```
+
+```bash bun
+bunx --bun shadcn@latest add https://ui.useautumn.com/pricing-table
+```
+
+</CodeGroup>
+
+This will download the pricing-table component in your `/components` directory, under a `/autumn` folder.
+
+<img
+  src="/assets/quickstart/ui-components/pricing-table.png"
+  alt="Pricing Table"
+  className="border"
+/>
+
+#### Usage
+
+```javascript
+import { PricingTable } from "@components/autumn/pricing-table";
+
+export const PricingTableExample = () => (
+  <div>
+    <PricingTable productDetails={productDetails} />
+  </div>
+);
+```
+
+The pricing table component can take in a `productDetails` prop, which can be used to pass in content that can override the default contents (which come from your Autumn products). The example below was used to render the screenshot above.
+
+By passing this prop, you can choose which products should be displayed, and what items should be displayed. The items array can either be an object with `primaryText` and `secondaryText` properties, or a string with the `featureId`, which will just take the item from Autumn's default contents.
+
+```tsx [expandable]
+const productDetails = [
+  {
+    id: "free",
+    description: "A great free plan to get started with",
+  },
+  {
+    id: "pro",
+    description: "For all your extra messaging needs",
+    recommendText: "Most Popular",
+    price: {
+      primaryText: "$10/month",
+      secondaryText: "billed monthly",
+    },
+    items: [
+      {
+        featureId: "messages",
+      },
+      {
+        primaryText: "Premium support",
+        secondaryText: "Get help from our team",
+      },
+    ],
+  },
+  {
+    id: "pro_annual",
+  },
+  {
+    id: "premium",
+    description: "For those of you who are really serious",
+  },
+  {
+    id: "premium_annual",
+  },
+];
+```
 
 ## Product Change
 
 The attach dialog will open when a customer wants to change their active product, such as when they upgrade or downgrade, to let them preview how much will be charged, and confirm the change.
 
-#### Install
+**React**
+
+```jsx
+import { AttachDialog } from "autumn-js/react";
+```
+
+**shadcn/ui**
 
 <CodeGroup>
 ```bash npm
@@ -323,43 +421,4 @@ export const getPaywallDialogTexts = (preview: CheckFeaturePreview) => {
       };
   }
 };
-```
-
-## Pricing Table
-
-The pricing table component displays your available products, the features available in each and any prices. You can also pass in a `productDetails` prop to add information to the pricing card contents.
-
-#### Install
-
-<CodeGroup>
-```bash npm
-npx shadcn@latest add https://ui.useautumn.com/pricing-table
-```
-
-```bash pnpm
-pnpm dlx shadcn@latest add https://ui.useautumn.com/pricing-table
-```
-
-```bash yarn
-yarn dlx shadcn@latest add https://ui.useautumn.com/pricing-table
-```
-
-```bash bun
-bunx --bun shadcn@latest add https://ui.useautumn.com/pricing-table
-```
-
-</CodeGroup>
-
-This will download the pricing-table component in your `/components` directory, under a `/autumn` folder.
-
-#### Usage
-
-```javascript
-import { PricingTable } from "@components/autumn/pricing-table";
-
-export const PricingTableExample = () => (
-  <div>
-    <PricingTable />
-  </div>
-);
 ```
