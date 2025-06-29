@@ -95,7 +95,7 @@ import { autumnHandler } from "autumn-js/next";
 import { auth } from "@/lib/auth";
 
 export const { GET, POST } = autumnHandler({
-  identify: async request => {
+  identify: async (request) => {
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -118,7 +118,7 @@ import { autumnHandler } from "autumn-js/react-router";
 import { auth } from "../lib/auth.server";
 
 export const { loader, action } = autumnHandler({
-  identify: async args => {
+  identify: async (args) => {
     const session = await auth.api.getSession({
       headers: args.request.headers,
     });
@@ -202,7 +202,7 @@ app.use(express.json()); // need to parse request body before autumnHandler
 app.use(
   "/api/autumn",
   autumnHandler({
-    identify: async req => {
+    identify: async (req) => {
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(req.headers),
       });
@@ -228,7 +228,7 @@ fastify.route({
   method: ["GET", "POST"],
   url: "/api/autumn/*",
   handler: autumnHandler({
-    identify: async request => {
+    identify: async (request) => {
       const session = await auth.api.getSession({
         headers: request.headers as any,
       });
@@ -447,4 +447,4 @@ autumn.track({
 
 ## 8. Next steps
 
-Nice! You've now integrated Autumn into your application. Next, learn how to handle [billing flows](/quickstart/billing-flows) like upgrades, cancellations and paywalls by using Autumn's shadcn/ui components or building your own.
+Nice! You've now integrated Autumn into your application. Next, learn how to use Autumn's [components](/quickstart/shadcn) to show a pricing table, and handle upgrades, downgrades and paywalls.
