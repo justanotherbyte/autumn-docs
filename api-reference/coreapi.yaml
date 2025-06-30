@@ -111,10 +111,9 @@ paths:
                 customer_id='user_123',
                 product_id='pro'
             )
-
       responses:
         "200":
-          description: Device attached
+          description: Customer attached
           content:
             application/json:
               schema:
