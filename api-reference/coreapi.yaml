@@ -102,6 +102,7 @@ paths:
               "product_id": "pro"
             }'
         - lang: python
+          label: required
           source: |
             from autumn import Autumn
 
@@ -110,6 +111,21 @@ paths:
             response = await autumn.attach(
                 customer_id='user_123',
                 product_id='pro'
+            )
+        - lang: python
+          label: with customer_data
+          source: |
+            from autumn import Autumn, CustomerData
+
+            autumn = Autumn("secret-key")
+
+            response = await autumn.attach(
+                customer_id='user_123',
+                product_id='pro',
+                customer_data=CustomerData(
+                    name='John Yeo',
+                    email='john@example.com'
+                )
             )
       responses:
         "200":
@@ -172,6 +188,15 @@ paths:
             -d '{
               "return_url": "https://example.com/account"
             }'
+        - lang: python
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn("secret-key")
+
+            response = await autumn.customers.get_billing_portal(
+                "user_123", returl_url="https://example.com/account"
+            )
       responses:
         "200":
           description: ""
@@ -276,6 +301,57 @@ paths:
                 "customer_id": "user_123",
                 "feature_id": "messages"
               }'
+        - lang: python
+          label: with value
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn("secret-key")
+
+            await autumn.track(
+                customer_id='user_123',
+                feature_id='messages',
+                value=3
+            )
+        - lang: python
+          label: single event
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn("secret-key")
+
+            await autumn.track(
+                customer_id='user_123',
+                feature_id='messages',
+            )
+        - lang: python
+          label: with customer data
+          source: |
+            from autumn import Autumn, CustomerData
+
+            autumn = Autumn("secret-key")
+
+            await autumn.track(
+                customer_id='user_123',
+                feature_id='messages',
+                value=12,
+                customer_data=CustomerData(
+                    name='John Yeo',
+                    email='john@example.com'
+                )
+            )
+        - lang: python
+          label: with event name
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn("secret-key")
+
+            await autumn.track(
+                customer_id='user_123',
+                event_name='mobile_messages',
+                value=12
+            )
       responses:
         "200":
           description: ""
@@ -415,6 +491,48 @@ paths:
                 "email": "john@useautumn.com"
               }
             }'
+        - lang: python
+          label: required
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret-key')
+
+            response = await autumn.check(
+                customer_id='user_123',
+                feature_id='messages'
+            )
+
+        - lang: python
+          label: with event
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret-key')
+
+            response = await autumn.check(
+                customer_id='user_123',
+                feature_id='messages',
+                required_balance=12,
+                send_event=True
+            )
+
+        - lang: python
+          label: with customer_data
+          source: |
+            from autumn import Autumn, CustomerData
+
+            autumn = Autumn('secret_key')
+
+            response = await autumn.check(
+                customer_id='user_123',
+                feature_id='messages',
+                customer_data=CustomerData(
+                    name='John Yeo',
+                    email='john@useautumn.com'
+                )
+            )
+
       responses:
         "200":
           description: ""
@@ -621,6 +739,28 @@ paths:
               "product_id": "lite",
               "entity_id": "1"
             }'
+        - lang: python
+          label: required
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret_key')
+
+            response = await autumn.products.cancel(
+                customer_id='user_123',
+                product_id='lite'
+            )
+        - lang: python
+          label: with entity
+            from autumn import Autumn
+
+            autumn = Autumn('secret_key')
+
+            response = await autumn.products.cancel(
+                customer_id='user_123',
+                product_id='lite',
+                entity_id='1',
+            )
       responses:
         "200":
           description: Product cancelled successfully
