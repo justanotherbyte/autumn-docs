@@ -20,7 +20,10 @@
         "groups": [
           {
             "group": " ",
-            "pages": ["introduction", "understanding"]
+            "pages": [
+              "introduction",
+              "understanding"
+            ]
           },
           {
             "group": "Get Started",
@@ -28,7 +31,10 @@
               "quickstart/quickstart",
               {
                 "group": "Components",
-                "pages": ["quickstart/shadcn", "quickstart/billing-flows"]
+                "pages": [
+                  "quickstart/shadcn",
+                  "quickstart/billing-flows"
+                ]
               },
               "cookbooks/ai-builders"
             ]
@@ -62,7 +68,10 @@
           },
           {
             "group": "Pricing Guides",
-            "pages": ["guides/credits", "guides/prepaid"]
+            "pages": [
+              "guides/credits",
+              "guides/prepaid"
+            ]
           }
         ]
       },
@@ -136,7 +145,11 @@
       "display": "interactive"
     },
     "examples": {
-      "languages": ["typescript", "bash"]
+      "languages": [
+        "typescript",
+        "bash",
+        "python"
+      ]
     }
   },
   "background": {
