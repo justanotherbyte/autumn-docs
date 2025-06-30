@@ -101,6 +101,17 @@ paths:
               "customer_id": "user_123",
               "product_id": "pro"
             }'
+        - lang: python
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn("secret-key")
+
+            response = await autumn.attach(
+                customer_id='user_123',
+                product_id='pro'
+            )
+
       responses:
         "200":
           description: Device attached
