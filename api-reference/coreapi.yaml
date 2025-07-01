@@ -104,29 +104,37 @@ paths:
         - lang: python
           label: required
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn("am_sk_1234567890")
 
-            response = await autumn.attach(
-                customer_id='user_123',
-                product_id='pro'
-            )
+            async def main():
+              response = await autumn.attach(
+                  customer_id='user_123',
+                  product_id='pro'
+              )
+
+            asyncio.run(main())
         - lang: python
           label: with customer_data
           source: |
+            import asyncio
             from autumn import Autumn, CustomerData
 
             autumn = Autumn("am_sk_1234567890")
 
-            response = await autumn.attach(
-                customer_id='user_123',
-                product_id='pro',
-                customer_data=CustomerData(
-                    name='John Yeo',
-                    email='john@example.com'
-                )
-            )
+            async def main():
+              response = await autumn.attach(
+                  customer_id='user_123',
+                  product_id='pro',
+                  customer_data=CustomerData(
+                      name='John Yeo',
+                      email='john@example.com'
+                  )
+              )
+
+            asyncio.run(main())
       responses:
         "200":
           description: Customer attached
@@ -190,13 +198,17 @@ paths:
             }'
         - lang: python
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn("am_sk_1234567890")
 
-            response = await autumn.customers.get_billing_portal(
+            async def main():
+              response = await autumn.customers.get_billing_portal(
                 "user_123", returl_url="https://example.com/account"
-            )
+              )
+
+            asyncio.run(main())
       responses:
         "200":
           description: ""
@@ -304,54 +316,70 @@ paths:
         - lang: python
           label: with value
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn("am_sk_1234567890")
 
-            await autumn.track(
-                customer_id='user_123',
-                feature_id='messages',
-                value=3
-            )
+            async def main():
+                await autumn.track(
+                    customer_id='user_123',
+                    feature_id='messages',
+                    value=3
+                )
+
+            asyncio.run(main())
         - lang: python
           label: single event
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn("am_sk_1234567890")
 
-            await autumn.track(
-                customer_id='user_123',
-                feature_id='messages',
-            )
+            async def main():
+                await autumn.track(
+                    customer_id='user_123', 
+                    feature_id='messages',
+                )
+
+            asyncio.run(main())
         - lang: python
           label: with customer data
           source: |
+            import asyncio
             from autumn import Autumn, CustomerData
 
             autumn = Autumn("am_sk_1234567890")
 
-            await autumn.track(
-                customer_id='user_123',
-                feature_id='messages',
-                value=12,
-                customer_data=CustomerData(
-                    name='John Yeo',
-                    email='john@example.com'
+            async def main():
+                await autumn.track(
+                    customer_id='user_123',
+                    feature_id='messages',
+                    value=12,
+                    customer_data=CustomerData(
+                        name='John Yeo',
+                        email='john@example.com'
+                    )
                 )
-            )
+
+            asyncio.run(main())
         - lang: python
           label: with event name
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn("am_sk_1234567890")
 
-            await autumn.track(
-                customer_id='user_123',
-                event_name='mobile_messages',
-                value=12
-            )
+            async def main():
+                await autumn.track(
+                    customer_id='user_123',
+                    event_name='mobile_messages',
+                    value=12
+                )
+
+            asyncio.run(main())
       responses:
         "200":
           description: ""
@@ -494,45 +522,55 @@ paths:
         - lang: python
           label: required
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('am_sk_1234567890')
 
-            response = await autumn.check(
-                customer_id='user_123',
-                feature_id='messages'
-            )
-
+            async def main():
+                response = await autumn.check(
+                  customer_id='user_123',
+                  feature_id='messages'
+                )
+                
+            asyncio.run(main())
         - lang: python
           label: with event
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('am_sk_1234567890')
 
-            response = await autumn.check(
-                customer_id='user_123',
-                feature_id='messages',
-                required_balance=12,
-                send_event=True
-            )
+            async def main():
+                response = await autumn.check(
+                  customer_id='user_123',
+                  feature_id='messages',
+                  required_balance=12,
+                  send_event=True
+                )
+                
+            asyncio.run(main())
 
         - lang: python
           label: with customer_data
           source: |
+            import asyncio
             from autumn import Autumn, CustomerData
 
             autumn = Autumn('secret_key')
 
-            response = await autumn.check(
-                customer_id='user_123',
-                feature_id='messages',
-                customer_data=CustomerData(
-                    name='John Yeo',
-                    email='john@useautumn.com'
+            async def main():
+                response = await autumn.check(
+                  customer_id='user_123',
+                  feature_id='messages',
+                  customer_data=CustomerData(
+                      name='John Yeo',
+                      email='john@useautumn.com'
+                  )
                 )
-            )
 
+            asyncio.run(main())
       responses:
         "200":
           description: ""
@@ -742,25 +780,34 @@ paths:
         - lang: python
           label: required
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('secret_key')
 
-            response = await autumn.products.cancel(
-                customer_id='user_123',
-                product_id='lite'
-            )
+            async def main():
+                response = await autumn.products.cancel(
+                  customer_id='user_123',
+                  product_id='lite'
+                )
+
+            asyncio.run(main())
         - lang: python
           label: with entity
+          source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('secret_key')
 
-            response = await autumn.products.cancel(
-                customer_id='user_123',
-                product_id='lite',
-                entity_id='1',
-            )
+            async def main():
+                response = await autumn.products.cancel(
+                    customer_id='user_123',
+                    product_id='lite',
+                    entity_id='1',
+                )
+
+            asyncio.run(main())
       responses:
         "200":
           description: Product cancelled successfully

@@ -93,13 +93,20 @@ paths:
         - lang: python
           label: single entity
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('secret_key')
 
-            entity = await autumn.create_entity(
-                'user_123', feature_id='seats', id='seat_456', name='Brandon Yeo'
-            )
+            async def main():
+                entity = await autumn.create_entity(
+                    'user_123',
+                    feature_id='seats',
+                    id='seat_456',
+                    name='Brandon Yeo'
+                )
+
+            asyncio.run(main())
 
   /customers/{customer_id}/entities/{entity_id}:
     delete:
@@ -163,15 +170,19 @@ paths:
 
         - lang: python
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('secret_key')
 
-            await autumn.features.set_usage(
-                customer_id='user_123',
-                feature_id='seats',
-                value=10,
-            )
+            async def main():
+                await autumn.features.set_usage(
+                    customer_id='user_123',
+                    feature_id='seats',
+                    value=10,
+                )
+
+            asyncio.run(main())
 
   /customers/{customer_id}/balances:
     post:

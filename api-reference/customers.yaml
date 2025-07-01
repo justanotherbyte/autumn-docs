@@ -57,16 +57,19 @@ paths:
             }'
         - lang: python
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('secret_key')
 
-            customer = await autumn.customers.create(
-                id='user_123',
-                name='John Yeo',
-                email='john@example.com'
-            )
+            async def main():
+                customer = await autumn.customers.create(
+                    id='user_123',
+                    name='John Yeo',
+                    email='john@example.com'
+                )
 
+            asyncio.run(main())
       responses:
         "200":
           description: ""
@@ -104,11 +107,15 @@ paths:
 
         - lang: python
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('secret_key')
 
-            customer = await autumn.customers.get('user_123')
+            async def main():
+                customer = await autumn.customers.get('user_123')
+
+            asyncio.run(main())
       responses:
         "200":
           description: ""
@@ -169,14 +176,19 @@ paths:
 
         - lang: python
           source: |
+            import asyncio
             from autumn import Autumn
 
             autumn = Autumn('secret_key')
 
-            customer = await autumn.customers.update(
-                name='John Yeo',
-                email='john@example.com'
-            )
+            async def main():
+                customer = await autumn.customers.update(
+                    customer_id='user_123',
+                    name='John Yeo',
+                    email='john@example.com'
+                )
+
+            asyncio.run(main())
       responses:
         "200":
           description: ""

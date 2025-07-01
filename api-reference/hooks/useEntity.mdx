@@ -48,11 +48,11 @@ export default function EntityProfile() {
 Function to manually refetch the entity data, eg when updating an entity's state or metadata to display.
 
 ```jsx
-import { useEntity } from "autumn-js/react";
+import { useEntity, useCustomer } from "autumn-js/react";
 
 export default function EntityWithRefresh() {
   const { entity, refetch } = useEntity("entity_abc");
-  const { track } = useAutumn();
+  const { track } = useCustomer();
 
   const updateEntity = async () => {
     // Perform some entity update operation

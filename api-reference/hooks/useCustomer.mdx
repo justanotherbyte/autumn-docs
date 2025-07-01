@@ -50,10 +50,10 @@ Opens a checkout URL for the user to make a payment. If the payment method alrea
 </Tip>
 
 ```jsx
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function PurchaseButton() {
-  const { attach } = useAutumn();
+  const { attach } = useCustomer();
 
   return (
     <button
@@ -143,10 +143,10 @@ export default function FeatureGate({ children }) {
 Check if a user has access to a specific feature or product. This will make an API call to Autumn to check access. You can use this to always get the most up-to-date usage data.
 
 ```jsx
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function FeatureGate({ children }) {
-  const { check } = useAutumn();
+  const { check } = useCustomer();
 
   return (
     <button
@@ -201,10 +201,10 @@ export default function FeatureGate({ children }) {
 Track usage events for features or custom analytics.
 
 ```jsx
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function ApiCallButton() {
-  const { track } = useAutumn();
+  const { track } = useCustomer();
 
   const handleApiCall = async () => {
     // Make your API call
@@ -249,10 +249,10 @@ export default function ApiCallButton() {
 Open the billing portal for customers to manage their subscriptions, payment methods, and billing information.
 
 ```jsx
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function BillingSettings() {
-  const { openBillingPortal } = useAutumn();
+  const { openBillingPortal } = useCustomer();
 
   return (
     <button
@@ -279,10 +279,10 @@ export default function BillingSettings() {
 Cancel a product or subscription for a user/entity.
 
 ```jsx
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function CancelSubscription() {
-  const { cancel } = useAutumn();
+  const { cancel } = useCustomer();
 
   return (
     <button
@@ -320,7 +320,7 @@ import { useCustomer } from "autumn-js/react";
 
 export default function CustomerWithRefresh() {
   const { customer, refetch } = useCustomer();
-  const { track } = useAutumn();
+  const { track } = useCustomer();
 
   const sendMessage = async () => {
     await track({ featureId: "chat_messages" });
