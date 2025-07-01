@@ -106,7 +106,7 @@ paths:
           source: |
             from autumn import Autumn
 
-            autumn = Autumn("secret-key")
+            autumn = Autumn("am_sk_1234567890")
 
             response = await autumn.attach(
                 customer_id='user_123',
@@ -117,7 +117,7 @@ paths:
           source: |
             from autumn import Autumn, CustomerData
 
-            autumn = Autumn("secret-key")
+            autumn = Autumn("am_sk_1234567890")
 
             response = await autumn.attach(
                 customer_id='user_123',
@@ -192,7 +192,7 @@ paths:
           source: |
             from autumn import Autumn
 
-            autumn = Autumn("secret-key")
+            autumn = Autumn("am_sk_1234567890")
 
             response = await autumn.customers.get_billing_portal(
                 "user_123", returl_url="https://example.com/account"
@@ -306,7 +306,7 @@ paths:
           source: |
             from autumn import Autumn
 
-            autumn = Autumn("secret-key")
+            autumn = Autumn("am_sk_1234567890")
 
             await autumn.track(
                 customer_id='user_123',
@@ -318,7 +318,7 @@ paths:
           source: |
             from autumn import Autumn
 
-            autumn = Autumn("secret-key")
+            autumn = Autumn("am_sk_1234567890")
 
             await autumn.track(
                 customer_id='user_123',
@@ -329,7 +329,7 @@ paths:
           source: |
             from autumn import Autumn, CustomerData
 
-            autumn = Autumn("secret-key")
+            autumn = Autumn("am_sk_1234567890")
 
             await autumn.track(
                 customer_id='user_123',
@@ -345,7 +345,7 @@ paths:
           source: |
             from autumn import Autumn
 
-            autumn = Autumn("secret-key")
+            autumn = Autumn("am_sk_1234567890")
 
             await autumn.track(
                 customer_id='user_123',
@@ -496,7 +496,7 @@ paths:
           source: |
             from autumn import Autumn
 
-            autumn = Autumn('secret-key')
+            autumn = Autumn('am_sk_1234567890')
 
             response = await autumn.check(
                 customer_id='user_123',
@@ -508,7 +508,7 @@ paths:
           source: |
             from autumn import Autumn
 
-            autumn = Autumn('secret-key')
+            autumn = Autumn('am_sk_1234567890')
 
             response = await autumn.check(
                 customer_id='user_123',
