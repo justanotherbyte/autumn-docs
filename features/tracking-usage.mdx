@@ -40,6 +40,22 @@ await autumn.track({
 });
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    await autumn.track(
+        customer_id="user-123",
+        feature_id="ai-messages",
+        value=1,
+    )
+
+asyncio.run(main())
+```
+
 </CodeGroup>
 ```json
 {
@@ -70,6 +86,32 @@ curl -X POST "https://api.useautumn.com/v1/usage" \
 "feature_id": "seats",
 "value": 3
 }'
+```
+
+```javascript Typescript
+import { Autumn as autumn } from "autumn-js";
+
+await autumn.usage({
+  customer_id: "user-123",
+  feature_id: "seats",
+  value: 3,
+});
+```
+
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    await autumn.features.set_usage(
+        customer_id="user-123",
+        feature_id="seats",
+        value=3,
+    )
+
+asyncio.run(main())
 ```
 
 </CodeGroup>
@@ -138,6 +180,20 @@ await autumn.track({
   value: 1,
   event_name: "blog_post_generation",
 });
+```
+
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+  await autumn.track(
+    customer_id="user-123",
+    value=1,
+    event_name="blog_post_generation",
+  )
 ```
 
 </CodeGroup>

@@ -31,6 +31,17 @@ import { Autumn as autumn } from "autumn-js";
 const customer = await autumn.customers.get("user_123");
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+
+async def main():
+    customer = await autumn.customers.get("user_123")
+
+asyncio.run(main())
+```
+
 </CodeGroup>
 
 ```json [expandable]

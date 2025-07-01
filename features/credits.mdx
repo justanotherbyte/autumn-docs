@@ -54,6 +54,22 @@ const { allowed } = await autumn.check({
 });
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    check = await autumn.check(
+        customer_id="user-123",
+        feature_id="audio-transcription-minutes",
+    )
+    allowed = check.allowed
+
+asyncio.run(main())
+```
+
 </CodeGroup>
 The response will contain the ID of the credit system you defined.
 
@@ -104,6 +120,22 @@ await autumn.track({
   feature_id: "audio-transcription-minutes",
   value: 10,
 });
+```
+
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    await autumn.track(
+        customer_id="user-123",
+        feature_id="audio-transcription-minutes",
+        value=10,
+    )
+
+asyncio.run(main())
 ```
 
 </CodeGroup>

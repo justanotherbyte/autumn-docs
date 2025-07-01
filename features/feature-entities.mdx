@@ -60,6 +60,23 @@ const entity = await autumn.entities.create("org_123", {
 });
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    entity = await autumn.features.create_entity(
+        customer_id="org_123",
+        id="user_abc",
+        name="Brandon Yeo",
+        feature_id="seats",
+    )
+
+asyncio.run(main())
+```
+
 ```bash cURL
 curl -X POST "https://api.useautumn.com/v1/customers/org_123/entities" \
 -H "Authorization: Bearer am_sk_1234567890" \
@@ -101,6 +118,23 @@ const { allowed } = await autumn.check({
 });
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    check = await autumn.check(
+        customer_id="org_123",
+        feature_id="ai-messages",
+        entity_id="user_abc",
+    )
+    allowed = check.allowed
+
+asyncio.run(main())
+```
+
 ```bash cURL
 curl -X POST "https://api.useautumn.com/v1/check" \
 -H "Authorization: Bearer am_sk_1234567890" \
@@ -135,6 +169,23 @@ const event = await autumn.track({
   entity_id: "user_abc",
   value: 10,
 });
+```
+
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    event = await autumn.track(
+        customer_id="org_123",
+        feature_id="ai-messages",
+        entity_id="user_abc",
+        value=10,
+    )
+
+asyncio.run(main())
 ```
 
 ```bash cURL
@@ -190,6 +241,29 @@ const { allowed } = await autumn.check({
 });
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    check = await autumn.check(
+        customer_id="org_123",
+        feature_id="ai-messages",
+        entity_id="user_abc",
+        entity_data={
+            "feature_id": "seats"
+        },
+    )
+    allowed = check.allowed
+
+    if allowed:
+      print("User has access to AI messages, let's SSR accordingly!")
+
+asyncio.run(main())
+```
+
 ```bash cURL
 curl -X POST "https://api.useautumn.com/v1/check" \
 -H "Authorization: Bearer am_sk_1234567890" \
@@ -242,6 +316,18 @@ To use top-level balances, just omit the `entity_id` from your check request.
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.entities.delete("org_123", "user_abc");
+```
+
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("am_sk_1234567890")
+
+async def main():
+    await autumn.features.delete_entity("org_123", "user_abc")
+
+asyncio.run(main())
 ```
 
 ```bash cURL

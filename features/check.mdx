@@ -40,6 +40,19 @@ const { allowed } = await autumn.check({
 });
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("secret_key")
+
+async def main():
+  check = await autumn.check(customer_id="user-123", feature_id="ai-messages")
+  allowed = check.allowed
+
+asyncio.run(main())
+```
+
 </CodeGroup>
 
 ```json
@@ -91,6 +104,23 @@ const { allowed } = await autumn.check({
 });
 ```
 
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("secret_key")
+
+async def main():
+  check = await autumn.check(
+    customer_id="user-123", 
+    feature_id="ai-messages",
+    required_quantity=3
+  )
+  allowed = check.allowed
+
+asyncio.run(main())
+```
+
 </CodeGroup>
 
 #### Checking Feature Access and Recording Usage together
@@ -122,6 +152,24 @@ const { allowed } = await autumn.check({
   required_quantity: 3,
   send_event: true,
 });
+```
+
+```python Python
+import asyncio
+from autumn import Autumn
+
+autumn = Autumn("secret_key")
+
+async def main():
+  check = await autumn.check(
+      customer_id="user-123",
+      feature_id="api_calls",
+      required_quantity=3,
+      send_event=True,
+  )
+  allowed = check.allowed
+
+asyncio.run(main())
 ```
 
 </CodeGroup>
