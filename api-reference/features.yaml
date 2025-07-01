@@ -96,7 +96,7 @@ paths:
             import asyncio
             from autumn import Autumn
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 entity = await autumn.create_entity(
@@ -173,7 +173,7 @@ paths:
             import asyncio
             from autumn import Autumn
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 await autumn.features.set_usage(

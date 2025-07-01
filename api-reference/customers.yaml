@@ -60,7 +60,7 @@ paths:
             import asyncio
             from autumn import Autumn
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 customer = await autumn.customers.create(
@@ -110,7 +110,7 @@ paths:
             import asyncio
             from autumn import Autumn
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 customer = await autumn.customers.get('user_123')
@@ -179,7 +179,7 @@ paths:
             import asyncio
             from autumn import Autumn
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 customer = await autumn.customers.update(

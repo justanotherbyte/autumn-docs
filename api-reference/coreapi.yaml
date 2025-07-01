@@ -558,7 +558,7 @@ paths:
             import asyncio
             from autumn import Autumn, CustomerData
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 response = await autumn.check(
@@ -783,7 +783,7 @@ paths:
             import asyncio
             from autumn import Autumn
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 response = await autumn.products.cancel(
@@ -798,7 +798,7 @@ paths:
             import asyncio
             from autumn import Autumn
 
-            autumn = Autumn('secret_key')
+            autumn = Autumn('am_sk_1234567890')
 
             async def main():
                 response = await autumn.products.cancel(
