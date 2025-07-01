@@ -55,6 +55,17 @@ paths:
               "name": "John Yeo",
               "email": "john@example.com"
             }'
+        - lang: python
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret_key')
+
+            customer = await autumn.customers.create(
+                id='user_123',
+                name='John Yeo',
+                email='john@example.com'
+            )
 
       responses:
         "200":
@@ -90,6 +101,14 @@ paths:
           source: |
             curl 'https://api.useautumn.com/v1/customers/user_123' \
             -H 'Authorization: Bearer am_sk_1234567890'
+
+        - lang: python
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret_key')
+
+            customer = await autumn.customers.get('user_123')
       responses:
         "200":
           description: ""
@@ -147,6 +166,17 @@ paths:
               "name": "John Yeo",
               "email": "john@example.com"
             }'
+
+        - lang: python
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret_key')
+
+            customer = await autumn.customers.update(
+                name='John Yeo',
+                email='john@example.com'
+            )
       responses:
         "200":
           description: ""
