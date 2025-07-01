@@ -161,6 +161,18 @@ paths:
               "quantity": 1
             }'
 
+        - lang: python
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret_key')
+
+            await autumn.features.set_usage(
+                customer_id='user_123',
+                feature_id='seats',
+                value=10,
+            )
+
   /customers/{customer_id}/balances:
     post:
       summary: Set balances for features
