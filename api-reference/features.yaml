@@ -30,35 +30,35 @@ paths:
         "201":
           description: ""
       x-code-samples:
-        # - lang: typescript
-        #   label: single entity
-        #   source: |
-        #     import { Autumn as autumn } from 'autumn-js';
+        - lang: typescript
+          label: single entity
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
 
-        #     const entity = await autumn.entities.create('user_123', {
-        #       feature_id: 'seats',
-        #       id: 'seat_456',
-        #       name: 'Brandon Yeo'
-        #     });
+            const entity = await autumn.entities.create('user_123', {
+              feature_id: 'seats',
+              id: 'seat_456',
+              name: 'Brandon Yeo'
+            });
 
-        # - lang: typescript
-        #   label: multiple entities
-        #   source: |
-        #     import { Autumn as autumn } from 'autumn-js';
+        - lang: typescript
+          label: multiple entities
+          source: |
+            import { Autumn as autumn } from 'autumn-js';
 
-        #     const entities = await autumn.entities.create('user_123',
-        #     [
-        #       {
-        #         feature_id: 'seats',
-        #         id: 'seat_456',
-        #         name: 'Brandon Yeo'
-        #       },
-        #       {
-        #         feature_id: 'seats',
-        #         id: 'seat_789',
-        #         name: 'John Yeo'
-        #       }
-        #     ]);
+            const entities = await autumn.entities.create('user_123',
+            [
+              {
+                feature_id: 'seats',
+                id: 'seat_456',
+                name: 'Brandon Yeo'
+              },
+              {
+                feature_id: 'seats',
+                id: 'seat_789',
+                name: 'John Yeo'
+              }
+            ]);
 
         - lang: curl
           label: single entity
@@ -89,6 +89,17 @@ paths:
                 "id": "seat_789",
                 "name": "John Yeo"
             }]'
+
+        - lang: python
+          label: single entity
+          source: |
+            from autumn import Autumn
+
+            autumn = Autumn('secret_key')
+
+            entity = await autumn.create_entity(
+                'user_123', feature_id='seats', id='seat_456', name='Brandon Yeo'
+            )
 
   /customers/{customer_id}/entities/{entity_id}:
     delete:
