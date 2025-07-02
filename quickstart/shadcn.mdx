@@ -65,9 +65,9 @@ export const PricingTableExample = () => (
 );
 ```
 
-The pricing table component can take in a `productDetails` prop, which can be used to pass in content that can override the default contents (which come from your Autumn products). The example below was used to render the screenshot above.
+The component can take in `productDetails`, which can be used to pass in content that can override the default contents (which are generated from your Autumn products). The example below was used to render the screenshot above.
 
-By passing this prop, you can choose which products should be displayed, and what items should be displayed. The items array can either be an object with `primaryText` and `secondaryText` properties, or a string with the `featureId`, which will just take the item from Autumn's default contents.
+You can choose which products should be displayed, and what items each card should have. The items array can either take an object with `primaryText` and `secondaryText` properties, or a string with the `featureId`, which will just take the item from Autumn's default contents.
 
 ```tsx [expandable]
 const productDetails = [
@@ -146,23 +146,7 @@ This will download the attach-dialog component in your `/components` directory, 
 
 #### Usage
 
-Pass in the `attach-dialog` component to the `attach()` hook. This allows Autumn to automatically open the attach dialog when they want to change their active product.
-
-```jsx
-import AttachDialog from "@/components/autumn/attach-dialog";
-import { useAutumn } from "autumn-js/react";
-
-<Button
-  onClick={async () =>
-    await attach({
-      productId: "pro",
-      dialog: AttachDialog,
-    })
-  }
-/>;
-```
-
-Now when you use the `attach()` hook, Autumn will first call the `check({withPreview: true})` function to preview the purchase under the hood. The dialog will open if:
+Pass in the `attach-dialog` component to the `attach()` hook. This allows Autumn to automatically open the attach dialog when they want to change their active product. The dialog will open if:
 
 - The customer needs to input a quantity for their purchase (ie, if the product has prepaid prices)
 - If the customer's payment method is already on file (ie, for upgrades, downgrades or add-ons).
@@ -175,20 +159,25 @@ When the customer confirms the purchase, Autumn will attach the product to the c
   checkout page.
 </Check>
 
+```jsx
+import AttachDialog from "@/components/autumn/attach-dialog";
+import { useCustomer } from "autumn-js/react";
+
+const { attach } = useCustomer();
+
+<Button
+  onClick={async () =>
+    await attach({
+      productId: "pro",
+      dialog: AttachDialog,
+    })
+  }
+/>;
+```
+
 #### Scenarios
 
-The `check({withPreview: true})` call can return a [`preview` object](/api-reference/check#response-feature-preview) that contains a `scenario` enum, which is used to control the dialog's contents. It can be one of the following:
-
-| Scenario    | Description                                                                                               |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
-| `upgrade`   | The customer is upgrading their product                                                                   |
-| `downgrade` | The customer is downgrading to another paid tier                                                          |
-| `cancel`    | The customer is downgrading to a free product                                                             |
-| `renew`     | The customer is reactivating a product that was previously cancelled                                      |
-| `scheduled` | The product is already scheduled to start at a future date (eg, for downgrades), so no changes are needed |
-| `active`    | The customer already has the product active, so no changes are needed                                     |
-
-When you install `attach-dialog`, a `@/lib/autumn/attach-content.tsx` file is also installed. This file contains the dialog texts for each scenario, which you can customize how you want.
+When you install `attach-dialog`, a `@/lib/autumn/attach-content.tsx` file is also installed. This file contains the dialog texts for each `scenario` (returned from the `attach` function), which you can customize how you want.
 
 ```tsx /lib/autumn/get-attach-content.tsx [expandable]
 import { CheckProductPreview } from "autumn-js";
@@ -331,13 +320,13 @@ This will download the `check-dialog` component in your `/components` directory,
 
 #### Usage
 
-Pass in the `check-dialog` component to the `check` function (exported from the `useAutumn` hook).
+Pass in the `check-dialog` component to the `check` function (exported from the `useCustomer` hook).
 
 ```jsx
 import CheckDialog from "@/components/autumn/check-dialog";
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
-const { check } = useAutumn();
+const { check } = useCustomer();
 
 const { data, error } = await check({
   featureId: "ai-messages",

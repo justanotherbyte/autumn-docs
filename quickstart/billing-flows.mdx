@@ -187,11 +187,11 @@ If there is no `preview` object, `open` will be `false` and the customer will be
 <CodeGroup>
 
 ```jsx PurchaseButton.tsx [expandable]
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 import CustomDialog from "./CustomDialog";
 
 export default function PurchaseButton() {
-  const { attach } = useAutumn();
+  const { attach } = useCustomer();
 
   return (
     <button
@@ -210,7 +210,7 @@ export default function PurchaseButton() {
 
 ```jsx CustomDialog.tsx [expandable]
 import { Button } from "../ui/button";
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 interface CustomDialogProps {
   open: boolean;
@@ -219,7 +219,7 @@ interface CustomDialogProps {
 }
 
 export const CustomDialog = ({ open, setOpen, preview }: CustomDialogProps) => {
-  const { attach } = useAutumn();
+  const { attach } = useCustomer();
 
   console.log(preview?.product_id);
   return (
@@ -245,9 +245,9 @@ export const CustomDialog = ({ open, setOpen, preview }: CustomDialogProps) => {
   <CodeGroup>
 
 ```typescript React
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
-const { check } = useAutumn();
+const { check } = useCustomer();
 
 const { data, error } = await check({
   productId: "pro",
@@ -283,10 +283,10 @@ The [`preview` object](/api-reference/check#response-feature-preview) that is re
 Example implementation:
 
 ```jsx [expandable]
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function PurchaseButton() {
-  const { attach } = useAutumn();
+  const { attach } = useCustomer();
 
   return (
     <button
@@ -439,11 +439,11 @@ If the feature is allowed, open will be false and no paywall will be shown.
 
 <CodeGroup>
 ```jsx FeatureButton.tsx [expandable]
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 import PaywallDialog from "./PaywallDialog";
 
 export default function FeatureButton() {
-  const { check } = useAutumn();
+  const { check } = useCustomer();
   
   return (
     <button
@@ -462,7 +462,7 @@ export default function FeatureButton() {
 
 ```jsx CustomPaywallDialog.tsx [expandable]
 import { Button } from "../ui/button";
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 interface PaywallDialogProps {
   open: boolean;
@@ -474,7 +474,7 @@ export const CustomPaywallDialog = ({
   setOpen,
   preview,
 }: PaywallDialogProps) => {
-  const { attach } = useAutumn();
+  const { attach } = useCustomer();
   return (
     <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full max-w-md items-center z-100">
       {open && (
@@ -503,8 +503,8 @@ export const CustomPaywallDialog = ({
 <CodeGroup>
 
 ```typescript React
-import { useAutumn } from "autumn-js/react";
-const { check } = useAutumn();
+import { useCustomer } from "autumn-js/react";
+const { check } = useCustomer();
 const { data, error } = await check({
   featureId: "chat_messages",
   withPreview: true,
@@ -537,10 +537,10 @@ The preview object that is returned from the check function can be used to contr
 Example implementation:
 
 ```jsx [expandable]
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function FeatureButton() {
-  const { check, attach } = useAutumn();
+  const { check, attach } = useCustomer();
 
   return (
     <button

@@ -22,9 +22,9 @@ If there's no existing payment method for the customer, a checkout URL will be g
 <CodeGroup>
 
 ```tsx React
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
-const { attach } = useAutumn();
+const { attach } = useCustomer();
 
 <Button onClick={() => attach({ product_id: "pro" })} />;
 ```

@@ -1,6 +1,6 @@
 ---
-title: "Quickstart"
-sidebarTitle: "Quickstart"
+title: "Integration Guide"
+sidebarTitle: "Integration"
 description: "Implement your app's payments and pricing model in under 5 minutes"
 ---
 
@@ -82,9 +82,9 @@ AUTUMN_SECRET_KEY=am_sk_1234567890
 
 ## 4. Mount the Autumn handler
 
-This creates server-side routes in the `/api/autumn/*` path, which will be used by Autumn's frontend React [library](/api-reference/hooks/useAutumn). These routes interact with Autumn's API (eg `attach`, `check`, `track`, `customer`) to handle the billing logic.
+Server-side, mount the handler. This will create routes in the `/api/autumn/*` path, which will be called by Autumn's frontend React [library](/api-reference/hooks/useCustomer). These routes in turn call Autumn's API.
 
-The handler takes in an identify function that returns a `customerId`. This is typically your internal user ID or organization ID from your auth provider. These examples use better-auth.
+The handler takes in an `identify` function that should return a `customerId`. This is typically your internal user ID or organization ID from your auth provider.
 
 <CodeGroup>
 
@@ -96,6 +96,7 @@ import { auth } from "@/lib/auth";
 
 export const { GET, POST } = autumnHandler({
   identify: async (request) => {
+    // get the user from your auth provider (example: better-auth)
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -119,6 +120,7 @@ import { auth } from "../lib/auth.server";
 
 export const { loader, action } = autumnHandler({
   identify: async (args) => {
+    // get the user from your auth provider (example: better-auth)
     const session = await auth.api.getSession({
       headers: args.request.headers,
     });
@@ -151,6 +153,7 @@ import { autumnHandler } from "autumn-js/tanstack";
 
 const handler = autumnHandler({
   identify: async ({ request }) => {
+    // get the user from your auth provider (example: better-auth)
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -177,6 +180,7 @@ app.use(
   "/api/autumn/*",
   autumnHandler({
     identify: async (c: Context) => {
+      // get the user from your auth provider (example: better-auth)
       const session = await auth.api.getSession({
         headers: c.req.raw.headers,
       });
@@ -203,6 +207,7 @@ app.use(
   "/api/autumn",
   autumnHandler({
     identify: async (req) => {
+      // get the user from your auth provider (example: better-auth)
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(req.headers),
       });
@@ -229,6 +234,7 @@ fastify.route({
   url: "/api/autumn/*",
   handler: autumnHandler({
     identify: async (request) => {
+      // get the user from your auth provider (example: better-auth)
       const session = await auth.api.getSession({
         headers: request.headers as any,
       });
@@ -400,14 +406,14 @@ export default function PurchaseButton() {
 
 There are 3 key functions you need to handle the billing logic once the customer has purchased the Pro plan:
 
-- `check` to see if the customer is allowed to send a message.
-- `track` a usage event in Autumn.
+- `check` to see if the customer is `allowed` to send a message.
+- `track` a usage event in Autumn (typically done server-side)
 - `customer` to display usage data in the UI.
 
 <CodeGroup>
 
 ```jsx Client
-import { useAutumn, useCustomer } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function SendChatMessage() {
   const { customer, allowed, refetch } = useCustomer();
@@ -437,8 +443,16 @@ export default function SendChatMessage() {
 ```typescript Server
 import { Autumn as autumn } from "autumn-js";
 
-autumn.track({
+//optionally check on the backend if the customer can send a message
+const { data } = await autumn.check({
   customer_id: "user_123", // same internal user id as in the autumn handler
+  feature_id: "messages",
+});
+
+// server-side function to send the message... then track the usage
+
+await autumn.track({
+  customer_id: "user_123",
   feature_id: "messages",
 });
 ```

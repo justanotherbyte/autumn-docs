@@ -28,7 +28,7 @@ Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
 
   <Accordion title="Create the Product">
     Click on the "+ Product" button and name the product "Pro".
-    <Frame className="bg-transparent items-center gap-4 bg-gray-50 dark:bg-gray-800">
+    <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
       <img
         src="/assets/quickstart/create-pro.png"
 
@@ -39,7 +39,7 @@ Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
   <Accordion title="Create the Messages Feature">
   Click the "+ Feature" button, and in the feature list, select "Create new feature".
 
-  <Frame className="bg-transparent items-center gap-4 bg-gray-50 dark:bg-gray-800">
+  <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
   <img src="/assets/quickstart/messages.png" />
   </Frame>
   </Accordion>
@@ -48,7 +48,7 @@ Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
   Back on the products page, create a new product and name it "Pro". Click "+ Feature" and add a limit of 10 messages per month.
   
   Then click "+ Price" and a price of $20 per month.
-  <Frame className="bg-transparent items-center gap-4 bg-gray-50 dark:bg-gray-800">
+  <Frame className="bg-transparent items-center gap-4 bg-[#fafafa]">
   <img src="/assets/quickstart/messages-item.png" className="" />
   <img src="/assets/quickstart/price.png" className="" />
   </Frame>
@@ -325,7 +325,7 @@ Now you can describe to the AI the pricing plans you defined in Autumn (eg free 
 
 
 import ProductChangeDialog from "@components/autumn/product-change-dialog";
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 <Button
   onClick={async () =>
@@ -340,11 +340,11 @@ import { useAutumn } from "autumn-js/react";
 
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { useAutumn } from "autumn-js/react"
+import { useCustomer } from "autumn-js/react"
 
 const ProductChangeDialog = (params) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { attach } = useAutumn();
+  const { attach } = useCustomer();
   const { open, setOpen, preview } = params;
 
   const handleConfirm = async () => {
@@ -381,21 +381,18 @@ import { useCustomer } from "autumn-js/react";
 const premiumUser = customer.products.find((p) => p.id === "pro");
 
 
-4. For usage-based features, you can use the check and track functions, to check access and then record usage. Replace “messages” with the provided featureId
+4. For usage-based features, you can use the allowed and track functions, to check access and then record usage. Replace “messages” with the provided featureId
 
 
-import { useAutumn, useCustomer } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function SendChatMessage() {
-  const { check } = useAutumn();
-  const { customer, refetch } = useCustomer();
+  const { customer, refetch, allowed } = useCustomer();
 
   return (
     <button
       onClick={async () => {
-        let { data } = await check({ featureId: "messages" });
-
-        if (data?.allowed) {
+        if (allowed({ featureId: "messages" })) {
           //... send message, then
           await track({ featureId: "messages" });
           await refetch(); // refetch customer usage data
@@ -469,10 +466,10 @@ const failed_payment = customer.products.find((p) => p.status === "past_due");
 2. Billing portal
 
 
-import { useAutumn } from "autumn-js/react";
+import { useCustomer } from "autumn-js/react";
 
 export default function BillingSettings() {
-  const { openBillingPortal } = useAutumn();
+  const { openBillingPortal } = useCustomer();
 
   return (
     <button
