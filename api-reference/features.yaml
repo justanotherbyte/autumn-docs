@@ -99,8 +99,8 @@ paths:
             autumn = Autumn('am_sk_1234567890')
 
             async def main():
-                entity = await autumn.create_entity(
-                    'user_123',
+                entity = await autumn.features.create_entity(
+                    customer_id='user_123',
                     feature_id='seats',
                     id='seat_456',
                     name='Brandon Yeo'
