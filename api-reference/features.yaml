@@ -130,6 +130,26 @@ paths:
       responses:
         "200":
           description: ""
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE 'https://api.useautumn.com/v1/customers/user_123/entities/seat_456' \
+            -H 'Authorization: Bearer am_sk_1234567890'
+
+        - lang: python
+          source: |
+            import asyncio
+            from autumn import Autumn
+
+            autumn = Autumn('am_sk_1234567890')
+
+            async def main():
+                await autumn.features.delete_entity(
+                    customer_id='user_123',
+                    entity_id='seat_456'
+                )
+
+            asyncio.run(main())
 
   /usage:
     post:
