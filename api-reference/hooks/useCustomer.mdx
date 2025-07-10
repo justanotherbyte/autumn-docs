@@ -42,7 +42,9 @@ export default function CustomerProfile() {
 
 ## `attach()`
 
-Opens a checkout URL for the user to make a payment. If the payment method already exists, the purchase will be handled automatically (eg, for upgrades/downgrades).
+Opens a checkout URL for the user to make a payment. If the payment method already exists, a payment confirmation dialog (AttachDialog) will be opened.
+
+You can override the default dialog by passing in a `dialog` prop, or disable it by passing in `disableDialog: true` into `<AutumnProvider />`.
 
 <Tip>
   Check out the [billing flows](/quickstart/billing-flows) page to see how to

@@ -376,7 +376,7 @@ export default function RootLayout({
 
 Call `attach` to redirect the customer to a Stripe checkout page when they want to purchase the Pro plan. Once they've paid, Autumn will grant them access to the features we defined.
 
-You can check this is successful in the dashboard under the customers tab.
+If their payment method is already on file, `AttachDialog` will open instead to let the customer confirm their new subscription or purchase, then handle the payment.
 
 <Warning>
   Make sure you've pasted in your [Stripe test secret
@@ -385,7 +385,7 @@ You can check this is successful in the dashboard under the customers tab.
 </Warning>
 
 ```jsx React {9}
-import { useCustomer } from "autumn-js/react";
+import { useCustomer, AttachDialog } from "autumn-js/react";
 
 export default function PurchaseButton() {
   const { attach } = useCustomer();
@@ -393,7 +393,10 @@ export default function PurchaseButton() {
   return (
     <button
       onClick={async () => {
-        await attach({ productId: "pro" });
+        await attach({
+          productId: "pro",
+          dialog: AttachDialog,
+        });
       }}
     >
       Upgrade to Pro
