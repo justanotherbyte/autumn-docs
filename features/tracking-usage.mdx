@@ -19,18 +19,7 @@ The track route is recommended for tracking consumable features, like AI message
 
 <CodeGroup>
 
-```bash cURL
-curl -X POST "https://api.useautumn.com/v1/track" \
--H "Authorization: Bearer am_sk_1234567890" \
--H "Content-Type: application/json" \
--d '{
-"customer_id": "user-123",
-"feature_id": "ai-messages",
-"value": 1
-}'
-```
-
-```javascript Typescript
+```javascript Node.js
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.track({
@@ -56,6 +45,17 @@ async def main():
 asyncio.run(main())
 ```
 
+```bash cURL
+curl -X POST "https://api.useautumn.com/v1/track" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "user-123",
+"feature_id": "ai-messages",
+"value": 1
+}'
+```
+
 </CodeGroup>
 ```json
 {
@@ -77,18 +77,7 @@ For other features (such as seats or workspaces), you may find it easier to set 
 
 <CodeGroup>
 
-```bash cURL {1}
-curl -X POST "https://api.useautumn.com/v1/usage" \
--H "Authorization: Bearer am_sk_1234567890" \
--H "Content-Type: application/json" \
--d '{
-"customer_id": "user-123",
-"feature_id": "seats",
-"value": 3
-}'
-```
-
-```javascript Typescript
+```javascript Node.js
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.usage({
@@ -112,6 +101,17 @@ async def main():
     )
 
 asyncio.run(main())
+```
+
+```bash cURL {1}
+curl -X POST "https://api.useautumn.com/v1/usage" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "user-123",
+"feature_id": "seats",
+"value": 3
+}'
 ```
 
 </CodeGroup>
@@ -161,18 +161,7 @@ You can then record usage for these events from your application:
 
 <CodeGroup>
 
-```bash cURL {8}
-curl -X POST "https://api.useautumn.com/v1/track" \
--H "Authorization: Bearer am_sk_1234567890" \
--H "Content-Type: application/json" \
--d '{
-"customer_id": "user-123",
-"value": 1,
-"event_name": "blog_post_generation"
-}'
-```
-
-```javascript Typescript {10}
+```javascript Node.js {10}
 import { Autumn as autumn } from "autumn-js";
 
 await autumn.track({
@@ -194,6 +183,17 @@ async def main():
     value=1,
     event_name="blog_post_generation",
   )
+```
+
+```bash cURL {8}
+curl -X POST "https://api.useautumn.com/v1/track" \
+-H "Authorization: Bearer am_sk_1234567890" \
+-H "Content-Type: application/json" \
+-d '{
+"customer_id": "user-123",
+"value": 1,
+"event_name": "blog_post_generation"
+}'
 ```
 
 </CodeGroup>

@@ -12,7 +12,7 @@ The `check` method returns the `allowed` property to check if a customer should 
 Before your customer uses a feature, you can check if the customer is allowed to use it and their current usage.
 
 <Info>
-**Example Use Case:**
+**Example**
 
 Let's imagine you have a free product that allows 100 AI messages per month. Before your customer sends an AI message, you can check if they have any remaining messages.
 
@@ -21,22 +21,24 @@ If they still have messages remaining, they'll be allowed to send an AI message.
 </Info>
 <CodeGroup>
 
-```bash cURL
-curl -X POST "https://api.useautumn.com/v1/check" \
-  -H "Authorization: Bearer am_sk_1234567890" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "user-123",
-    "feature_id": "ai-messages",
-  }'
+```tsx React
+import { useCustomer } from "autumn-js/react";
+
+const { allowed, check } = useCustomer();
+
+// check the customer state object locally (no API call)
+const canSendMessage = allowed({ featureId: "messages" });
+
+// alternatively, call Autumn's API to get the latest state
+const { data } = await check({ featureId: "messages" });
 ```
 
-```javascript Typescript
+```javascript Node.js
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.check({
-  customerId: "user-123",
-  featureId: "ai-messages",
+const { data } = await autumn.check({
+  customer_id: "user-123",
+  feature_id: "messages",
 });
 ```
 
@@ -47,24 +49,38 @@ from autumn import Autumn
 autumn = Autumn("secret_key")
 
 async def main():
-  check = await autumn.check(customer_id="user-123", feature_id="ai-messages")
+  check = await autumn.check(customer_id="user-123", feature_id="messages")
   allowed = check.allowed
 
 asyncio.run(main())
 ```
 
+```bash cURL
+curl -X POST "https://api.useautumn.com/v1/check" \
+  -H "Authorization: Bearer am_sk_1234567890" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "user-123",
+    "feature_id": "messages",
+  }'
+```
+
 </CodeGroup>
 
-```json
+```json [expandable]
 {
   "allowed": true,
-  "balances": [
-    {
-      "feature_id": "ai-messages",
-      "balance": 100,
-      "required": 1
-    }
-  ]
+  "customer_id": "123",
+  "feature_id": "messages",
+  "required_balance": 1,
+  "code": "feature_found",
+  "interval": "month",
+  "unlimited": false,
+  "balance": 100,
+  "usage": 0,
+  "included_usage": 100,
+  "next_reset_at": 1754421255055,
+  "overage_allowed": false
 }
 ```
 
@@ -83,24 +99,21 @@ By default, `required_quantity` is 1, so not passing this parameter will return 
 
 <CodeGroup>
 
-```bash cURL {7}
-curl -X POST "https://api.useautumn.com/v1/check" \
-  -H "Authorization: Bearer am_sk_1234567890" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "user-123",
-    "feature_id": "ai-messages",
-    "required_quantity": 3
-  }'
+```tsx React
+const { allowed, check } = useCustomer();
+
+const canSendMessage = allowed({ featureId: "messages", requiredQuantity: 3 });
+
+const { data } = await check({ featureId: "messages", requiredQuantity: 3 });
 ```
 
-```javascript Typescript {10}
+```javascript Node.js {10}
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.check({
-  customerId: "user-123",
-  featureId: "ai-messages",
-  requiredQuantity: 3,
+const { data } = await autumn.check({
+  customer_id: "user-123",
+  feature_id: "ai-messages",
+  required_quantity: 3,
 });
 ```
 
@@ -112,13 +125,24 @@ autumn = Autumn("secret_key")
 
 async def main():
   check = await autumn.check(
-    customer_id="user-123", 
+    customer_id="user-123",
     feature_id="ai-messages",
     required_quantity=3
   )
   allowed = check.allowed
 
 asyncio.run(main())
+```
+
+```bash cURL {7}
+curl -X POST "https://api.useautumn.com/v1/check" \
+  -H "Authorization: Bearer am_sk_1234567890" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "user-123",
+    "feature_id": "ai-messages",
+    "required_quantity": 3
+  }'
 ```
 
 </CodeGroup>
@@ -131,22 +155,18 @@ However, you can check entitlement and record usage in a single API call using t
 
 <CodeGroup>
 
-```bash cURL {7-8}
-curl -X POST "https://api.useautumn.com/v1/check" \
-  -H "Authorization: Bearer am_sk_1234567890" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "user-123",
-    "feature_id": "ai-messages",
-    "required_quantity": 3,
-    "send_event": true
-  }'
+```tsx React
+const { allowed, check } = useCustomer();
+
+const canSendMessage = allowed({ featureId: "messages", requiredQuantity: 3 });
+
+const { data } = await check({ featureId: "messages", requiredQuantity: 3 });
 ```
 
-```javascript Typescript
+```javascript Node.js
 import { Autumn as autumn } from "autumn-js";
 
-const { allowed } = await autumn.check({
+const { data } = await autumn.check({
   customer_id: "user-123",
   feature_id: "api_calls",
   required_quantity: 3,
@@ -172,6 +192,18 @@ async def main():
 asyncio.run(main())
 ```
 
+```bash cURL {7-8}
+curl -X POST "https://api.useautumn.com/v1/check" \
+  -H "Authorization: Bearer am_sk_1234567890" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "user-123",
+    "feature_id": "ai-messages",
+    "required_quantity": 3,
+    "send_event": true
+  }'
+```
+
 </CodeGroup>
 
 <Warning>
@@ -182,28 +214,14 @@ Alternatively, you can "refund" usage with a negative usage `value` if the event
 </Warning>
 ## Checking Boolean Features
 
-For simple on/off features, use the endpoint to determine if a customer has access.
+For simple on/off features, use the endpoint to determine if a customer has access. Alternatively you can just check if they have access to a certain product.
 
-You can do this on the client side on page load, using a `useEffect` function:
+```tsx React
+const { allowed } = useCustomer();
 
-```javascript
-import { Autumn as autumn } from "autumn-js";
+// check if the customer has access to a product
+const isPremium = allowed({ productId: "premium" });
 
-const { allowed } = await autumn.check({
-  customer_id: "user-123",
-  feature_id: "premium-dashboard",
-});
-```
-
-```json
-{
-  "allowed": true,
-  "balances": [
-    {
-      "feature_id": "premium-dashboard",
-      "balance": null,
-      "required": null
-    }
-  ]
-}
+// check if the customer has access to a feature
+const dashboardAccess = allowed({ featureId: "premium-dashboard" });
 ```
