@@ -6,48 +6,79 @@ description: "Implement your app's payments and pricing model in under 5 minutes
 
 Create your [Autumn account](https://app.useautumn.com/) and let's create the pricing for a premium AI chatbot.
 
-We're going to have a "Pro" plan that gives users **10 chat messages per month** for **$20 per month**.
+We're going to have:
 
-## 1. Create the product
+- A Free plan that gives users **5 chat messages per month** for free
+- A Pro plan that gives users **100 chat messages per month** for **$20 per month**.
 
-Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
+## 1. Create your products
 
 <Tabs>
 <Tab title="Using the CLI">
-    Add the following code to your `autumn.config.ts` file.
-    ```typescript autumn.config.ts
-      import { product, feature, pricedFeatureItem } from "autumn-js/compose";
 
-      const messages = feature({
-        id: "messages",
-        name: "Messages",
-        type: "metered"
-      })
+Run the following command in your root directory:
 
-      const proPlan = product({
-        id: "pro",
-        name: "Pro",
-        items: [
-          pricedFeatureItem({
-            feature_id: messages.id,
-            included_usage: 10,
-            price: 20,
-            interval: "month",
-          })
-        ]
-      })
+```bash
+npx atmn init
+```
 
-      export default {
-        products: [proPlan],
-        features: [messages]
-      }
-    ```
+This will create a `autumn.config.ts` file in your root directory and prompt you to login / create an account. Add the following code to your `autumn.config.ts` file.
 
-    If you haven't already, authenticate yourself with the CLI by running: `npx atmn auth`.
+```typescript autumn.config.ts [expandable]
+import { product, feature, featureItem, priceItem } from "atmn";
 
-    Then run `npx atmn push` to push your changes to Autumn's sandbox environment.
+const messages = feature({
+  id: "messages",
+  name: "Messages",
+  type: "single_use",
+});
+
+const freePlan = product({
+  id: "free",
+  name: "Free",
+  items: [
+    // 5 messages per month
+    featureItem({
+      feature_id: messages.id,
+      included_usage: 5,
+      interval: "month",
+    }),
+  ],
+});
+
+const proPlan = product({
+  id: "pro",
+  name: "Pro",
+  items: [
+    featureItem({
+      // 10 messages per month
+      feature_id: messages.id,
+      included_usage: 10,
+      interval: "month",
+    }),
+    priceItem({
+      // $20 per month
+      price: 20,
+      interval: "month",
+    }),
+  ],
+});
+
+export default {
+  products: [freePlan, proPlan],
+  features: [messages],
+};
+```
+
+Then, push your changes to Autumn's sandbox environment.
+
+```bash
+npx atmn push
+```
+
 </Tab>
 <Tab title="Dashboard">
+Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
 <AccordionGroup>
 
   <Accordion title="Create the Product">
@@ -58,21 +89,25 @@ Create the Pro plan in the [Products](https://app.useautumn.com/products) tab.
 
       />
     </Frame>
+
   </Accordion>
 
   <Accordion title="Create the Messages Feature">
   Click the "+ Feature" button, and in the feature list, select "Create new feature".
 
-  <Frame className="bg-transparent items-center gap-4 bg-gray-50 dark:bg-gray-800">
+{" "}
+
+<Frame className="bg-transparent items-center gap-4 bg-gray-50 dark:bg-gray-800">
   <img src="/assets/quickstart/messages.png" />
-  </Frame>
+</Frame>
 
   </Accordion>
 
   <Accordion title="Add the Product Items">
   Back on the products page, create a new product and name it "Pro". Click "+ Feature" and add a limit of 10 messages per month.
-  
-  Then click "+ Price" and a price of $20 per month.
+
+Then click "+ Price" and a price of $20 per month.
+
   <Frame className="bg-transparent items-center gap-4 bg-gray-50 dark:bg-gray-800">
   <img src="/assets/quickstart/messages-item.png" className="" />
   <img src="/assets/quickstart/price.png" className="" />
