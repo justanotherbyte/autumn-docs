@@ -30,7 +30,7 @@ import { product, feature, featureItem, priceItem } from "atmn";
 const messages = feature({
   id: "messages",
   name: "Messages",
-  type: "metered",
+  type: "single_use",
 });
 
 const freePlan = product({
@@ -65,7 +65,7 @@ const proPlan = product({
 });
 
 export default {
-  products: [proPlan],
+  products: [freePlan, proPlan],
   features: [messages],
 };
 ```
